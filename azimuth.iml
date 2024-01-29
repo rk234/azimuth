@@ -11,5 +11,7 @@
     <orderEntry type="jdk" jdkName="21" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
+    <orderEntry type="library" name="netcdfAll-5.5.3" level="project" />
+    <orderEntry type="library" name="flatlaf-3.3" level="project" />
   </component>
 </module>

@@ -1,14 +1,27 @@
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-fun main() {
-    val name = "Kotlin"
-    //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-    // to see how IntelliJ IDEA suggests fixing it.
-    println("Hello, " + name + "!")
+import com.formdev.flatlaf.FlatDarkLaf
+import javax.swing.BorderFactory
+import javax.swing.BoxLayout
+import javax.swing.JButton
+import javax.swing.JFrame
+import javax.swing.JPanel
 
-    for (i in 1..5) {
-        //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-        // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-        println("i = $i")
-    }
+fun main() {
+    System.setProperty( "apple.laf.useScreenMenuBar", "true" )
+    System.setProperty( "apple.awt.application.appearance", "system" )
+    FlatDarkLaf.setup()
+    //val file = NetcdfFiles.openInMemory("src/main/resources/KLWX_20240119_153921");
+    //println(file.variables)
+    val window = JFrame("Azimuth")
+    val panel = JPanel()
+
+    panel.layout = BoxLayout(panel, BoxLayout.Y_AXIS)
+    panel.border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
+
+    panel.add(JButton("Click Me!"))
+
+    window.setSize(500, 400)
+    window.contentPane = panel
+    window.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
+
+    window.isVisible = true
 }
