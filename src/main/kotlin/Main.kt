@@ -2,6 +2,8 @@ import com.formdev.flatlaf.FlatDarkLaf
 import map.MapView
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.awt.GLData
+import ucar.ma2.Index
+import ucar.nc2.NetcdfFiles
 import java.awt.BorderLayout
 import java.awt.Dimension
 import javax.swing.BorderFactory
@@ -16,13 +18,18 @@ fun main() {
     System.setProperty("apple.laf.useScreenMenuBar", "true")
     System.setProperty("apple.awt.application.appearance", "system")
     FlatDarkLaf.setup()
-    //val file = NetcdfFiles.openInMemory("src/main/resources/KLWX_20240119_153921");
-    //println(file.variables)
-    val window = JFrame("Azimuth")
+    val file = NetcdfFiles.openInMemory("src/main/resources/KLWX_20240119_153921");
+    println(file.variables)
+    val reflectivity = file.findVariable("Reflectivity")
+    println(reflectivity?.shape.contentToString())
+
+    val refData = reflectivity?.read()
+    println(refData?.getFloat(Index(reflectivity.shape, intArrayOf(0,0,0))))
+
+    val window = JFrame()
     val panel = JPanel()
     val data = GLData()
     val canvas = MapView(data)
-
 
     panel.layout = BoxLayout(panel, BoxLayout.Y_AXIS)
     panel.preferredSize = Dimension(300, 300)
@@ -49,7 +56,7 @@ fun main() {
             }
             canvas.render()
             SwingUtilities.invokeLater(this)
-            println("FPS: ${1 / ((System.currentTimeMillis() - prev) / 1000f)}")
+//            println("FPS: ${1 / ((System.currentTimeMillis() - prev) / 1000f)}")
             prev = System.currentTimeMillis()
         }
     })
