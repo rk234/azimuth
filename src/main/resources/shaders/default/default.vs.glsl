@@ -6,5 +6,5 @@ uniform mat4 projectionMatrix;
 uniform mat4 transformMatrix;
 
 void main() {
-    gl_Position = projectionMatrix * vec4(aPos, 1.0);
+    gl_Position = projectionMatrix * transformMatrix * vec4(aPos, 1.0);
 }

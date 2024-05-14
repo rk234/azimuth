@@ -30,7 +30,7 @@ class Camera(viewWidth: Float, viewHeight: Float) {
     }
 
     fun recalcTransform() {
-        transformMatrix = Matrix4f().translate(position).scale(zoom)
+        transformMatrix = Matrix4f().translate(Vector3f(position).mul(-1f)).scale(zoom)
     }
 
     fun updateViewport(width: Float, height: Float) {

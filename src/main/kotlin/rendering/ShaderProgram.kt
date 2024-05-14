@@ -62,7 +62,6 @@ class ShaderProgram {
             loc = glGetUniformLocation(id, uniformName)
             uniforms[uniformName] = loc
         }
-        println("Uniform loc $loc")
         val buf = MemoryUtil.memAllocFloat(16)
         glUniformMatrix4fv(loc, false, data.get(buf))
         MemoryUtil.memFree(buf)

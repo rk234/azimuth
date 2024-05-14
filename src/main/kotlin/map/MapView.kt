@@ -1,5 +1,6 @@
 package map
 
+import org.joml.Vector3f
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL45.*;
 import org.lwjgl.opengl.awt.AWTGLCanvas
@@ -22,7 +23,7 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
         GL.createCapabilities()
         glClearColor(0f, 0.0f, 0.0f, 1.0f)
 
-        camera = Camera(2f, 2f)
+        camera = Camera(width.toFloat(), height.toFloat())
 
         val vsSource = File("src/main/resources/shaders/default/default.vs.glsl").readText(Charsets.UTF_8)
         val fsSource = File("src/main/resources/shaders/default/default.fs.glsl").readText(Charsets.UTF_8)
@@ -33,8 +34,6 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
         shader.link()
 
         println(camera.projectionMatrix)
-        shader.setUniformMatrix4f("projectionMatrix", camera.projectionMatrix)
-        //shader.setUniformMatrix4f("transform", camera.transformMatrix)
 
         val verts = floatArrayOf(
             0.0f, 0.5f, 1.0f,
@@ -59,7 +58,11 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
     override fun paintGL() {
         glViewport(0, 0, width, height)
         shader.bind()
+
+        camera.updateViewport(width.toFloat()/100, height.toFloat()/100)
         shader.setUniformMatrix4f("projectionMatrix", camera.projectionMatrix)
+        shader.setUniformMatrix4f("transformMatrix", camera.transformMatrix)
+
         vertexBuffer.bind()
         vertexArrayObject.bind()
         vertexArrayObject.enableAttrib(0)
