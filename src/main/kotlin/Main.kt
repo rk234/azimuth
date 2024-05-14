@@ -18,13 +18,12 @@ fun main() {
     System.setProperty("apple.laf.useScreenMenuBar", "true")
     System.setProperty("apple.awt.application.appearance", "system")
     FlatDarkLaf.setup()
-    val file = NetcdfFiles.openInMemory("src/main/resources/KLWX_20240119_153921");
-    println(file.variables)
-    val reflectivity = file.findVariable("Reflectivity")
-    println(reflectivity?.shape.contentToString())
-
-    val refData = reflectivity?.read()
-    println(refData?.getFloat(Index(reflectivity.shape, intArrayOf(0,0,0))))
+//    val file = NetcdfFiles.openInMemory("src/main/resources/KLWX_20240119_153921");
+//    println(file.variables)
+//    val reflectivity = file.findVariable("Reflectivity")
+//    println(reflectivity?.shape.contentToString())
+//
+//    val refData = reflectivity?.read()
 
     val window = JFrame()
     val panel = JPanel()

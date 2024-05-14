@@ -1,10 +1,16 @@
 package rendering
+import com.sun.jna.Memory
+import org.joml.Matrix4f
 import org.lwjgl.opengl.GL45.*
+import org.lwjgl.system.MemoryStack
+import org.lwjgl.system.MemoryUtil
 
 class ShaderProgram {
     val id: Int
     var vsID: Int = 0
     var fsID: Int = 0
+
+    val uniforms = HashMap<String, Int>()
 
     init {
         id = glCreateProgram()
@@ -46,6 +52,20 @@ class ShaderProgram {
         glValidateProgram(id)
 
         if(glGetProgrami(id, GL_VALIDATE_STATUS) == 0) error("Warning validating shader code ${glGetProgramInfoLog(id)}")
+    }
+
+    fun setUniformMatrix4f(uniformName: String, data: Matrix4f) {
+        val loc: Int;
+        if(uniforms.containsKey(uniformName)) {
+            loc = uniforms[uniformName]!!
+        } else {
+            loc = glGetUniformLocation(id, uniformName)
+            uniforms[uniformName] = loc
+        }
+        println("Uniform loc $loc")
+        val buf = MemoryUtil.memAllocFloat(16)
+        glUniformMatrix4fv(loc, false, data.get(buf))
+        MemoryUtil.memFree(buf)
     }
 
     fun bind() {

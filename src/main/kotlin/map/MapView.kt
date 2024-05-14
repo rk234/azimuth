@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL45.*;
 import org.lwjgl.opengl.awt.AWTGLCanvas
 import org.lwjgl.opengl.awt.GLData
 import org.lwjgl.system.MemoryUtil
+import rendering.Camera
 import rendering.GLBufferObject
 import rendering.ShaderProgram
 import rendering.VertexArrayObject
@@ -14,11 +15,14 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
     lateinit var vertexBuffer: GLBufferObject;
     lateinit var vertexArrayObject: VertexArrayObject;
     lateinit var shader: ShaderProgram;
+    lateinit var camera: Camera
 
     override fun initGL() {
         println("GL Version: ${effective.majorVersion}.${effective.minorVersion}")
         GL.createCapabilities()
         glClearColor(0f, 0.0f, 0.0f, 1.0f)
+
+        camera = Camera(2f, 2f)
 
         val vsSource = File("src/main/resources/shaders/default/default.vs.glsl").readText(Charsets.UTF_8)
         val fsSource = File("src/main/resources/shaders/default/default.fs.glsl").readText(Charsets.UTF_8)
@@ -28,10 +32,14 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
         shader.createFragmentShader(fsSource)
         shader.link()
 
+        println(camera.projectionMatrix)
+        shader.setUniformMatrix4f("projectionMatrix", camera.projectionMatrix)
+        //shader.setUniformMatrix4f("transform", camera.transformMatrix)
+
         val verts = floatArrayOf(
-            0.0f, 0.5f, 0.0f,
-            -0.5f, -0.5f, 0.0f,
-            0.5f, -0.5f, 0.0f
+            0.0f, 0.5f, 1.0f,
+            -0.5f, -0.5f, 1.0f,
+            0.5f, -0.5f, 1.0f
         )
         val floatBuffer = MemoryUtil.memAllocFloat(verts.size)
         floatBuffer.put(verts).flip()
@@ -51,6 +59,7 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
     override fun paintGL() {
         glViewport(0, 0, width, height)
         shader.bind()
+        shader.setUniformMatrix4f("projectionMatrix", camera.projectionMatrix)
         vertexBuffer.bind()
         vertexArrayObject.bind()
         vertexArrayObject.enableAttrib(0)
