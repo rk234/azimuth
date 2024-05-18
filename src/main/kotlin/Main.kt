@@ -17,10 +17,21 @@ fun main() {
     System.setProperty("apple.laf.useScreenMenuBar", "true")
     System.setProperty("apple.awt.application.appearance", "system")
     FlatDarkLaf.setup()
+
     val file = NetcdfFiles.openInMemory("src/main/resources/KLWX_20240119_153921");
-    println(file.variables)
-    val reflectivity = file.findVariable("Reflectivity")
-    println(reflectivity?.shape.contentToString())
+    println(file.globalAttributes)
+    println(file.id)
+    println("Variables:")
+    for (variable in file.variables) {
+        println("\t${variable.name} - ${variable.shape.contentToString()} | ${variable.unitsString}")
+    }
+
+    val azimuth = file.findVariable("azimuthR_HI")
+    val range = file.findVariable("distanceR_HI")
+    val reflectivity = file.findVariable("Reflectivity_HI")
+    println("reflectivity shape ${reflectivity?.shape.contentToString()}")
+    println("range shape ${range?.shape.contentToString()}")
+    println("azimuth shape ${azimuth?.shape.contentToString()}")
 
     val refData = reflectivity?.read()
 
