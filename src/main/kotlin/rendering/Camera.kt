@@ -30,7 +30,7 @@ class Camera(viewWidth: Float, viewHeight: Float) {
     }
 
     fun recalcTransform() {
-        transformMatrix = Matrix4f().translate(Vector3f(position).mul(-1f)).scale(zoom)
+        transformMatrix = Matrix4f().translate(Vector3f(position).mul(-1f))
     }
 
     fun updateViewport(width: Float, height: Float) {
@@ -40,12 +40,17 @@ class Camera(viewWidth: Float, viewHeight: Float) {
 
     fun recalcProjection() {
         projectionMatrix = Matrix4f().ortho(
-            -viewportDims.x/2,
-            viewportDims.x/2,
-            -viewportDims.y/2,
-            viewportDims.y/2,
+            -viewportDims.x * (1 / zoom) / 2,
+            viewportDims.x * (1 / zoom) / 2,
+            -viewportDims.y * (1 / zoom) / 2,
+            viewportDims.y * (1 / zoom) / 2,
             -1f,
             1f
         )
+    }
+
+    fun translate(delta: Vector2f) {
+        position.add(Vector3f(delta, position.z))
+        recalcTransform()
     }
 }

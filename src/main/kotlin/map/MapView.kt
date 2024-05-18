@@ -10,6 +10,10 @@ import rendering.Camera
 import rendering.GLBufferObject
 import rendering.ShaderProgram
 import rendering.VertexArrayObject
+import java.awt.event.MouseEvent
+import java.awt.event.MouseMotionListener
+import java.awt.event.MouseWheelEvent
+import java.awt.event.MouseWheelListener
 import java.io.File
 
 class MapView(data: GLData?) : AWTGLCanvas(data) {
@@ -17,6 +21,7 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
     lateinit var vertexArrayObject: VertexArrayObject;
     lateinit var shader: ShaderProgram;
     lateinit var camera: Camera
+    lateinit var inputHandler: MapViewInputHandler
 
     override fun initGL() {
         println("GL Version: ${effective.majorVersion}.${effective.minorVersion}")
@@ -24,6 +29,11 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
         glClearColor(0f, 0.0f, 0.0f, 1.0f)
 
         camera = Camera(width.toFloat(), height.toFloat())
+        inputHandler = MapViewInputHandler(camera)
+
+        addMouseMotionListener(inputHandler)
+        addMouseWheelListener(inputHandler)
+        addMouseListener(inputHandler)
 
         val vsSource = File("src/main/resources/shaders/default/default.vs.glsl").readText(Charsets.UTF_8)
         val fsSource = File("src/main/resources/shaders/default/default.fs.glsl").readText(Charsets.UTF_8)
@@ -59,7 +69,7 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
         glViewport(0, 0, width, height)
         shader.bind()
 
-        camera.updateViewport(width.toFloat()/100, height.toFloat()/100)
+        camera.updateViewport(width.toFloat() / 100, height.toFloat() / 100)
         shader.setUniformMatrix4f("projectionMatrix", camera.projectionMatrix)
         shader.setUniformMatrix4f("transformMatrix", camera.transformMatrix)
 
@@ -71,5 +81,4 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
         glDrawArrays(GL_TRIANGLES, 0, 3)
         swapBuffers()
     }
-
 }
