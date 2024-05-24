@@ -30,8 +30,14 @@ class MapViewInputHandler(camera: Camera) : MouseListener, MouseWheelListener, M
     }
 
     override fun mouseWheelMoved(e: MouseWheelEvent?) {
-        camera.zoom += (e?.preciseWheelRotation?.toFloat() ?: 0f) / 50f
-        println(camera.zoom)
+        val rot = (e?.preciseWheelRotation ?: 0).toFloat()
+
+        if (rot > 0f) {
+            camera.zoom *= 1.1f
+        } else if (rot < 0f) {
+            camera.zoom /= 1.1f
+        }
+
         camera.recalcProjection()
     }
 

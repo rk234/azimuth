@@ -1,10 +1,8 @@
 import com.formdev.flatlaf.FlatDarkLaf
 import map.MapView
 import meteo.radar.Product
-import meteo.radar.RadarVolume
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.awt.GLData
-import ucar.ma2.Index
 import ucar.nc2.NetcdfFiles
 import java.awt.BorderLayout
 import java.awt.Dimension
@@ -21,7 +19,10 @@ fun main() {
     FlatDarkLaf.setup()
 
     val file = NetcdfFiles.openInMemory("src/main/resources/KLWX_20240119_153921");
-    var vol = RadarVolume(file, Product.REFLECTIVITY_HIRES)
+    val vol = RadarVolume(file, Product.REFLECTIVITY_HIRES)
+    println(vol.station)
+    println(vol.latitude)
+    println(vol.longitude)
 
     val window = JFrame()
     val panel = JPanel()

@@ -1,6 +1,5 @@
 package map
 
-import org.joml.Vector3f
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL45.*;
 import org.lwjgl.opengl.awt.AWTGLCanvas
@@ -10,10 +9,7 @@ import rendering.Camera
 import rendering.GLBufferObject
 import rendering.ShaderProgram
 import rendering.VertexArrayObject
-import java.awt.event.MouseEvent
-import java.awt.event.MouseMotionListener
-import java.awt.event.MouseWheelEvent
-import java.awt.event.MouseWheelListener
+
 import java.io.File
 
 class MapView(data: GLData?) : AWTGLCanvas(data) {
@@ -46,9 +42,9 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
         println(camera.projectionMatrix)
 
         val verts = floatArrayOf(
-            0.0f, 0.5f, 1.0f,
-            -0.5f, -0.5f, 1.0f,
-            0.5f, -0.5f, 1.0f
+            0.0f, 0.5f, 1.0f, 1.0f, 0f, 0f,
+            -0.5f, -0.5f, 1.0f, 0f, 1.0f, 0f,
+            0.5f, -0.5f, 1.0f, 0f, 0f, 1.0f
         )
         val floatBuffer = MemoryUtil.memAllocFloat(verts.size)
         floatBuffer.put(verts).flip()
@@ -62,7 +58,8 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
 
         MemoryUtil.memFree(floatBuffer)
 
-        vertexArrayObject.attrib(0, 3, GL_FLOAT, false, 0, 0)
+        vertexArrayObject.attrib(0, 3, GL_FLOAT, false, 6 * Float.SIZE_BYTES, 0)
+        vertexArrayObject.attrib(1, 3, GL_FLOAT, false, 6 * Float.SIZE_BYTES, (3 * Float.SIZE_BYTES).toLong())
     }
 
     override fun paintGL() {
@@ -76,6 +73,7 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
         vertexBuffer.bind()
         vertexArrayObject.bind()
         vertexArrayObject.enableAttrib(0)
+        vertexArrayObject.enableAttrib(1)
 
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
         glDrawArrays(GL_TRIANGLES, 0, 3)
