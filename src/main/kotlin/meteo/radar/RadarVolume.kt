@@ -4,13 +4,10 @@ import ucar.ma2.ArrayByte
 import ucar.ma2.ArrayFloat
 import ucar.nc2.NetcdfFile
 
-class RadarVolume(file: NetcdfFile, product: Product) {
+class RadarVolume(file: NetcdfFile, val product: Product) {
     val scans: List<RadarScan<Float>> = listOf()
-    val product: Product
 
     init {
-        this.product = product
-
         val azimuthVar = file.findVariable(product.azimuthField)
         val elevationVar = file.findVariable(product.elevationField)
         val rangeVar = file.findVariable(product.distanceField)
@@ -20,9 +17,16 @@ class RadarVolume(file: NetcdfFile, product: Product) {
             throw Exception("Unable to read product data from file. Product: $product")
         }
 
-        println("${product.dataField} shape ${variableVar?.shape.contentToString()}")
-        println("${product.distanceField} shape ${rangeVar?.shape.contentToString()}")
-        println("${product.azimuthField} shape ${azimuthVar?.shape.contentToString()}")
+        println(variableVar)
+
+        val addOffset = variableVar.attributes().findAttributeDouble("add_offset", 0.0).toFloat()
+        val scale = variableVar.attributes().findAttributeDouble("scale_factor", 1.0).toFloat()
+        val belowThreshold = variableVar.attributes().findAttributeDouble("signal_below_threshold", 0.0).toFloat()
+        println(variableVar.attributes().findAttribute("missing_value"))
+
+        println("${product.dataField} shape ${variableVar.shape.contentToString()}")
+        println("${product.distanceField} shape ${rangeVar.shape.contentToString()}")
+        println("${product.azimuthField} shape ${azimuthVar.shape.contentToString()}")
 
         val productData: ArrayByte.D3 = variableVar.read() as ArrayByte.D3
         val azimuthData: ArrayFloat.D2 = azimuthVar.read() as ArrayFloat.D2
@@ -38,8 +42,12 @@ class RadarVolume(file: NetcdfFile, product: Product) {
 //                val elevation = elevationData.getFloat(sweep, radiall)
                 for (gate in 0..<shape[2]) { //Sweeps
                     val range = rangeData.get(gate)
-                    val gateValue = productData.get(sweep, radial, gate)
-                    println("Azimuth: $azimuth, Range: $range | Data: $gateValue")
+                    val rawValue = productData.get(sweep, radial, gate).toFloat()
+
+                    if(rawValue != belowThreshold) {
+                        val scaledValue = (productData.get(sweep, radial, gate)*scale)+addOffset
+//                        println("Azimuth: $azimuth, Range: $range | Data: $scaledValue")
+                    }
                 }
             }
         }
