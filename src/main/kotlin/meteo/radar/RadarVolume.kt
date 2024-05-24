@@ -26,6 +26,7 @@ class RadarVolume(file: NetcdfFile, val product: Product) {
     val vcpName: String
 
     init {
+        println(file)
         station = file.findGlobalAttribute("Station")?.stringValue ?: "UNKNOWN"
         stationName = file.findGlobalAttribute("StationName")?.stringValue ?: "UNKNOWN"
 
@@ -51,7 +52,8 @@ class RadarVolume(file: NetcdfFile, val product: Product) {
             throw Exception("Unable to read product data from file. Product: $product")
         }
 
-        println(variableVar)
+        println(rangeVar)
+        println(azimuthVar)
 
         val addOffset = variableVar.attributes().findAttributeDouble("add_offset", 0.0).toFloat()
         val scale = variableVar.attributes().findAttributeDouble("scale_factor", 1.0).toFloat()

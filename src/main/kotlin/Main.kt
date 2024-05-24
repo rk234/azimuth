@@ -18,12 +18,6 @@ fun main() {
     System.setProperty("apple.awt.application.appearance", "system")
     FlatDarkLaf.setup()
 
-    val file = NetcdfFiles.openInMemory("src/main/resources/KLWX_20240119_153921");
-    val vol = RadarVolume(file, Product.REFLECTIVITY_HIRES)
-    println(vol.station)
-    println(vol.latitude)
-    println(vol.longitude)
-
     val window = JFrame()
     val panel = JPanel()
     val data = GLData()
