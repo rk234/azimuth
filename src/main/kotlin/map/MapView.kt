@@ -1,6 +1,7 @@
 package map
 
 import RadarVolume
+import meteo.radar.Colormap
 import meteo.radar.Product
 import org.joml.Vector2f
 import org.lwjgl.opengl.GL
@@ -15,6 +16,8 @@ import rendering.VertexArrayObject
 import ucar.nc2.NetcdfFiles
 
 import java.io.File
+import kotlin.math.cos
+import kotlin.math.sin
 
 class MapView(data: GLData?) : AWTGLCanvas(data) {
     lateinit var vertexBuffer: GLBufferObject;
@@ -50,50 +53,54 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
         println(vol.latitude)
         println(vol.longitude)
 
-        val verts = MemoryUtil.memAllocFloat(720*1832*6*6)
+        val cmap = Colormap(File("src/main/resources/colormaps/reflectivity.cmap").readText(Charsets.UTF_8))
+
+        val verts = MemoryUtil.memAllocFloat(720 * 1832 * 6 * 6)
 
         val firstScan = vol.scans[0]
 
         val resolution = Math.toRadians(0.5) //TODO: Should be 1 degree for normal resolution, .5 for super-res
         var gateSize: Float = -1f
-        for((radialIndex, radial) in firstScan.radials.withIndex()) {
-            for((gateIndex, gate) in radial.withIndex()) {
-                val azimuth = gate.azimuth-90
+        for ((radialIndex, radial) in firstScan.radials.withIndex()) {
+            for ((gateIndex, gate) in radial.withIndex()) {
+                val azimuth = gate.azimuth + 270
                 val range = gate.range / 1000
                 val data = gate.data
 
-                val startAngle = Math.toRadians(azimuth.toDouble()) - (resolution/2)
-                val endAngle = Math.toRadians(azimuth.toDouble()) + (resolution/2)
+                val startAngle = Math.toRadians(azimuth.toDouble()) - (resolution / 2) * 1.1
+                val endAngle = Math.toRadians(azimuth.toDouble()) + (resolution / 2) * 1.1
 
-                if(gateSize == -1f) {
-                    gateSize = (radial[gateIndex+1].range-radial[gateIndex].range)/1000
+                if (gateSize == -1f) {
+                    gateSize = (radial[gateIndex + 1].range - radial[gateIndex].range) / 1000
                 }
 
                 val p1 = Vector2f(
-                    (Math.cos(startAngle) * range).toFloat(),
-                    (Math.sin(startAngle) * range).toFloat()
+                    (cos(startAngle) * range).toFloat(),
+                    (-sin(startAngle) * range).toFloat()
                 )
                 val p2 = Vector2f(
-                    (Math.cos(startAngle) * (range+gateSize)).toFloat(),
-                    (Math.sin(startAngle) * (range+gateSize)).toFloat()
+                    (cos(startAngle) * (range + gateSize)).toFloat(),
+                    (-sin(startAngle) * (range + gateSize)).toFloat()
                 )
                 val p3 = Vector2f(
-                    (Math.cos(endAngle) * (range+gateSize)).toFloat(),
-                    (Math.sin(endAngle) * (range+gateSize)).toFloat()
+                    (cos(endAngle) * (range + gateSize)).toFloat(),
+                    (-sin(endAngle) * (range + gateSize)).toFloat()
                 )
                 val p4 = Vector2f(
-                    (Math.cos(endAngle) * range).toFloat(),
-                    (Math.sin(endAngle) * range).toFloat()
+                    (cos(endAngle) * range).toFloat(),
+                    (-sin(endAngle) * range).toFloat()
                 )
 
-                verts.put(floatArrayOf(p1.x, p1.y, 0f, 1f, 0f, 0f))
-                verts.put(floatArrayOf(p2.x, p2.y, 0f, 1f, 0f, 0f))
-                verts.put(floatArrayOf(p3.x, p3.y, 0f, 1f, 0f, 0f))
+                val color = cmap.sample(data)
 
-                verts.put(floatArrayOf(p3.x, p3.y, 0f, 1f, 0f, 0f))
-                verts.put(floatArrayOf(p4.x, p4.y, 0f, 1f, 0f, 0f))
-                verts.put(floatArrayOf(p1.x, p1.y, 0f, 1f, 0f, 0f))
-                numVerts+=6
+                verts.put(floatArrayOf(p1.x, p1.y, 0f, color.x, color.y, color.z))
+                verts.put(floatArrayOf(p2.x, p2.y, 0f, color.x, color.y, color.z))
+                verts.put(floatArrayOf(p3.x, p3.y, 0f, color.x, color.y, color.z))
+
+                verts.put(floatArrayOf(p3.x, p3.y, 0f, color.x, color.y, color.z))
+                verts.put(floatArrayOf(p4.x, p4.y, 0f, color.x, color.y, color.z))
+                verts.put(floatArrayOf(p1.x, p1.y, 0f, color.x, color.y, color.z))
+                numVerts += 6
             }
         }
 

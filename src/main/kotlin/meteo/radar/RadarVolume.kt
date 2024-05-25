@@ -26,7 +26,6 @@ class RadarVolume(file: NetcdfFile, val product: Product) {
     val vcpName: String
 
     init {
-        println(file)
         station = file.findGlobalAttribute("Station")?.stringValue ?: "UNKNOWN"
         stationName = file.findGlobalAttribute("StationName")?.stringValue ?: "UNKNOWN"
 
@@ -52,11 +51,12 @@ class RadarVolume(file: NetcdfFile, val product: Product) {
             throw Exception("Unable to read product data from file. Product: $product")
         }
 
-        println(rangeVar)
-        println(azimuthVar)
+        println(variableVar.dataType.signedness)
 
         val addOffset = variableVar.attributes().findAttributeDouble("add_offset", 0.0).toFloat()
         val scale = variableVar.attributes().findAttributeDouble("scale_factor", 1.0).toFloat()
+        println(addOffset)
+        println(scale)
 
         val belowThreshold: Byte = 0;
         val noData: Byte = 1;
@@ -83,11 +83,13 @@ class RadarVolume(file: NetcdfFile, val product: Product) {
                 val gates: ArrayList<RadarGate<Float>> = arrayListOf()
                 for (gate in 0..<shape[2]) { //Sweeps
                     val range = rangeData.get(gate)
-                    val rawValue = productData.get(sweep, radial, gate)
+                    val rawValue = productData.get(sweep, radial, gate).toUByte().toFloat()
 
-                    if (rawValue != belowThreshold && rawValue != noData) {
-                        val scaledValue = (productData.get(sweep, radial, gate) * scale) + addOffset
+                    if (rawValue != belowThreshold.toFloat() && rawValue != noData.toFloat()) {
+                        val scaledValue = (rawValue * scale) + addOffset
+//                        println(if (scaledValue > 10) scaledValue else "")
 //                        println("Azimuth: $azimuth, Range: $range | Data: $scaledValue")
+//                        println(scaledValue)
                         gates.add(RadarGate<Float>(elevation, azimuth, range, scaledValue))
                     }
                 }

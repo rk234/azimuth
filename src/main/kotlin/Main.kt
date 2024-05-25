@@ -1,11 +1,11 @@
 import com.formdev.flatlaf.FlatDarkLaf
 import map.MapView
-import meteo.radar.Product
+import meteo.radar.Colormap
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.awt.GLData
-import ucar.nc2.NetcdfFiles
 import java.awt.BorderLayout
 import java.awt.Dimension
+import java.io.File
 import javax.swing.BorderFactory
 import javax.swing.BoxLayout
 import javax.swing.JFrame
@@ -17,6 +17,7 @@ fun main() {
     System.setProperty("apple.laf.useScreenMenuBar", "true")
     System.setProperty("apple.awt.application.appearance", "system")
     FlatDarkLaf.setup()
+
 
     val window = JFrame()
     val panel = JPanel()

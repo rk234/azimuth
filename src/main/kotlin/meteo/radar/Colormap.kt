@@ -1,13 +1,14 @@
 package meteo.radar
 
 import org.joml.Vector3f
+import java.util.Vector
 
 class Colormap(str: String) {
     var product: Product? = null
     var unit: String? = null
 
-    lateinit var min: Float
-    lateinit var max: Float
+//    lateinit var min: Float
+//    lateinit var max: Float
 
     val steps: ArrayList<ColorStep> = arrayListOf()
 
@@ -16,45 +17,83 @@ class Colormap(str: String) {
     }
 
     private fun parse(colormapStr: String) {
-        val lines = colormapStr.split("\n").map { line -> line.trim() }
+        val lines = colormapStr.split("\n").map { line -> line.trim().lowercase() }
         val colorLines = arrayListOf<String>()
 
-        for(line in lines) {
-            val (prop, value) = line.split(":").map {s -> s.trim()}
+        for (line in lines) {
+            val (prop, value) = line.split(":").map { s -> s.trim() }
 
-            when(prop) {
+            when (prop) {
                 "product" -> product = Product.fromString(value)
                 "units" -> unit = value
                 "color" -> {
-                   colorLines.add(value)
+                    colorLines.add(value)
                 }
             }
         }
 
-        for(i in 0..<colorLines.size-1) {
-            val fields = colorLines[i].split(" ").map { s -> s.toFloat() }
-            val (dataVal, r, g, b) = fields;
-            var (r1, g1, b1) = fields.slice(4..<fields.size)
+        for (i in 0..<colorLines.size - 1) {
+            val s1 = parseColormapLine(colorLines[i])
+            val s2 = parseColormapLine(colorLines[i + 1])
+            steps.add(ColorStep(s1.first, s2.first, s1.second, s2.second))
+        }
+    }
+
+    private fun parseColormapLine(str: String): Triple<Float, Vector3f, Vector3f?> {
+        val fields = str.split(" ").filter { s -> s.trim().isNotEmpty() }.map { s -> s.toFloat() }
+        val (dataVal, r, g, b) = fields;
+        if (fields.size > 4) {
+            val (r1, g1, b1) = fields.slice(4..<fields.size)
+            return Triple(dataVal, Vector3f(r, g, b).mul(1 / 255f), Vector3f(r1, g1, b1))
+        } else {
+            return Triple(dataVal, Vector3f(r, g, b).mul(1 / 255f), null)
+        }
+    }
+
+    fun sample(value: Float): Vector3f {
+        var min = 0;
+        var max = steps.size - 1
+
+        if (value <= steps.first().low) return steps.first().lowColor
+        if (value >= steps.last().high) return steps.last().highColor
+
+        do {
+            val step = steps[(min + max) / 2]
+            if (value < step.low) {
+                max = -1 + (min + max) / 2
+            }
+            if (value > step.high) {
+                min = 1 + (min + max) / 2
+            }
+        } while (!steps[(min + max) / 2].contains(value))
+
+        return steps[(min + max) / 2].sample(value)
+    }
+
+    fun genTextureData(samples: Int): Array<UByte> {
+        val data = Array<UByte>(samples * 3) { (0).toUByte() }
+        val min = steps.first().low
+        val max = steps.last().high
+        val step = (max - min) / samples
+
+        for (i in 0..<samples) {
 
         }
     }
 
-    private fun parseColorStep(str: String): ColorStep {
-        val fields = str.split(" ").map { s -> s.toFloat() }
-        val (dataVal, r, g, b) = fields;
-        var (r1, g1, b1) = fields.slice(4..<fields.size)
-    }
 }
 
 data class ColorStep(val low: Float, val high: Float, val lowColor: Vector3f, val highColor: Vector3f) {
+    fun contains(value: Float) = value in low..high
+
     fun sample(value: Float): Vector3f {
-        if(value <= low) {
+        if (value <= low) {
             return lowColor
-        } else if(value >= high) {
+        } else if (value >= high) {
             return highColor
         } else {
             val out = Vector3f(0f)
-            val t = (value-low)/(high - low)
+            val t = (value - low) / (high - low)
             lowColor.lerp(highColor, t, out)
             return out
         }
