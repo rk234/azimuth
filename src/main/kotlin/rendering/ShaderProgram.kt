@@ -67,6 +67,17 @@ class ShaderProgram {
         MemoryUtil.memFree(buf)
     }
 
+    fun setUniformInt(uniformName: String, data: Int) {
+        val loc: Int;
+        if(uniforms.containsKey(uniformName)) {
+            loc = uniforms[uniformName]!!
+        } else {
+            loc = glGetUniformLocation(id, uniformName)
+            uniforms[uniformName] = loc
+        }
+        glUniform1i(loc, data)
+    }
+
     fun bind() {
         glUseProgram(id)
     }

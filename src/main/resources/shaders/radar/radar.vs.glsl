@@ -8,12 +8,14 @@ layout (location = 0) in float azimuth;
 layout (location = 1) in float range;
 layout (location = 2) in float data;
 
-out vec4 vertColor;
+out float fragData;
 
 void main() {
-    vertColor = texture(colortable, data);
-    gl_Position = projectionMatrix * transformMatrix * vec3(
+    gl_Position = projectionMatrix * transformMatrix * vec4(
             range * cos(azimuth),
-            range * sin(azimuth)
+            range * sin(azimuth),
+            0.0,
+            1.0
     );
+    fragData = data;
 }

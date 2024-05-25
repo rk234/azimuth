@@ -1,8 +1,10 @@
 #version 450 core
 
-in vec4 vertColor;
+in float fragData;
 out vec4 fragColor;
 
+uniform sampler1D colormap;
+
 void main() {
-    fragColor = vertColor;
+    fragColor = vec4(texture(colormap, fragData).xyz, 1);
 }

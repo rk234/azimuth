@@ -3,6 +3,7 @@ import map.MapView
 import meteo.radar.Colormap
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.awt.GLData
+import views.ColormapBar
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.io.File
@@ -33,6 +34,8 @@ fun main() {
 
     window.minimumSize = Dimension(1300, 700)
     window.layout = BorderLayout()
+    val cmap = Colormap(File("src/main/resources/colormaps/reflectivity.cmap").readText(Charsets.UTF_8))
+    window.add(ColormapBar(cmap, 500), BorderLayout.NORTH)
     window.add(canvas, BorderLayout.CENTER)
     window.add(panel, BorderLayout.WEST)
     window.defaultCloseOperation = JFrame.EXIT_ON_CLOSE

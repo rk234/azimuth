@@ -1,7 +1,7 @@
 package meteo.radar
 
 import org.joml.Vector3f
-import java.util.Vector
+import java.nio.ByteBuffer
 
 class Colormap(str: String) {
     var product: Product? = null
@@ -70,15 +70,23 @@ class Colormap(str: String) {
         return steps[(min + max) / 2].sample(value)
     }
 
-    fun genTextureData(samples: Int): Array<UByte> {
-        val data = Array<UByte>(samples * 3) { (0).toUByte() }
+    fun genTextureData(samples: Int, out: ByteBuffer) {
         val min = steps.first().low
         val max = steps.last().high
         val step = (max - min) / samples
 
         for (i in 0..<samples) {
-
+            val color = sample(min+(step*i)).mul(255f)
+            out.put(color.x.toInt().toByte())
+            out.put(color.y.toInt().toByte())
+            out.put(color.z.toInt().toByte())
         }
+    }
+
+    fun rescale(data: Float): Float {
+        val min = steps.first().low
+        val max = steps.last().high
+        return Math.clamp((data-min)/(max-min), 0f, 1f)
     }
 
 }
