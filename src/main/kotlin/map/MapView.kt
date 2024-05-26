@@ -11,6 +11,7 @@ import org.lwjgl.opengl.awt.GLData
 import org.lwjgl.system.MemoryUtil
 import rendering.*
 import ucar.nc2.NetcdfFiles
+import java.awt.Cursor
 
 import java.io.File
 import kotlin.math.cos
@@ -24,6 +25,10 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
     lateinit var inputHandler: MapViewInputHandler
     lateinit var cmapTexture: Texture1D
     var numVerts = 0;
+
+    init {
+        cursor = Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR)
+    }
 
     override fun initGL() {
         println("GL Version: ${effective.majorVersion}.${effective.minorVersion}")
@@ -53,7 +58,7 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
 
         val cmap = Colormap(File("src/main/resources/colormaps/reflectivity.cmap").readText(Charsets.UTF_8))
 
-        val colormapImageData = MemoryUtil.memAlloc(100*3)
+        val colormapImageData = MemoryUtil.memAlloc(100 * 3)
         cmap.genTextureData(100, colormapImageData)
         println("Image Data: ${colormapImageData.get(0)}")
         cmapTexture = Texture1D()
@@ -61,7 +66,7 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
         cmapTexture.uploadData(100, colormapImageData.flip())
         MemoryUtil.memFree(colormapImageData)
 
-        val verts = MemoryUtil.memAllocFloat(720 * 1832 * 3 *6)
+        val verts = MemoryUtil.memAllocFloat(720 * 1832 * 3 * 6)
 
         val firstScan = vol.scans[0]
 
@@ -99,10 +104,10 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
 
 
                 verts.put(floatArrayOf(startAngle.toFloat(), range, cmap.rescale(data)))
-                verts.put(floatArrayOf(startAngle.toFloat(), range+gateSize, cmap.rescale(data)))
-                verts.put(floatArrayOf(endAngle.toFloat(), range+gateSize, cmap.rescale(data)))
+                verts.put(floatArrayOf(startAngle.toFloat(), range + gateSize, cmap.rescale(data)))
+                verts.put(floatArrayOf(endAngle.toFloat(), range + gateSize, cmap.rescale(data)))
 
-                verts.put(floatArrayOf(endAngle.toFloat(), range+gateSize, cmap.rescale(data)))
+                verts.put(floatArrayOf(endAngle.toFloat(), range + gateSize, cmap.rescale(data)))
                 verts.put(floatArrayOf(endAngle.toFloat(), range, cmap.rescale(data)))
                 verts.put(floatArrayOf(startAngle.toFloat(), range, cmap.rescale(data)))
 
@@ -136,8 +141,8 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
 //        vertexArrayObject.attrib(0, 3, GL_FLOAT, false, 6 * Float.SIZE_BYTES, 0)
 //        vertexArrayObject.attrib(1, 3, GL_FLOAT, false, 6 * Float.SIZE_BYTES, (3 * Float.SIZE_BYTES).toLong())
         vertexArrayObject.attrib(0, 1, GL_FLOAT, false, 3 * Float.SIZE_BYTES, 0)
-        vertexArrayObject.attrib(1, 1, GL_FLOAT, false, 3 * Float.SIZE_BYTES, (1*Float.SIZE_BYTES).toLong())
-        vertexArrayObject.attrib(2, 1, GL_FLOAT, false, 3 * Float.SIZE_BYTES, (2*Float.SIZE_BYTES).toLong())
+        vertexArrayObject.attrib(1, 1, GL_FLOAT, false, 3 * Float.SIZE_BYTES, (1 * Float.SIZE_BYTES).toLong())
+        vertexArrayObject.attrib(2, 1, GL_FLOAT, false, 3 * Float.SIZE_BYTES, (2 * Float.SIZE_BYTES).toLong())
     }
 
     override fun paintGL() {

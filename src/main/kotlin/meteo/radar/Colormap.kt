@@ -35,6 +35,7 @@ class Colormap(str: String) {
         for (i in 0..<colorLines.size - 1) {
             val s1 = parseColormapLine(colorLines[i])
             val s2 = parseColormapLine(colorLines[i + 1])
+
             steps.add(ColorStep(s1.first, s2.first, s1.second, s2.second))
         }
     }
@@ -54,8 +55,8 @@ class Colormap(str: String) {
         var min = 0;
         var max = steps.size - 1
 
-        if (value <= steps.first().low) return steps.first().lowColor
-        if (value >= steps.last().high) return steps.last().highColor
+        if (value <= steps.first().low) return Vector3f(steps.first().lowColor)
+        if (value >= steps.last().high) return Vector3f(steps.last().highColor)
 
         do {
             val step = steps[(min + max) / 2]
@@ -76,7 +77,7 @@ class Colormap(str: String) {
         val step = (max - min) / samples
 
         for (i in 0..<samples) {
-            val color = sample(min+(step*i)).mul(255f)
+            val color = sample(min + (step * i)).mul(255f)
             out.put(color.x.toInt().toByte())
             out.put(color.y.toInt().toByte())
             out.put(color.z.toInt().toByte())
@@ -86,7 +87,7 @@ class Colormap(str: String) {
     fun rescale(data: Float): Float {
         val min = steps.first().low
         val max = steps.last().high
-        return Math.clamp((data-min)/(max-min), 0f, 1f)
+        return Math.clamp((data - min) / (max - min), 0f, 1f)
     }
 
 }
@@ -96,9 +97,9 @@ data class ColorStep(val low: Float, val high: Float, val lowColor: Vector3f, va
 
     fun sample(value: Float): Vector3f {
         if (value <= low) {
-            return lowColor
+            return Vector3f(lowColor)
         } else if (value >= high) {
-            return highColor
+            return Vector3f(highColor)
         } else {
             val out = Vector3f(0f)
             val t = (value - low) / (high - low)

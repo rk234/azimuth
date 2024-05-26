@@ -12,10 +12,10 @@ out float fragData;
 
 void main() {
     gl_Position = projectionMatrix * transformMatrix * vec4(
-            range * cos(azimuth),
-            range * sin(azimuth),
-            0.0,
-            1.0
+        range * cos(azimuth),
+        range * -sin(azimuth),
+        0.0,
+        1.0
     );
     fragData = data;
 }

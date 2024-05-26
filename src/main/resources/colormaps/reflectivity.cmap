@@ -1,6 +1,7 @@
 product: BR
 units: dBZ
 step: 5
+color: -10 0 0 0
 color: 5 29 37 60
 color: 17.5 89 155 171
 color: 22.5  33 186 72

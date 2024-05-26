@@ -26,16 +26,17 @@ fun main() {
     val canvas = MapView(data)
 
     panel.layout = BoxLayout(panel, BoxLayout.Y_AXIS)
-    panel.preferredSize = Dimension(300, 300)
+    panel.preferredSize = Dimension(200, 300)
     panel.border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
     val title = JLabel("Sidebar")
     title.putClientProperty("FlatLaf.styleClass", "h2")
     panel.add(title)
 
-    window.minimumSize = Dimension(1300, 700)
+    window.minimumSize = Dimension(1000, 700)
     window.layout = BorderLayout()
     val cmap = Colormap(File("src/main/resources/colormaps/reflectivity.cmap").readText(Charsets.UTF_8))
-    window.add(ColormapBar(cmap, 500), BorderLayout.NORTH)
+    val bar = ColormapBar(cmap, 500)
+    window.add(bar, BorderLayout.NORTH)
     window.add(canvas, BorderLayout.CENTER)
     window.add(panel, BorderLayout.WEST)
     window.defaultCloseOperation = JFrame.EXIT_ON_CLOSE

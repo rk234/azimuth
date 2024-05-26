@@ -1,0 +1,49 @@
+package rendering
+
+import org.joml.Vector3f
+import org.lwjgl.opengl.GL45.GL_FLOAT
+import java.io.File
+
+class Renderer(val camera: Camera) {
+    val radarShader: ShaderProgram
+    val linesShader: ShaderProgram
+
+    val radarVAO: VertexArrayObject
+    val linesVAO: VertexArrayObject
+
+    init {
+        val radarVs = File("src/main/resources/shaders/radar/radar.vs.glsl").readText(Charsets.UTF_8)
+        val radarFs = File("src/main/resources/shaders/radar/radar.fs.glsl").readText(Charsets.UTF_8)
+
+        radarShader = ShaderProgram()
+        radarShader.createVertexShader(radarVs)
+        radarShader.createFragmentShader(radarFs)
+        radarShader.link()
+
+        val linesVs = File("src/main/resources/shaders/radar/lines.vs.glsl").readText(Charsets.UTF_8)
+        val linesFs = File("src/main/resources/shaders/lines/lines.fs.glsl").readText(Charsets.UTF_8)
+
+        linesShader = ShaderProgram()
+        linesShader.createVertexShader(linesVs)
+        linesShader.createFragmentShader(linesFs)
+        linesShader.link()
+
+        radarVAO = VertexArrayObject()
+        radarVAO.bind()
+
+        radarVAO.attrib(0, 1, GL_FLOAT, false, 3 * Float.SIZE_BYTES, 0)
+        radarVAO.attrib(1, 1, GL_FLOAT, false, 3 * Float.SIZE_BYTES, (1 * Float.SIZE_BYTES).toLong())
+        radarVAO.attrib(2, 1, GL_FLOAT, false, 3 * Float.SIZE_BYTES, (2 * Float.SIZE_BYTES).toLong())
+        //TODO: Lines VAO
+
+        linesVAO = VertexArrayObject()
+    }
+
+    fun drawRadar(vbo: GLBufferObject, verts: Int, colormapTexture: Texture1D) {
+
+    }
+
+    fun drawLines(vbo: GLBufferObject, verts: Int, color: Vector3f, width: Float) {
+
+    }
+}
