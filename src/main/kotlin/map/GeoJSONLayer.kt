@@ -46,8 +46,8 @@ class GeoJSONLayer(val json: JSONObject) : MapLayer {
                 val lon = coord.getFloat(1)
                 vertices.add(
                     floatArrayOf(
-                    lat, lon
-                )
+                        lat, lon
+                    )
                 )
 
                 if(j < innerPoly.length()-1) {
@@ -57,8 +57,8 @@ class GeoJSONLayer(val json: JSONObject) : MapLayer {
 
                     vertices.add(
                         floatArrayOf(
-                        nextLat, nextLon
-                    )
+                            nextLat, nextLon
+                        )
                     )
                 }
             }
