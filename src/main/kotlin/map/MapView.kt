@@ -4,6 +4,7 @@ import RadarVolume
 import meteo.radar.Colormap
 import meteo.radar.Product
 import org.joml.Vector2f
+import org.json.JSONObject
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL45.*;
 import org.lwjgl.opengl.awt.AWTGLCanvas
@@ -34,6 +35,10 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
         println("GL Version: ${effective.majorVersion}.${effective.minorVersion}")
         GL.createCapabilities()
         glClearColor(0f, 0.0f, 0.0f, 1.0f)
+
+        val geojson = JSONObject(File("src/main/resources/geo/countries.geojson").readText(Charsets.UTF_8))
+        val geojsonLayer = GeoJSONLayer(geojson)
+        geojsonLayer.init()
 
         camera = Camera(width.toFloat(), height.toFloat())
         inputHandler = MapViewInputHandler(camera)

@@ -15,5 +15,6 @@
     <orderEntry type="library" name="flatlaf-3.3" level="project" />
     <orderEntry type="library" name="LWJGL3" level="project" />
     <orderEntry type="library" name="json" level="project" />
+    <orderEntry type="library" name="json" level="project" />
   </component>
 </module>
