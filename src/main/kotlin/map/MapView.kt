@@ -1,9 +1,9 @@
 package map
 
 import RadarVolume
+import map.layers.GeoJSONLayer
 import meteo.radar.Colormap
 import meteo.radar.Product
-import org.joml.Vector2f
 import org.json.JSONObject
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL45.*;
@@ -15,8 +15,6 @@ import ucar.nc2.NetcdfFiles
 import java.awt.Cursor
 
 import java.io.File
-import kotlin.math.cos
-import kotlin.math.sin
 
 class MapView(data: GLData?) : AWTGLCanvas(data) {
     lateinit var vertexBuffer: GLBufferObject;
@@ -26,6 +24,8 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
     lateinit var inputHandler: MapViewInputHandler
     lateinit var cmapTexture: Texture1D
     var numVerts = 0;
+
+    lateinit var renderer: Renderer
 
     init {
         cursor = Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR)
@@ -41,6 +41,7 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
         geojsonLayer.init()
 
         camera = Camera(width.toFloat(), height.toFloat())
+        renderer = Renderer(camera)
         inputHandler = MapViewInputHandler(camera)
 
         addMouseMotionListener(inputHandler)

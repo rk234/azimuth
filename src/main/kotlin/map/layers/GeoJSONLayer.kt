@@ -1,4 +1,4 @@
-package map
+package map.layers
 
 import org.json.JSONArray
 import org.json.JSONObject
@@ -67,6 +67,11 @@ class GeoJSONLayer(val json: JSONObject) : MapLayer {
 
     override fun render(renderer: Renderer) {
         TODO("Not yet implemented")
+    }
+
+    override fun destroy() {
+        //TODO: Destroy any allocated opengl objects and other stuff
+
     }
 
 }
