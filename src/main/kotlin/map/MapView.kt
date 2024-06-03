@@ -78,8 +78,8 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
                 val range = gate.range / 1000
                 val data = gate.data
 
-                val startAngle = Math.toRadians(azimuth.toDouble()) - (resolution / 2) * 1.1f
-                val endAngle = Math.toRadians(azimuth.toDouble()) + (resolution / 2) * 1.1f
+                val startAngle = Math.toRadians(azimuth.toDouble()) - (resolution / 2) * 1.05f
+                val endAngle = Math.toRadians(azimuth.toDouble()) + (resolution / 2) * 1.05f
 
                 if (gateSize == -1f) {
                     gateSize = (radial[gateIndex + 1].range - radial[gateIndex].range) / 1000
