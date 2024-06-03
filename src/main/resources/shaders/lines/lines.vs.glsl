@@ -1,8 +1,8 @@
 #version 450 core
-layout (location = 0) in vec3 position;
+layout (location = 0) in vec2 positionGeo;
 layout (location = 1) in float direction;
-layout (location = 2) in vec3 next;
-layout (location = 3) in vec3 previous;
+layout (location = 2) in vec2 nextGeo;
+layout (location = 3) in vec2 previousGeo;
 
 uniform mat4 projection;
 uniform mat4 transform;
@@ -12,7 +12,22 @@ uniform vec2 resolution;
 uniform float thickness;
 uniform int miter; // 1 for mitter, 0 for no mitter
 
+#define PI 3.1415926535897932384626433832795
+
+//Takes in latitude and logitude in radians, returns web mercator coordinates at zoom level zero
+vec2 latlngToCartesian(float lat, float lon) {
+    float zoom = 0;
+
+    float x = (1.0f / (2*PI)) * pow(2, zoom) * (PI - lon);
+    float y = (1.0f / (2*PI)) * pow(2, zoom) * (PI - log(tan(PI/4 + lat/2)));
+
+    return vec2(x, y);
+}
+
 void main() {
+    vec3 position = vec3(latlngToCartesian(radians(positionGeo.x), radians(positionGeo.y)), 0);
+    vec3 previous = vec3(latlngToCartesian(radians(previousGeo.x), radians(previousGeo.y)), 0);
+    vec3 next = vec3(latlngToCartesian(radians(nextGeo.x), radians(nextGeo.y)), 0);
 
     vec2 aspectVec = vec2(aspect, 1.0);
     mat4 projViewModel = projection * transform;

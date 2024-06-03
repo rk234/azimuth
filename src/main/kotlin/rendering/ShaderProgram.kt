@@ -1,6 +1,8 @@
 package rendering
 import com.sun.jna.Memory
 import org.joml.Matrix4f
+import org.joml.Vector2f
+import org.joml.Vector3f
 import org.lwjgl.opengl.GL45.*
 import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryUtil
@@ -78,6 +80,28 @@ class ShaderProgram {
         glUniform1i(loc, data)
     }
 
+    fun setUniformFloat(uniformName: String, data: Float) {
+        val loc: Int;
+        if(uniforms.containsKey(uniformName)) {
+            loc = uniforms[uniformName]!!
+        } else {
+            loc = glGetUniformLocation(id, uniformName)
+            uniforms[uniformName] = loc
+        }
+        glUniform1f(loc, data)
+    }
+
+    fun setUniformVec2f(uniformName: String, data: Vector2f) {
+        val loc: Int;
+        if(uniforms.containsKey(uniformName)) {
+            loc = uniforms[uniformName]!!
+        } else {
+            loc = glGetUniformLocation(id, uniformName)
+            uniforms[uniformName] = loc
+        }
+        glUniform2f(loc, data.x, data.y)
+    }
+
     fun bind() {
         glUseProgram(id)
     }
@@ -90,4 +114,16 @@ class ShaderProgram {
         unbind()
         if (id != 0) glDeleteProgram(id)
     }
+
+    fun setUniformVec3f(uniformName: String, color: Vector3f) {
+        val loc: Int;
+        if(uniforms.containsKey(uniformName)) {
+            loc = uniforms[uniformName]!!
+        } else {
+            loc = glGetUniformLocation(id, uniformName)
+            uniforms[uniformName] = loc
+        }
+        glUniform3f(loc, color.x, color.y, color.z)
+    }
+
 }
