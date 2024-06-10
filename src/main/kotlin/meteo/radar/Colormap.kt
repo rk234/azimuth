@@ -4,7 +4,6 @@ import org.joml.Vector3f
 import java.nio.ByteBuffer
 
 class Colormap(str: String) {
-    var product: Product? = null
     var unit: String? = null
 
 //    lateinit var min: Float
@@ -24,7 +23,7 @@ class Colormap(str: String) {
             val (prop, value) = line.split(":").map { s -> s.trim() }
 
             when (prop) {
-                "product" -> product = Product.fromString(value)
+                "product" -> println("Loading colormap for: $value")
                 "units" -> unit = value
                 "color" -> {
                     colorLines.add(value)

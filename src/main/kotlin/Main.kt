@@ -1,6 +1,7 @@
 import com.formdev.flatlaf.FlatDarkLaf
 import map.MapView
 import meteo.radar.Colormap
+import meteo.radar.Product
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.awt.GLData
 import views.ColormapBar
@@ -34,7 +35,7 @@ fun main() {
 
     window.minimumSize = Dimension(1000, 700)
     window.layout = BorderLayout()
-    val cmap = Colormap(File("src/main/resources/colormaps/reflectivity.cmap").readText(Charsets.UTF_8))
+    val cmap = Product.CORRELATION_COEF_HIRES.colormap
     val bar = ColormapBar(cmap, 500)
     window.add(bar, BorderLayout.NORTH)
     window.add(canvas, BorderLayout.CENTER)

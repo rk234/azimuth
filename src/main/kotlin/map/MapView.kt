@@ -38,11 +38,12 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
 
         val geojson = JSONObject(File("src/main/resources/geo/countries.geojson").readText(Charsets.UTF_8))
         val geojsonLayer = GeoJSONLayer(geojson)
-        geojsonLayer.init()
 
         camera = Camera(width.toFloat(), height.toFloat())
         renderer = Renderer(camera)
         inputHandler = MapViewInputHandler(camera)
+
+        geojsonLayer.init(camera)
 
         addMouseMotionListener(inputHandler)
         addMouseWheelListener(inputHandler)
@@ -57,12 +58,12 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
         shader.link()
 
         val file = NetcdfFiles.openInMemory("src/main/resources/KLWX_20240119_153921");
-        val vol = RadarVolume(file, Product.REFLECTIVITY_HIRES)
+        val vol = RadarVolume(file, Product.CORRELATION_COEF_HIRES)
         println(vol.station)
         println(vol.latitude)
         println(vol.longitude)
 
-        val cmap = Colormap(File("src/main/resources/colormaps/reflectivity.cmap").readText(Charsets.UTF_8))
+        val cmap = vol.product.colormap
 
         val colormapImageData = MemoryUtil.memAlloc(100 * 3)
         cmap.genTextureData(100, colormapImageData)
