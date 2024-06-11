@@ -62,6 +62,7 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
         println(vol.station)
         println(vol.latitude)
         println(vol.longitude)
+        println(vol.elevationMeters)
 
         val cmap = vol.product.colormap
 

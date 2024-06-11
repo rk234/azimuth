@@ -14,7 +14,7 @@ class RadarVolume(file: NetcdfFile, val product: Product) {
 
     val latitude: Float
     val longitude: Float
-    val elevation: Float
+    val elevationMeters: Float
 
     val timeCoverageStart: String //should convert to dates later
     val timeCoverageEnd: String
@@ -31,7 +31,7 @@ class RadarVolume(file: NetcdfFile, val product: Product) {
 
         latitude = file.findGlobalAttribute("StationLatitude")?.numericValue?.toFloat() ?: 0f
         longitude = file.findGlobalAttribute("StationLongitude")?.numericValue?.toFloat() ?: 0f
-        elevation = file.findGlobalAttribute("StationElevationInMeters")?.numericValue?.toFloat() ?: 0f
+        elevationMeters = file.findGlobalAttribute("StationElevationInMeters")?.numericValue?.toFloat() ?: 0f
 
         timeCoverageStart = file.findGlobalAttribute("time_coverage_start")?.stringValue ?: "UNKNOWN"
         timeCoverageEnd = file.findGlobalAttribute("time_coverage_end")?.stringValue ?: "UNKNOWN"
