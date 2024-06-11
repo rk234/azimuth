@@ -35,7 +35,7 @@ fun main() {
 
     window.minimumSize = Dimension(1000, 700)
     window.layout = BorderLayout()
-    val cmap = Product.CORRELATION_COEF_HIRES.colormap
+    val cmap = Product.REFLECTIVITY_HIRES.colormap
     val bar = ColormapBar(cmap, 500)
     window.add(bar, BorderLayout.NORTH)
     window.add(canvas, BorderLayout.CENTER)

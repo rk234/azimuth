@@ -2,7 +2,6 @@ package map
 
 import RadarVolume
 import map.layers.GeoJSONLayer
-import meteo.radar.Colormap
 import meteo.radar.Product
 import org.json.JSONObject
 import org.lwjgl.opengl.GL
@@ -58,7 +57,8 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
         shader.link()
 
         val file = NetcdfFiles.openInMemory("src/main/resources/KLWX_20240119_153921");
-        val vol = RadarVolume(file, Product.CORRELATION_COEF_HIRES)
+        val vol = RadarVolume(file, Product.REFLECTIVITY_HIRES)
+        println(file.variables)
         println(vol.station)
         println(vol.latitude)
         println(vol.longitude)
@@ -82,15 +82,15 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
         var gateSize: Float = -1f
         for ((radialIndex, radial) in firstScan.radials.withIndex()) {
             for ((gateIndex, gate) in radial.withIndex()) {
-                val azimuth = gate.azimuth + 270
-                val range = gate.range / 1000
+                val azimuth = gate.azimuthDeg + 270
+                val range = gate.rangeMeters / 1000
                 val data = gate.data
 
                 val startAngle = Math.toRadians(azimuth.toDouble()) - (resolution / 2) * 1.05f
                 val endAngle = Math.toRadians(azimuth.toDouble()) + (resolution / 2) * 1.05f
 
                 if (gateSize == -1f) {
-                    gateSize = (radial[gateIndex + 1].range - radial[gateIndex].range) / 1000
+                    gateSize = (radial[gateIndex + 1].rangeMeters - radial[gateIndex].rangeMeters) / 1000
                 }
 
 //                val p1 = Vector2f(
