@@ -1,8 +1,9 @@
 package map.projection
 
 import org.joml.Vector2f
+import java.util.Vector
 
 interface MapProjection {
-    fun toCartesian(latitude: Float, longitude: Float): Vector2f
-    fun fromCartesian(point: Vector2f): Pair<Float, Float>
+    fun toCartesian(latlon: Vector2f): Vector2f
+    fun fromCartesian(point: Vector2f): Vector2f
 }

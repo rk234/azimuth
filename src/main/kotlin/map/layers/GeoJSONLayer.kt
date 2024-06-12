@@ -2,10 +2,16 @@ package map.layers
 
 import org.json.JSONArray
 import org.json.JSONObject
-import rendering.Camera
-import rendering.Renderer
+import org.lwjgl.opengl.GL45.GL_FLOAT
+import org.lwjgl.opengl.GL45.GL_STATIC_DRAW
+import org.lwjgl.system.MemoryUtil
+import rendering.*
+import java.io.File
 
 class GeoJSONLayer(val json: JSONObject) : MapLayer {
+    private lateinit var vbo: GLBufferObject
+    private lateinit var vao: VertexArrayObject
+    private lateinit var shader: ShaderProgram
 
     override fun init(camera: Camera) {
         val vertices = arrayListOf<FloatArray>()
@@ -65,6 +71,35 @@ class GeoJSONLayer(val json: JSONObject) : MapLayer {
                 }
             }
         }
+
+        //initGraphics()
+    }
+
+    private fun initGraphics() {
+        val vsSource = File("src/main/resources/shaders/lines/lines.vs.glsl").readText(Charsets.UTF_8)
+        val fsSource = File("src/main/resources/shaders/lines/lines.fs.glsl").readText(Charsets.UTF_8)
+
+        shader = ShaderProgram()
+        shader.createVertexShader(vsSource)
+        shader.createFragmentShader(fsSource)
+        shader.link()
+
+        val verts = MemoryUtil.memAllocFloat(7 * 3)
+
+        vao = VertexArrayObject()
+        vao.bind()
+
+        vbo = GLBufferObject()
+        vbo.bind()
+        vbo.uploadData(verts, GL_STATIC_DRAW)
+
+        MemoryUtil.memFree(verts)
+
+//        vertexArrayObject.attrib(0, 3, GL_FLOAT, false, 6 * Float.SIZE_BYTES, 0)
+//        vertexArrayObject.attrib(1, 3, GL_FLOAT, false, 6 * Float.SIZE_BYTES, (3 * Float.SIZE_BYTES).toLong())
+        vao.attrib(0, 1, GL_FLOAT, false, 3 * Float.SIZE_BYTES, 0)
+        vao.attrib(1, 1, GL_FLOAT, false, 3 * Float.SIZE_BYTES, (1 * Float.SIZE_BYTES).toLong())
+        vao.attrib(2, 1, GL_FLOAT, false, 3 * Float.SIZE_BYTES, (2 * Float.SIZE_BYTES).toLong())
     }
 
     override fun render(renderer: Renderer) {

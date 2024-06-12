@@ -2,7 +2,11 @@ package map
 
 import RadarVolume
 import map.layers.GeoJSONLayer
+import map.projection.MercatorProjection
+import map.projection.aerToGeo
 import meteo.radar.Product
+import org.joml.Vector2f
+import org.joml.Vector3f
 import org.json.JSONObject
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL45.*;
@@ -14,6 +18,7 @@ import ucar.nc2.NetcdfFiles
 import java.awt.Cursor
 
 import java.io.File
+import kotlin.math.*
 
 class MapView(data: GLData?) : AWTGLCanvas(data) {
     lateinit var vertexBuffer: GLBufferObject;
@@ -58,11 +63,18 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
 
         val file = NetcdfFiles.openInMemory("src/main/resources/KLWX_20240119_153921");
         val vol = RadarVolume(file, Product.REFLECTIVITY_HIRES)
+        val proj = MercatorProjection()
         println(file.variables)
         println(vol.station)
         println(vol.latitude)
         println(vol.longitude)
         println(vol.elevationMeters)
+        val camPos = proj.toCartesian(Vector2f(vol.latitude, vol.longitude))
+        println("CAMERA POSITION: $camPos")
+        camera.position = Vector3f(camPos.x, camPos.y, 0f)
+        camera.zoom = 0.001f
+        camera.recalcProjection()
+        camera.recalcTransform()
 
         val cmap = vol.product.colormap
 
@@ -83,15 +95,68 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
         for ((radialIndex, radial) in firstScan.radials.withIndex()) {
             for ((gateIndex, gate) in radial.withIndex()) {
                 val azimuth = gate.azimuthDeg + 270
-                val range = gate.rangeMeters / 1000
+                val range = gate.rangeMeters // 1000
                 val data = gate.data
 
                 val startAngle = Math.toRadians(azimuth.toDouble()) - (resolution / 2) * 1.05f
                 val endAngle = Math.toRadians(azimuth.toDouble()) + (resolution / 2) * 1.05f
 
                 if (gateSize == -1f) {
-                    gateSize = (radial[gateIndex + 1].rangeMeters - radial[gateIndex].rangeMeters) / 1000
+                    gateSize = (radial[gateIndex + 1].rangeMeters - radial[gateIndex].rangeMeters)
                 }
+                val latlng =
+                    proj.toCartesian(
+                        aerToGeo(
+                            startAngle.toFloat(),
+                            firstScan.elevation,
+                            range,
+                            vol.latitude,
+                            vol.longitude
+                        )
+                    )
+                println("LAT LON: $latlng")
+
+                val p1 =
+                    proj.toCartesian(
+                        aerToGeo(
+                            startAngle.toFloat(),
+                            firstScan.elevation,
+                            range,
+                            vol.latitude,
+                            vol.longitude,
+                        )
+                    )
+
+                val p2 =
+                    proj.toCartesian(
+                        aerToGeo(
+                            startAngle.toFloat(),
+                            firstScan.elevation,
+                            range + gateSize,
+                            vol.latitude,
+                            vol.longitude,
+                        )
+                    )
+                val p3 =
+                    proj.toCartesian(
+                        aerToGeo(
+                            endAngle.toFloat(),
+                            firstScan.elevation,
+                            range + gateSize,
+                            vol.latitude,
+                            vol.longitude,
+                        )
+                    )
+                val p4 =
+                    proj.toCartesian(
+                        aerToGeo(
+                            endAngle.toFloat(),
+                            firstScan.elevation,
+                            range,
+                            vol.latitude,
+                            vol.longitude,
+                        )
+                    )
 
 //                val p1 = Vector2f(
 //                    (cos(startAngle) * range).toFloat(),
@@ -110,14 +175,13 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
 //                    (-sin(endAngle) * range).toFloat()
 //                )
 
+                verts.put(floatArrayOf(p1.x, p1.y, cmap.rescale(data)))
+                verts.put(floatArrayOf(p2.x, p2.y, cmap.rescale(data)))
+                verts.put(floatArrayOf(p3.x, p3.y, cmap.rescale(data)))
 
-                verts.put(floatArrayOf(startAngle.toFloat(), range, cmap.rescale(data)))
-                verts.put(floatArrayOf(startAngle.toFloat(), range + gateSize, cmap.rescale(data)))
-                verts.put(floatArrayOf(endAngle.toFloat(), range + gateSize, cmap.rescale(data)))
-
-                verts.put(floatArrayOf(endAngle.toFloat(), range + gateSize, cmap.rescale(data)))
-                verts.put(floatArrayOf(endAngle.toFloat(), range, cmap.rescale(data)))
-                verts.put(floatArrayOf(startAngle.toFloat(), range, cmap.rescale(data)))
+                verts.put(floatArrayOf(p3.x, p3.y, cmap.rescale(data)))
+                verts.put(floatArrayOf(p4.x, p4.y, cmap.rescale(data)))
+                verts.put(floatArrayOf(p1.x, p1.y, cmap.rescale(data)))
 
 //                verts.put(floatArrayOf(p1.x, p1.y, 0f, color.x, color.y, color.z))
 //                verts.put(floatArrayOf(p2.x, p2.y, 0f, color.x, color.y, color.z))
@@ -131,9 +195,9 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
         }
 
 //        val verts = floatArrayOf(
-//            0.0f, 0.5f, 1.0f, 1.0f, 0f, 0f,
-//            -0.5f, -0.5f, 1.0f, 0f, 1.0f, 0f,
-//            0.5f, -0.5f, 1.0f, 0f, 0f, 1.0f
+//            0.0f, 0.5f, 1.0f,
+//            -0.5f, -0.5f, 1.0f,
+//            0.5f, -0.5f, 1.0f
 //        )
         verts.flip()
 
@@ -148,9 +212,8 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
 
 //        vertexArrayObject.attrib(0, 3, GL_FLOAT, false, 6 * Float.SIZE_BYTES, 0)
 //        vertexArrayObject.attrib(1, 3, GL_FLOAT, false, 6 * Float.SIZE_BYTES, (3 * Float.SIZE_BYTES).toLong())
-        vertexArrayObject.attrib(0, 1, GL_FLOAT, false, 3 * Float.SIZE_BYTES, 0)
-        vertexArrayObject.attrib(1, 1, GL_FLOAT, false, 3 * Float.SIZE_BYTES, (1 * Float.SIZE_BYTES).toLong())
-        vertexArrayObject.attrib(2, 1, GL_FLOAT, false, 3 * Float.SIZE_BYTES, (2 * Float.SIZE_BYTES).toLong())
+        vertexArrayObject.attrib(0, 2, GL_FLOAT, false, 3 * Float.SIZE_BYTES, 0)
+        vertexArrayObject.attrib(1, 1, GL_FLOAT, false, 3 * Float.SIZE_BYTES, (2 * Float.SIZE_BYTES).toLong())
     }
 
     override fun paintGL() {
@@ -166,10 +229,44 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
         vertexArrayObject.bind()
         vertexArrayObject.enableAttrib(0)
         vertexArrayObject.enableAttrib(1)
-        vertexArrayObject.enableAttrib(2)
 
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
         glDrawArrays(GL_TRIANGLES, 0, numVerts)
         swapBuffers()
+    }
+
+    //https://arm-doe.github.io/pyart/_modules/pyart/core/transforms.html
+
+    private fun azimuthRangeElevationToLatLon(
+        stationLatitude: Float,
+        stationLongitude: Float,
+        azimuth: Float,
+        range: Float,
+        elevationAngle: Float
+    ): Vector2f {
+        val theta_e = Math.toRadians(elevationAngle.toDouble())
+        val theta_a = Math.toRadians(azimuth.toDouble())
+        val Re = 6371.0 * 1000.0 * 4.0 / 3.0 // Earth radius in meters
+        val r = range // already in meters
+
+        val z = (r.pow(2) + Re.pow(2) + 2 * r * Re * sin(theta_e)).pow(0.5) - Re
+        val s = Re * asin(r * cos(theta_e) / (Re + z))
+        val x = s * sin(theta_a)
+        val y = s * cos(theta_a)
+
+        val c = sqrt(x * x + y * y) / r
+        val phi_0 = Math.toRadians(stationLatitude.toDouble())
+        val azi = atan2(y, x)
+
+        val lat = asin(
+            cos(c) * sin(phi_0)
+                    + sin(azi) * sin(c) * cos(phi_0)
+        ) * 180 / PI
+        val lon = (atan2(
+            cos(azi) * sin(c),
+            cos(c) * cos(phi_0) - sin(azi) * sin(c) * sin(phi_0)
+        ) * 180 / PI + stationLongitude)
+
+        return Vector2f(lat.toFloat(), (((lon + 180) % 360) - 180).toFloat())
     }
 }
