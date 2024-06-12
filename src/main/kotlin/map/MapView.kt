@@ -90,16 +90,16 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
 
         val firstScan = vol.scans[0]
 
-        val resolution = Math.toRadians(0.5) //TODO: Should be 1 degree for normal resolution, .5 for super-res
+        val resolution = 360.0f / firstScan.radials.size //TODO: Should be 1 degree for normal resolution, .5 for super-res
         var gateSize: Float = -1f
         for ((radialIndex, radial) in firstScan.radials.withIndex()) {
             for ((gateIndex, gate) in radial.withIndex()) {
-                val azimuth = gate.azimuthDeg + 270
+                val azimuth = gate.azimuthDeg
                 val range = gate.rangeMeters // 1000
                 val data = gate.data
 
-                val startAngle = Math.toRadians(azimuth.toDouble()) - (resolution / 2) * 1.05f
-                val endAngle = Math.toRadians(azimuth.toDouble()) + (resolution / 2) * 1.05f
+                val startAngle = (azimuth.toDouble()) - (resolution / 2) * 1.05f
+                val endAngle = (azimuth.toDouble()) + (resolution / 2) * 1.05f
 
                 if (gateSize == -1f) {
                     gateSize = (radial[gateIndex + 1].rangeMeters - radial[gateIndex].rangeMeters)
@@ -233,40 +233,5 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
         glDrawArrays(GL_TRIANGLES, 0, numVerts)
         swapBuffers()
-    }
-
-    //https://arm-doe.github.io/pyart/_modules/pyart/core/transforms.html
-
-    private fun azimuthRangeElevationToLatLon(
-        stationLatitude: Float,
-        stationLongitude: Float,
-        azimuth: Float,
-        range: Float,
-        elevationAngle: Float
-    ): Vector2f {
-        val theta_e = Math.toRadians(elevationAngle.toDouble())
-        val theta_a = Math.toRadians(azimuth.toDouble())
-        val Re = 6371.0 * 1000.0 * 4.0 / 3.0 // Earth radius in meters
-        val r = range // already in meters
-
-        val z = (r.pow(2) + Re.pow(2) + 2 * r * Re * sin(theta_e)).pow(0.5) - Re
-        val s = Re * asin(r * cos(theta_e) / (Re + z))
-        val x = s * sin(theta_a)
-        val y = s * cos(theta_a)
-
-        val c = sqrt(x * x + y * y) / r
-        val phi_0 = Math.toRadians(stationLatitude.toDouble())
-        val azi = atan2(y, x)
-
-        val lat = asin(
-            cos(c) * sin(phi_0)
-                    + sin(azi) * sin(c) * cos(phi_0)
-        ) * 180 / PI
-        val lon = (atan2(
-            cos(azi) * sin(c),
-            cos(c) * cos(phi_0) - sin(azi) * sin(c) * sin(phi_0)
-        ) * 180 / PI + stationLongitude)
-
-        return Vector2f(lat.toFloat(), (((lon + 180) % 360) - 180).toFloat())
     }
 }
