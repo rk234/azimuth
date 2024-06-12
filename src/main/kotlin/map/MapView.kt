@@ -104,17 +104,6 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
                 if (gateSize == -1f) {
                     gateSize = (radial[gateIndex + 1].rangeMeters - radial[gateIndex].rangeMeters)
                 }
-                val latlng =
-                    proj.toCartesian(
-                        aerToGeo(
-                            startAngle.toFloat(),
-                            firstScan.elevation,
-                            range,
-                            vol.latitude,
-                            vol.longitude
-                        )
-                    )
-                println("LAT LON: $latlng")
 
                 val p1 =
                     proj.toCartesian(
