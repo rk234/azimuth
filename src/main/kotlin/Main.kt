@@ -24,10 +24,10 @@ fun main() {
     val window = JFrame()
     val panel = JPanel()
     val data = GLData()
-    val canvas = MapView(data)
+    val canvas = MapView()
 
     panel.layout = BoxLayout(panel, BoxLayout.Y_AXIS)
-    panel.preferredSize = Dimension(200, 300)
+    panel.preferredSize = Dimension(400, 300)
     panel.border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
     val title = JLabel("Sidebar")
     title.putClientProperty("FlatLaf.styleClass", "h2")

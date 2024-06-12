@@ -20,7 +20,7 @@ import java.awt.Cursor
 import java.io.File
 import kotlin.math.*
 
-class MapView(data: GLData?) : AWTGLCanvas(data) {
+class MapView : AWTGLCanvas() {
     lateinit var vertexBuffer: GLBufferObject;
     lateinit var vertexArrayObject: VertexArrayObject;
     lateinit var shader: ShaderProgram;
