@@ -1,13 +1,11 @@
 import com.formdev.flatlaf.FlatDarkLaf
-import map.MapView
-import meteo.radar.Colormap
 import meteo.radar.Product
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.awt.GLData
-import views.ColormapBar
+import ucar.nc2.NetcdfFiles
+import views.RadarProductPane
 import java.awt.BorderLayout
 import java.awt.Dimension
-import java.io.File
 import javax.swing.BorderFactory
 import javax.swing.BoxLayout
 import javax.swing.JFrame
@@ -20,11 +18,13 @@ fun main() {
     System.setProperty("apple.awt.application.appearance", "system")
     FlatDarkLaf.setup()
 
+    val file = NetcdfFiles.openInMemory("src/main/resources/KLWX_20240119_153921");
+    val vol = RadarVolume(file, Product.REFLECTIVITY_HIRES)
 
     val window = JFrame()
     val panel = JPanel()
     val data = GLData()
-    val canvas = MapView()
+    val productPane = RadarProductPane(vol, 0)
 
     panel.layout = BoxLayout(panel, BoxLayout.Y_AXIS)
     panel.preferredSize = Dimension(400, 300)
@@ -35,10 +35,8 @@ fun main() {
 
     window.minimumSize = Dimension(1000, 700)
     window.layout = BorderLayout()
-    val cmap = Product.REFLECTIVITY_HIRES.colormap
-    val bar = ColormapBar(cmap, 500)
-    window.add(bar, BorderLayout.NORTH)
-    window.add(canvas, BorderLayout.CENTER)
+
+    window.add(productPane, BorderLayout.CENTER)
     window.add(panel, BorderLayout.WEST)
     window.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
 
@@ -48,11 +46,11 @@ fun main() {
     SwingUtilities.invokeLater(object : Runnable {
         var prev = 0L;
         override fun run() {
-            if (!canvas.isValid) {
+            if (!productPane.isValid) {
                 GL.setCapabilities(null)
                 return
             }
-            canvas.render()
+            productPane.render()
             SwingUtilities.invokeLater(this)
 //            println("FPS: ${1 / ((System.currentTimeMillis() - prev) / 1000f)}")
             prev = System.currentTimeMillis()

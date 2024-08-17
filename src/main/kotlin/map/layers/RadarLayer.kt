@@ -1,13 +1,16 @@
 package map.layers
 
 import RadarVolume
+import map.projection.MercatorProjection
+import map.projection.aerToGeo
+import meteo.radar.Colormap
 import org.lwjgl.opengl.GL45.*;
 import meteo.radar.Product
 import org.lwjgl.system.MemoryUtil
 import rendering.*
 import java.io.File
 
-class RadarLayer(val volume: RadarVolume) : MapLayer {
+class RadarLayer(val volume: RadarVolume, val tilt: Int) : MapLayer {
     private lateinit var vbo: GLBufferObject
     private lateinit var vao: VertexArrayObject
     private lateinit var radarShader: ShaderProgram
@@ -28,6 +31,82 @@ class RadarLayer(val volume: RadarVolume) : MapLayer {
         vao.bind()
 
         val verts = MemoryUtil.memAllocFloat(720 * 1832 * 3 * 6)
+        val firstScan = volume.scans[0]
+        val proj = MercatorProjection()
+        val cmap = volume.product.colormap
+
+        val resolution =
+            360.0f / firstScan.radials.size //TODO: Should be 1 degree for normal resolution, .5 for super-res
+        var gateSize: Float = -1f
+        for ((radialIndex, radial) in firstScan.radials.withIndex()) {
+            for ((gateIndex, gate) in radial.withIndex()) {
+                val azimuth = gate.azimuthDeg
+                val range = gate.rangeMeters // 1000
+                val data = gate.data
+
+                val startAngle = (azimuth.toDouble()) - (resolution / 2) * 1.05f
+                val endAngle = (azimuth.toDouble()) + (resolution / 2) * 1.05f
+
+                if (gateSize == -1f) {
+                    gateSize = (radial[gateIndex + 1].rangeMeters - radial[gateIndex].rangeMeters)
+                }
+
+                val p1 =
+                    proj.toCartesian(
+                        aerToGeo(
+                            startAngle.toFloat(),
+                            firstScan.elevation,
+                            range,
+                            volume.latitude,
+                            volume.longitude,
+                        )
+                    )
+
+                val p2 =
+                    proj.toCartesian(
+                        aerToGeo(
+                            startAngle.toFloat(),
+                            firstScan.elevation,
+                            range + gateSize,
+                            volume.latitude,
+                            volume.longitude,
+                        )
+                    )
+                val p3 =
+                    proj.toCartesian(
+                        aerToGeo(
+                            endAngle.toFloat(),
+                            firstScan.elevation,
+                            range + gateSize,
+                            volume.latitude,
+                            volume.longitude,
+                        )
+                    )
+                val p4 =
+                    proj.toCartesian(
+                        aerToGeo(
+                            endAngle.toFloat(),
+                            firstScan.elevation,
+                            range,
+                            volume.latitude,
+                            volume.longitude,
+                        )
+                    )
+
+
+                verts.put(floatArrayOf(p1.x, p1.y, cmap.rescale(data)))
+                verts.put(floatArrayOf(p2.x, p2.y, cmap.rescale(data)))
+                verts.put(floatArrayOf(p3.x, p3.y, cmap.rescale(data)))
+
+                verts.put(floatArrayOf(p3.x, p3.y, cmap.rescale(data)))
+                verts.put(floatArrayOf(p4.x, p4.y, cmap.rescale(data)))
+                verts.put(floatArrayOf(p1.x, p1.y, cmap.rescale(data)))
+
+                numVerts += 6
+            }
+        }
+
+        verts.flip()
 
         vbo = GLBufferObject()
         vbo.bind()
@@ -62,13 +141,5 @@ class RadarLayer(val volume: RadarVolume) : MapLayer {
         vbo.destroy()
         vao.destroy()
         radarShader.destroy()
-    }
-
-    fun loadColormapFromProduct(product: Product) {
-        when(product) {
-            Product.REFLECTIVITY_HIRES -> TODO()
-            Product.RADIAL_VEL_HIRES -> TODO()
-            Product.CORRELATION_COEF_HIRES -> TODO()
-        }
     }
 }

@@ -2,19 +2,32 @@ package views
 
 import RadarVolume
 import map.MapView
+import java.awt.Color
+import java.awt.Dimension
 import javax.swing.*
 import kotlin.math.roundToInt
 
 class RadarProductPane(var volume: RadarVolume, var tilt: Int) : JPanel() {
+    var map: MapView = MapView()
+
     init {
         layout = BoxLayout(this, BoxLayout.Y_AXIS)
-        border = BorderFactory.createEmptyBorder(8, 8, 8, 8)
+        border = BorderFactory.createLineBorder(Color.GREEN, 1)
 
         val header = JPanel()
         header.layout = BoxLayout(header, BoxLayout.Y_AXIS)
+        header.border = BorderFactory.createEmptyBorder(8, 8, 8, 8)
 
+        val topRow = JPanel()
+        topRow.layout = BoxLayout(topRow, BoxLayout.X_AXIS)
         val productLbl = JLabel(volume.product.displayName)
-        header.add(productLbl)
+        productLbl.alignmentX = JLabel.LEFT_ALIGNMENT
+//        productLbl.putClientProperty("FlatLaf.styleClass", "h3")
+        productLbl.putClientProperty("FlatLaf.style", "font: bold \$h3.regular.font");
+
+        topRow.add(productLbl)
+        topRow.add(Box.createHorizontalGlue())
+        header.add(topRow)
 
         val row = JPanel()
         row.layout = BoxLayout(row, BoxLayout.X_AXIS)
@@ -29,8 +42,14 @@ class RadarProductPane(var volume: RadarVolume, var tilt: Int) : JPanel() {
         row.add(timeLbl)
 
         header.add(row)
-        header.add(ColormapBar(volume.product.colormap, 250))
+        val cmapBar = ColormapBar(volume.product.colormap, 250)
+        cmapBar.maximumSize = Dimension(Int.MAX_VALUE, 25)
+        add(cmapBar)
         add(header)
-        add(MapView())
+        add(map)
+    }
+
+    fun render() {
+        map.render()
     }
 }
