@@ -17,6 +17,10 @@ class RadarLayer(private val volume: RadarVolume, private val tilt: Int) : MapLa
     private lateinit var cmapTexture: Texture1D
     private var numVerts: Int = 0
 
+    fun updateVolume() {
+        TODO("Best way to do this would be a KV cache of volume/tilts and render data, pick from that if available or else generate")
+    }
+
     override fun init(camera: Camera) {
         val vsSource = File("src/main/resources/shaders/radar/radar.vs.glsl").readText(Charsets.UTF_8)
         val fsSource = File("src/main/resources/shaders/radar/radar.fs.glsl").readText(Charsets.UTF_8)
@@ -41,7 +45,7 @@ class RadarLayer(private val volume: RadarVolume, private val tilt: Int) : MapLa
         MemoryUtil.memFree(colormapImageData)
 
         val resolution =
-            360.0f / firstScan.radials.size //TODO: Should be 1 degree for normal resolution, .5 for super-res
+            360.0f / firstScan.radials.size
         var gateSize: Float = -1f
         for ((radialIndex, radial) in firstScan.radials.withIndex()) {
             for ((gateIndex, gate) in radial.withIndex()) {
