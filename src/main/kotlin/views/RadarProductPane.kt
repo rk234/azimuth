@@ -2,6 +2,7 @@ package views
 
 import RadarVolume
 import map.MapView
+import map.layers.RadarLayer
 import java.awt.Color
 import java.awt.Dimension
 import javax.swing.*
@@ -11,6 +12,7 @@ class RadarProductPane(var volume: RadarVolume, var tilt: Int) : JPanel() {
     var map: MapView = MapView()
 
     init {
+        map.addLayer(RadarLayer(volume, tilt))
         layout = BoxLayout(this, BoxLayout.Y_AXIS)
         border = BorderFactory.createLineBorder(Color.GREEN, 1)
 

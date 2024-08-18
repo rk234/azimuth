@@ -9,39 +9,24 @@ import java.util.Date
 class RadarVolume(file: NetcdfFile, val product: Product) {
     val scans: ArrayList<RadarScan<Float>> = arrayListOf()
 
-    val station: String
-    val stationName: String
+    val station: String = file.findGlobalAttribute("Station")?.stringValue ?: "UNKNOWN"
+    val stationName: String = file.findGlobalAttribute("StationName")?.stringValue ?: "UNKNOWN"
 
-    val latitude: Float
-    val longitude: Float
-    val elevationMeters: Float
+    val latitude: Float = file.findGlobalAttribute("StationLatitude")?.numericValue?.toFloat() ?: 0f
+    val longitude: Float = file.findGlobalAttribute("StationLongitude")?.numericValue?.toFloat() ?: 0f
+    val elevationMeters: Float = file.findGlobalAttribute("StationElevationInMeters")?.numericValue?.toFloat() ?: 0f
 
-    val timeCoverageStart: String //should convert to dates later
-    val timeCoverageEnd: String
+    val timeCoverageStart: String =
+        file.findGlobalAttribute("time_coverage_start")?.stringValue ?: "UNKNOWN" //should convert to dates later
+    val timeCoverageEnd: String = file.findGlobalAttribute("time_coverage_end")?.stringValue ?: "UNKNOWN"
 
-    val title: String
-    val summary: String
+    val title: String = file.findGlobalAttribute("Title")?.stringValue ?: "UNKNOWN"
+    val summary: String = file.findGlobalAttribute("Summary")?.stringValue ?: "UNKNOWN"
 
-    val vcp: Int
-    val vcpName: String
+    val vcp: Int = file.findGlobalAttribute("VolumeCoveragePattern")?.numericValue?.toInt() ?: -1
+    val vcpName: String = file.findGlobalAttribute("VolumeCoveragePatternName")?.stringValue ?: "UNKNOWN"
 
     init {
-        station = file.findGlobalAttribute("Station")?.stringValue ?: "UNKNOWN"
-        stationName = file.findGlobalAttribute("StationName")?.stringValue ?: "UNKNOWN"
-
-        latitude = file.findGlobalAttribute("StationLatitude")?.numericValue?.toFloat() ?: 0f
-        longitude = file.findGlobalAttribute("StationLongitude")?.numericValue?.toFloat() ?: 0f
-        elevationMeters = file.findGlobalAttribute("StationElevationInMeters")?.numericValue?.toFloat() ?: 0f
-
-        timeCoverageStart = file.findGlobalAttribute("time_coverage_start")?.stringValue ?: "UNKNOWN"
-        timeCoverageEnd = file.findGlobalAttribute("time_coverage_end")?.stringValue ?: "UNKNOWN"
-
-        title = file.findGlobalAttribute("Title")?.stringValue ?: "UNKNOWN"
-        summary = file.findGlobalAttribute("Summary")?.stringValue ?: "UNKNOWN"
-
-        vcp = file.findGlobalAttribute("VolumeCoveragePattern")?.numericValue?.toInt() ?: -1
-        vcpName = file.findGlobalAttribute("VolumeCoveragePatternName")?.stringValue ?: "UNKNOWN"
-
         val azimuthVar = file.findVariable(product.azimuthField)
         val elevationVar = file.findVariable(product.elevationField)
         val rangeVar = file.findVariable(product.distanceField)

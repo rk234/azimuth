@@ -3,19 +3,18 @@ package map.layers
 import RadarVolume
 import map.projection.MercatorProjection
 import map.projection.aerToGeo
-import meteo.radar.Colormap
+import org.joml.Vector2f
+import org.joml.Vector3f
 import org.lwjgl.opengl.GL45.*;
-import meteo.radar.Product
 import org.lwjgl.system.MemoryUtil
 import rendering.*
 import java.io.File
 
-class RadarLayer(val volume: RadarVolume, val tilt: Int) : MapLayer {
+class RadarLayer(private val volume: RadarVolume, private val tilt: Int) : MapLayer {
     private lateinit var vbo: GLBufferObject
     private lateinit var vao: VertexArrayObject
     private lateinit var radarShader: ShaderProgram
-    private lateinit var colormapTexture: Texture1D
-    private lateinit var camera: Camera
+    private lateinit var cmapTexture: Texture1D
     private var numVerts: Int = 0
 
     override fun init(camera: Camera) {
@@ -27,13 +26,19 @@ class RadarLayer(val volume: RadarVolume, val tilt: Int) : MapLayer {
         radarShader.createFragmentShader(fsSource)
         radarShader.link()
 
-        vao = VertexArrayObject()
-        vao.bind()
 
         val verts = MemoryUtil.memAllocFloat(720 * 1832 * 3 * 6)
-        val firstScan = volume.scans[0]
+        val firstScan = volume.scans[tilt]
         val proj = MercatorProjection()
         val cmap = volume.product.colormap
+
+        val colormapImageData = MemoryUtil.memAlloc(100 * 3)
+        cmap.genTextureData(100, colormapImageData)
+        println("Image Data: ${colormapImageData.get(0)}")
+        cmapTexture = Texture1D()
+        cmapTexture.bind()
+        cmapTexture.uploadData(100, colormapImageData.flip())
+        MemoryUtil.memFree(colormapImageData)
 
         val resolution =
             360.0f / firstScan.radials.size //TODO: Should be 1 degree for normal resolution, .5 for super-res
@@ -108,32 +113,43 @@ class RadarLayer(val volume: RadarVolume, val tilt: Int) : MapLayer {
 
         verts.flip()
 
+        vao = VertexArrayObject()
+        vao.bind()
+
         vbo = GLBufferObject()
         vbo.bind()
-
-        verts.flip()
         vbo.uploadData(verts, GL_STATIC_DRAW)
         MemoryUtil.memFree(verts)
 
-        vao.attrib(0, 1, GL_FLOAT, false, 3 * Float.SIZE_BYTES, 0)
-        vao.attrib(1, 1, GL_FLOAT, false, 3 * Float.SIZE_BYTES, (1 * Float.SIZE_BYTES).toLong())
-        vao.attrib(2, 1, GL_FLOAT, false, 3 * Float.SIZE_BYTES, (2 * Float.SIZE_BYTES).toLong())
-        vao.enableAttrib(0)
-        vao.enableAttrib(1)
-        vao.enableAttrib(2)
+        vao.attrib(0, 2, GL_FLOAT, false, 3 * Float.SIZE_BYTES, 0)
+        vao.attrib(1, 1, GL_FLOAT, false, 3 * Float.SIZE_BYTES, (2 * Float.SIZE_BYTES).toLong())
+//        vao.attrib(2, 1, GL_FLOAT, false, 3 * Float.SIZE_BYTES, (2 * Float.SIZE_BYTES).toLong())
+//        vao.enableAttrib(0)
+//        vao.enableAttrib(1)
+
+        println("verts: $numVerts")
+        println(volume.station)
+        println(volume.latitude)
+        println(volume.longitude)
+        println(volume.elevationMeters)
+
+        val camPos = proj.toCartesian(Vector2f(volume.latitude, volume.longitude))
+        camera.position = Vector3f(camPos.x, camPos.y, 0f)
+        camera.zoom = 0.001f
+        camera.recalcProjection()
+        camera.recalcTransform()
     }
 
-    override fun render(renderer: Renderer) {
+    override fun render(camera: Camera) {
         radarShader.bind()
         radarShader.setUniformMatrix4f("projectionMatrix", camera.projectionMatrix)
         radarShader.setUniformMatrix4f("transformMatrix", camera.transformMatrix)
 
         vbo.bind()
-        colormapTexture.bind()
+        cmapTexture.bind()
         vao.bind()
         vao.enableAttrib(0)
         vao.enableAttrib(1)
-        vao.enableAttrib(2)
         glDrawArrays(GL_TRIANGLES, 0, numVerts)
     }
 

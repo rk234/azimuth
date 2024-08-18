@@ -102,13 +102,12 @@ class GeoJSONLayer(val json: JSONObject) : MapLayer {
         vao.attrib(2, 1, GL_FLOAT, false, 3 * Float.SIZE_BYTES, (2 * Float.SIZE_BYTES).toLong())
     }
 
-    override fun render(renderer: Renderer) {
+    override fun render(camera: Camera) {
         TODO("Not yet implemented")
     }
 
     override fun destroy() {
         //TODO: Destroy any allocated opengl objects and other stuff
-
     }
 
 }
