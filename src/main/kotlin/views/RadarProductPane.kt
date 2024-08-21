@@ -17,10 +17,12 @@ class RadarProductPane(var volume: RadarVolume, var tilt: Int) : JPanel() {
         border = BorderFactory.createLineBorder(Color.GREEN, 1)
 
         val header = JPanel()
+        header.background = Color(50, 50, 50)
         header.layout = BoxLayout(header, BoxLayout.Y_AXIS)
         header.border = BorderFactory.createEmptyBorder(8, 8, 8, 8)
 
         val topRow = JPanel()
+        topRow.isOpaque = false
         topRow.layout = BoxLayout(topRow, BoxLayout.X_AXIS)
         val productLbl = JLabel(volume.product.displayName)
         productLbl.alignmentX = JLabel.LEFT_ALIGNMENT
@@ -32,6 +34,7 @@ class RadarProductPane(var volume: RadarVolume, var tilt: Int) : JPanel() {
         header.add(topRow)
 
         val row = JPanel()
+        row.isOpaque = false
         row.layout = BoxLayout(row, BoxLayout.X_AXIS)
 
         val tiltLbl = JLabel("Tilt: ${volume.scans[tilt].elevation.roundToInt()} deg")
