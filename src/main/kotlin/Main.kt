@@ -23,7 +23,6 @@ fun main() {
 
     val window = JFrame()
     val panel = JPanel()
-    val data = GLData()
     val productPane = RadarProductPane(vol, 0)
 
     panel.layout = BoxLayout(panel, BoxLayout.Y_AXIS)
