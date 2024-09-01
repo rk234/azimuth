@@ -2,16 +2,16 @@ package map.layers
 
 import org.json.JSONArray
 import org.json.JSONObject
-import org.lwjgl.opengl.GL45.GL_FLOAT
-import org.lwjgl.opengl.GL45.GL_STATIC_DRAW
+import org.lwjgl.opengl.GL45.*
 import org.lwjgl.system.MemoryUtil
 import rendering.*
 import java.io.File
 
-class GeoJSONLayer(val json: JSONObject) : MapLayer {
+class GeoJSONLayer(val json: JSONObject, val lineWidth: Float) : MapLayer {
     private lateinit var vbo: GLBufferObject
     private lateinit var vao: VertexArrayObject
     private lateinit var shader: ShaderProgram
+    private var numVerts: Int = 0
 
     override fun init(camera: Camera) {
         val vertices = arrayListOf<FloatArray>()
@@ -72,10 +72,12 @@ class GeoJSONLayer(val json: JSONObject) : MapLayer {
             }
         }
 
-        //initGraphics()
+        numVerts = vertices.size * 2
+
+        initGraphics(vertices)
     }
 
-    private fun initGraphics() {
+    private fun initGraphics(vertices: ArrayList<FloatArray>) {
         val vsSource = File("src/main/resources/shaders/lines/lines.vs.glsl").readText(Charsets.UTF_8)
         val fsSource = File("src/main/resources/shaders/lines/lines.fs.glsl").readText(Charsets.UTF_8)
 
@@ -84,7 +86,12 @@ class GeoJSONLayer(val json: JSONObject) : MapLayer {
         shader.createFragmentShader(fsSource)
         shader.link()
 
-        val verts = MemoryUtil.memAllocFloat(7 * 3)
+        val verts = MemoryUtil.memAllocFloat(vertices.size * 2)
+
+        vertices.forEach { pt ->
+            verts.put(pt[0])
+            verts.put(pt[1])
+        }
 
         vao = VertexArrayObject()
         vao.bind()
@@ -103,11 +110,27 @@ class GeoJSONLayer(val json: JSONObject) : MapLayer {
     }
 
     override fun render(camera: Camera) {
-        TODO("Not yet implemented")
+        shader.bind()
+        shader.setUniformMatrix4f("projection", camera.projectionMatrix)
+        shader.setUniformMatrix4f("transform", camera.transformMatrix)
+        shader.setUniformFloat("aspect", camera.viewportDims.y / camera.viewportDims.x)
+        shader.setUniformVec2f("resolution", camera.viewportDims)
+        shader.setUniformFloat("thickness", lineWidth)
+        shader.setUniformInt("miter", 0)
+
+        vbo.bind()
+        vao.bind()
+        vao.enableAttrib(0)
+        vao.enableAttrib(1)
+        vao.enableAttrib(2)
+
+        glDrawArrays(GL_TRIANGLES, 0, numVerts)
     }
 
     override fun destroy() {
-        //TODO: Destroy any allocated opengl objects and other stuff
+        vao.destroy()
+        vbo.destroy()
+        shader.destroy()
     }
 
 }
