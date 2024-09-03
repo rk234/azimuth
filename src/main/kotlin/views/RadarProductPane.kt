@@ -5,6 +5,9 @@ import map.MapView
 import map.layers.RadarLayer
 import java.awt.Color
 import java.awt.Dimension
+import java.time.LocalDateTime
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import javax.swing.*
 import kotlin.math.roundToInt
 
@@ -39,7 +42,11 @@ class RadarProductPane(var volume: RadarVolume, var tilt: Int) : JPanel() {
 
         val tiltLbl = JLabel("Tilt: ${volume.scans[tilt].elevation.roundToInt()} deg")
         tiltLbl.alignmentX = JLabel.LEFT_ALIGNMENT
-        val timeLbl = JLabel("Updated ${volume.timeCoverageEnd}")
+
+        val dateTime = ZonedDateTime.parse(volume.timeCoverageEnd)
+        val localTime = dateTime.toLocalDateTime()
+
+        val timeLbl = JLabel(formatDateTime(localTime))
         timeLbl.alignmentX = JLabel.RIGHT_ALIGNMENT
 
         row.add(tiltLbl)
@@ -52,6 +59,11 @@ class RadarProductPane(var volume: RadarVolume, var tilt: Int) : JPanel() {
         add(cmapBar)
         add(header)
         add(map)
+    }
+
+    fun formatDateTime(dateTime: LocalDateTime): String {
+        val fmt: DateTimeFormatter = DateTimeFormatter.ofPattern("EEEE, MMMM d hh:mm:ss a")
+        return fmt.format(dateTime)
     }
 
     fun render() {
