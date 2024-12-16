@@ -1,13 +1,19 @@
 package views
 
 import RadarVolume
+import data.ResourceManager
 import map.MapView
+import map.layers.GeoJSONLayer
+import map.layers.MapLayer
 import map.layers.RadarLayer
+import org.json.JSONObject
 import java.awt.Color
 import java.awt.Dimension
+import java.io.File
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.util.ResourceBundle
 import javax.swing.*
 import kotlin.math.roundToInt
 
@@ -15,7 +21,11 @@ class RadarProductPane(var volume: RadarVolume, var tilt: Int) : JPanel() {
     var map: MapView = MapView()
 
     init {
+        val countries = JSONObject(
+            File("src/main/resources/geo/countries.geojson").readText(Charsets.UTF_8)
+        )
         map.addLayer(RadarLayer(volume, tilt))
+        map.addLayer(GeoJSONLayer(countries, 1.0f))
         layout = BoxLayout(this, BoxLayout.Y_AXIS)
         border = BorderFactory.createLineBorder(Color.GREEN, 1)
 
