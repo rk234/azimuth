@@ -1,7 +1,8 @@
 #version 450 core
 layout (location = 0) in vec2 positionGeo;
-layout (location = 2) in vec2 nextGeo;
-layout (location = 3) in vec2 previousGeo;
+layout (location = 1) in vec2 nextGeo;
+layout (location = 2) in vec2 previousGeo;
+layout (location = 3) in float direction;
 
 uniform mat4 projection;
 uniform mat4 transform;
@@ -30,7 +31,7 @@ void main() {
     vec2 nextScreen = nextProjected.xy / nextProjected.w * aspectVec;
 
     float len = thickness;
-    float orientation = 1.0f;
+    float orientation = direction;
 
     //starting point uses (next - current)
     vec2 dir = vec2(0.0);

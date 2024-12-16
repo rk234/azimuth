@@ -25,7 +25,7 @@ class RadarProductPane(var volume: RadarVolume, var tilt: Int) : JPanel() {
             File("src/main/resources/geo/countries.geojson").readText(Charsets.UTF_8)
         )
         map.addLayer(RadarLayer(volume, tilt))
-        map.addLayer(GeoJSONLayer(countries, 1.0f))
+        map.addLayer(GeoJSONLayer(countries, 0.05f))
         layout = BoxLayout(this, BoxLayout.Y_AXIS)
         border = BorderFactory.createLineBorder(Color.GREEN, 1)
 
