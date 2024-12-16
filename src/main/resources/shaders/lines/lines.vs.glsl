@@ -1,6 +1,5 @@
 #version 450 core
 layout (location = 0) in vec2 positionGeo;
-layout (location = 1) in float direction;
 layout (location = 2) in vec2 nextGeo;
 layout (location = 3) in vec2 previousGeo;
 
@@ -31,7 +30,7 @@ void main() {
     vec2 nextScreen = nextProjected.xy / nextProjected.w * aspectVec;
 
     float len = thickness;
-    float orientation = direction;
+    float orientation = 1.0f;
 
     //starting point uses (next - current)
     vec2 dir = vec2(0.0);
