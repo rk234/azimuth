@@ -10,12 +10,6 @@ class MercatorProjection : MapProjection {
 
     //https://en.wikipedia.org/wiki/Mercator_projection
     override fun toCartesian(latlon: Vector2f): Vector2f {
-//        val pixelsPerLonDegree = (700 * 250) / 360
-//        val pixelsPerLonRadian = (700 * 250) / (2 * PI)
-//        val x = latlon.y * pixelsPerLonDegree
-//
-//        val siny = Math.clamp(sin(Math.toRadians(latlon.x.toDouble())), -0.999999, 0.999999)
-//        val y = 0.5 * Math.log((1 + siny) / (1 - siny)) * pixelsPerLonRadian
         val x = Math.toRadians(latlon.y.toDouble()) * radiusMajor
         val y = ln(tan(PI / 4 + Math.toRadians(latlon.x.toDouble()) / 2)) * radiusMajor
 
@@ -23,6 +17,8 @@ class MercatorProjection : MapProjection {
     }
 
     override fun fromCartesian(point: Vector2f): Vector2f {
-        TODO("Not yet implemented")
+        val lon = Math.toDegrees(point.x.toDouble() / radiusMajor)
+        val lat = Math.toDegrees(2 * atan(exp(point.y.toDouble() / radiusMajor)) - PI / 2)
+        return Vector2f(lat.toFloat(), lon.toFloat())
     }
 }
