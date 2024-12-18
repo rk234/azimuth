@@ -4,27 +4,23 @@ import org.lwjgl.opengl.GL45.*
 import java.nio.FloatBuffer
 import java.nio.IntBuffer
 
-class GLBufferObject {
-    val id: Int
+class GLBufferObject(private val target: Int = GL_ARRAY_BUFFER) {
+    val id: Int = glGenBuffers()
 
-    init {
-        id = glGenBuffers()
-    }
-
-    fun bind(target: Int = GL_ARRAY_BUFFER) {
+    fun bind() {
         glBindBuffer(target, id)
     }
 
-    fun uploadData(data: FloatBuffer, usage: Int, target: Int = GL_ARRAY_BUFFER) {
+    fun uploadData(data: FloatBuffer, usage: Int) {
         glBufferData(target, data, usage)
     }
 
-    fun uploadData(data: IntBuffer, usage: Int, target: Int = GL_ARRAY_BUFFER) {
+    fun uploadData(data: IntBuffer, usage: Int) {
         glBufferData(target, data, usage)
     }
 
     fun uploadSubData(data: FloatBuffer, offset: Long) {
-        glBufferSubData(GL_ARRAY_BUFFER, offset, data)
+        glBufferSubData(target, offset, data)
     }
 
     fun destroy() {

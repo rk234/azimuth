@@ -6,12 +6,15 @@ import ucar.nc2.NetcdfFiles
 import views.RadarProductPane
 import java.awt.BorderLayout
 import java.awt.Dimension
+import java.awt.event.ActionListener
+import javax.swing.Action
 import javax.swing.BorderFactory
 import javax.swing.BoxLayout
 import javax.swing.JFrame
 import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.SwingUtilities
+import javax.swing.Timer
 
 fun main() {
     System.setProperty("apple.laf.useScreenMenuBar", "true")
@@ -43,15 +46,15 @@ fun main() {
 
     window.pack()
     SwingUtilities.invokeLater(object : Runnable {
-        var prev = 0L;
         override fun run() {
             if (!productPane.isValid) {
                 GL.setCapabilities(null)
                 return
             }
-            productPane.render()
-            SwingUtilities.invokeLater(this)
-            prev = System.currentTimeMillis()
+
+            Timer(1000 / 60) {
+                productPane.render()
+            }.start()
         }
     })
 }
