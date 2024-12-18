@@ -1,11 +1,11 @@
 package views
 
 import RadarVolume
-import data.ResourceManager
 import map.MapView
 import map.layers.GeoJSONLayer
-import map.layers.MapLayer
 import map.layers.RadarLayer
+import meteo.radar.Product
+import org.joml.Vector3f
 import org.json.JSONObject
 import java.awt.Color
 import java.awt.Dimension
@@ -13,7 +13,6 @@ import java.io.File
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import java.util.ResourceBundle
 import javax.swing.*
 import kotlin.math.roundToInt
 
@@ -24,10 +23,14 @@ class RadarProductPane(var volume: RadarVolume, var tilt: Int) : JPanel() {
         val countries = JSONObject(
             File("src/main/resources/geo/countries.geojson").readText(Charsets.UTF_8)
         )
+        val counties = JSONObject(
+            File("src/main/resources/geo/counties.json").readText(Charsets.UTF_8)
+        )
         map.addLayer(RadarLayer(volume, tilt))
-        map.addLayer(GeoJSONLayer(countries, 0.05f))
+        map.addLayer(GeoJSONLayer(countries, 0.05f, Vector3f(0.8f)))
+        map.addLayer(GeoJSONLayer(counties, 0.03f, Vector3f(0.8f)))
+
         layout = BoxLayout(this, BoxLayout.Y_AXIS)
-        border = BorderFactory.createLineBorder(Color.GREEN, 1)
 
         val header = JPanel()
         header.background = Color(50, 50, 50)
@@ -37,12 +40,17 @@ class RadarProductPane(var volume: RadarVolume, var tilt: Int) : JPanel() {
         val topRow = JPanel()
         topRow.isOpaque = false
         topRow.layout = BoxLayout(topRow, BoxLayout.X_AXIS)
-        val productLbl = JLabel(volume.product.displayName)
-        productLbl.alignmentX = JLabel.LEFT_ALIGNMENT
+        val productSelect = JComboBox<String>()
+        for (product in Product.entries) {
+            productSelect.addItem(product.displayName)
+        }
+        productSelect.selectedItem = volume.product.displayName
+        productSelect.alignmentX = JLabel.LEFT_ALIGNMENT
 //        productLbl.putClientProperty("FlatLaf.styleClass", "h3")
-        productLbl.putClientProperty("FlatLaf.style", "font: bold \$h3.regular.font");
+//        productSelect.putClientProperty("FlatLaf.style", "font: bold \$h3.regular.font");
+        productSelect.maximumSize = Dimension(300, 50)
 
-        topRow.add(productLbl)
+        topRow.add(productSelect)
         topRow.add(Box.createHorizontalGlue())
         header.add(topRow)
 
@@ -63,6 +71,7 @@ class RadarProductPane(var volume: RadarVolume, var tilt: Int) : JPanel() {
         row.add(Box.createHorizontalGlue())
         row.add(timeLbl)
 
+        header.add(Box.createVerticalStrut(4))
         header.add(row)
         val cmapBar = ColormapBar(volume.product.colormap, 250)
         cmapBar.maximumSize = Dimension(Int.MAX_VALUE, 25)

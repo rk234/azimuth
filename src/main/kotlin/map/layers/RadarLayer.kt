@@ -9,13 +9,15 @@ import org.lwjgl.opengl.GL45.*;
 import org.lwjgl.system.MemoryUtil
 import rendering.*
 import java.io.File
+import java.nio.IntBuffer
 
 class RadarLayer(private val volume: RadarVolume, private val tilt: Int) : MapLayer {
     private lateinit var vbo: GLBufferObject
     private lateinit var vao: VertexArrayObject
+    private lateinit var ibo: GLBufferObject
     private lateinit var radarShader: ShaderProgram
     private lateinit var cmapTexture: Texture1D
-    private var numVerts: Int = 0
+    private var gateCount: Int = 0
 
     fun updateVolume() {
         TODO("Best way to do this would be a KV cache of volume/tilts and render data, pick from that if available or else generate")
@@ -31,7 +33,7 @@ class RadarLayer(private val volume: RadarVolume, private val tilt: Int) : MapLa
         radarShader.link()
 
 
-        val verts = MemoryUtil.memAllocFloat(720 * 1832 * 3 * 6)
+        val verts = MemoryUtil.memAllocFloat(720 * 1832 * 3 * 4)
         val firstScan = volume.scans[tilt]
         val proj = MercatorProjection()
         val cmap = volume.product.colormap
@@ -107,11 +109,11 @@ class RadarLayer(private val volume: RadarVolume, private val tilt: Int) : MapLa
                 verts.put(floatArrayOf(p2.x, p2.y, cmap.rescale(data)))
                 verts.put(floatArrayOf(p3.x, p3.y, cmap.rescale(data)))
 
-                verts.put(floatArrayOf(p3.x, p3.y, cmap.rescale(data)))
+//                verts.put(floatArrayOf(p3.x, p3.y, cmap.rescale(data)))
                 verts.put(floatArrayOf(p4.x, p4.y, cmap.rescale(data)))
-                verts.put(floatArrayOf(p1.x, p1.y, cmap.rescale(data)))
+//                verts.put(floatArrayOf(p1.x, p1.y, cmap.rescale(data)))
 
-                numVerts += 6
+                gateCount++
             }
         }
 
@@ -125,13 +127,23 @@ class RadarLayer(private val volume: RadarVolume, private val tilt: Int) : MapLa
         vbo.uploadData(verts, GL_STATIC_DRAW)
         MemoryUtil.memFree(verts)
 
+
         vao.attrib(0, 2, GL_FLOAT, false, 3 * Float.SIZE_BYTES, 0)
         vao.attrib(1, 1, GL_FLOAT, false, 3 * Float.SIZE_BYTES, (2 * Float.SIZE_BYTES).toLong())
-//        vao.attrib(2, 1, GL_FLOAT, false, 3 * Float.SIZE_BYTES, (2 * Float.SIZE_BYTES).toLong())
-//        vao.enableAttrib(0)
-//        vao.enableAttrib(1)
 
-        println("verts: $numVerts")
+        vao.enableAttrib(0)
+        vao.enableAttrib(1)
+
+        ibo = GLBufferObject(GL_ELEMENT_ARRAY_BUFFER)
+        ibo.bind()
+
+        val indices = MemoryUtil.memAllocInt((gateCount) * 6)
+        generateIndices(indices, gateCount)
+        indices.flip()
+        ibo.uploadData(indices, GL_STATIC_DRAW)
+        MemoryUtil.memFree(indices)
+
+        println("verts: $gateCount")
         println(volume.station)
         println(volume.latitude)
         println(volume.longitude)
@@ -144,17 +156,30 @@ class RadarLayer(private val volume: RadarVolume, private val tilt: Int) : MapLa
         camera.recalcTransform()
     }
 
+    private fun generateIndices(indices: IntBuffer, gateCount: Int) {
+        var c = 0
+        var index = 0
+        for (j in 0..<gateCount) {
+            val i = index
+            indices.put(i)
+            indices.put(i + 1)
+            indices.put(i + 2)
+            indices.put(i + 2)
+            indices.put(i + 3)
+            indices.put(i)
+            index += 4
+        }
+    }
+
+
     override fun render(camera: Camera) {
         radarShader.bind()
         radarShader.setUniformMatrix4f("projectionMatrix", camera.projectionMatrix)
         radarShader.setUniformMatrix4f("transformMatrix", camera.transformMatrix)
 
-        vbo.bind()
         cmapTexture.bind()
         vao.bind()
-        vao.enableAttrib(0)
-        vao.enableAttrib(1)
-        glDrawArrays(GL_TRIANGLES, 0, numVerts)
+        glDrawElements(GL_TRIANGLES, gateCount * 6, GL_UNSIGNED_INT, 0)
     }
 
     override fun destroy() {
