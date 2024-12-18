@@ -2,6 +2,7 @@ package rendering
 
 import org.lwjgl.opengl.GL45.*
 import java.nio.FloatBuffer
+import java.nio.IntBuffer
 
 class GLBufferObject {
     val id: Int
@@ -10,12 +11,16 @@ class GLBufferObject {
         id = glGenBuffers()
     }
 
-    fun bind() {
-        glBindBuffer(GL_ARRAY_BUFFER, id)
+    fun bind(target: Int = GL_ARRAY_BUFFER) {
+        glBindBuffer(target, id)
     }
 
-    fun uploadData(data: FloatBuffer, usage: Int) {
-        glBufferData(GL_ARRAY_BUFFER, data, usage)
+    fun uploadData(data: FloatBuffer, usage: Int, target: Int = GL_ARRAY_BUFFER) {
+        glBufferData(target, data, usage)
+    }
+
+    fun uploadData(data: IntBuffer, usage: Int, target: Int = GL_ARRAY_BUFFER) {
+        glBufferData(target, data, usage)
     }
 
     fun uploadSubData(data: FloatBuffer, offset: Long) {
