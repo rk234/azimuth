@@ -51,7 +51,6 @@ fun main() {
             }
             productPane.render()
             SwingUtilities.invokeLater(this)
-//            println("FPS: ${1 / ((System.currentTimeMillis() - prev) / 1000f)}")
             prev = System.currentTimeMillis()
         }
     })

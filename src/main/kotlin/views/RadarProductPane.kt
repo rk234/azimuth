@@ -1,12 +1,19 @@
 package views
 
 import RadarVolume
+import data.ResourceManager
 import map.MapView
+import map.layers.GeoJSONLayer
+import map.layers.MapLayer
 import map.layers.RadarLayer
-import org.joda.time.LocalDateTime
+import org.json.JSONObject
 import java.awt.Color
 import java.awt.Dimension
+import java.io.File
+import java.time.LocalDateTime
 import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.util.ResourceBundle
 import javax.swing.*
 import kotlin.math.roundToInt
 
@@ -14,7 +21,11 @@ class RadarProductPane(var volume: RadarVolume, var tilt: Int) : JPanel() {
     var map: MapView = MapView()
 
     init {
+        val countries = JSONObject(
+            File("src/main/resources/geo/countries.geojson").readText(Charsets.UTF_8)
+        )
         map.addLayer(RadarLayer(volume, tilt))
+        map.addLayer(GeoJSONLayer(countries, 0.05f))
         layout = BoxLayout(this, BoxLayout.Y_AXIS)
         border = BorderFactory.createLineBorder(Color.GREEN, 1)
 
@@ -42,7 +53,10 @@ class RadarProductPane(var volume: RadarVolume, var tilt: Int) : JPanel() {
         val tiltLbl = JLabel("Tilt: ${volume.scans[tilt].elevation.roundToInt()} deg")
         tiltLbl.alignmentX = JLabel.LEFT_ALIGNMENT
 
-        val timeLbl = JLabel("Updated ${volume.timeCoverageEnd}")
+        val dateTime = ZonedDateTime.parse(volume.timeCoverageEnd)
+        val localTime = dateTime.toLocalDateTime()
+
+        val timeLbl = JLabel(formatDateTime(localTime))
         timeLbl.alignmentX = JLabel.RIGHT_ALIGNMENT
 
         row.add(tiltLbl)
@@ -55,6 +69,11 @@ class RadarProductPane(var volume: RadarVolume, var tilt: Int) : JPanel() {
         add(cmapBar)
         add(header)
         add(map)
+    }
+
+    fun formatDateTime(dateTime: LocalDateTime): String {
+        val fmt: DateTimeFormatter = DateTimeFormatter.ofPattern("EEEE, MMMM d hh:mm:ss a")
+        return fmt.format(dateTime)
     }
 
     fun render() {

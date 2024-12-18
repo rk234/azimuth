@@ -1,8 +1,8 @@
 #version 450 core
 layout (location = 0) in vec2 positionGeo;
-layout (location = 1) in float direction;
-layout (location = 2) in vec2 nextGeo;
-layout (location = 3) in vec2 previousGeo;
+layout (location = 1) in vec2 nextGeo;
+layout (location = 2) in vec2 previousGeo;
+layout (location = 3) in float direction;
 
 uniform mat4 projection;
 uniform mat4 transform;
