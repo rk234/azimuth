@@ -3,8 +3,10 @@ package views
 import RadarVolume
 import map.MapView
 import map.layers.RadarLayer
+import org.joda.time.LocalDateTime
 import java.awt.Color
 import java.awt.Dimension
+import java.time.ZonedDateTime
 import javax.swing.*
 import kotlin.math.roundToInt
 
@@ -39,6 +41,7 @@ class RadarProductPane(var volume: RadarVolume, var tilt: Int) : JPanel() {
 
         val tiltLbl = JLabel("Tilt: ${volume.scans[tilt].elevation.roundToInt()} deg")
         tiltLbl.alignmentX = JLabel.LEFT_ALIGNMENT
+
         val timeLbl = JLabel("Updated ${volume.timeCoverageEnd}")
         timeLbl.alignmentX = JLabel.RIGHT_ALIGNMENT
 
