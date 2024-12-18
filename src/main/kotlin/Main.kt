@@ -4,6 +4,7 @@ import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.awt.GLData
 import ucar.nc2.NetcdfFiles
 import views.RadarProductPane
+import views.SideBar
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.event.ActionListener
@@ -28,18 +29,12 @@ fun main() {
     val panel = JPanel()
     val productPane = RadarProductPane(vol, 0)
 
-    panel.layout = BoxLayout(panel, BoxLayout.Y_AXIS)
-    panel.preferredSize = Dimension(400, 300)
-    panel.border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
-    val title = JLabel("Sidebar")
-    title.putClientProperty("FlatLaf.styleClass", "h2")
-    panel.add(title)
 
     window.minimumSize = Dimension(1000, 700)
     window.layout = BorderLayout()
 
     window.add(productPane, BorderLayout.CENTER)
-    window.add(panel, BorderLayout.WEST)
+    window.add(SideBar(), BorderLayout.WEST)
     window.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
 
     window.isVisible = true
