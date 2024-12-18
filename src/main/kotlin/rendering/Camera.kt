@@ -1,5 +1,6 @@
 package rendering
 
+import map.projection.MercatorProjection
 import org.joml.Matrix4f
 import org.joml.Vector2f
 import org.joml.Vector3f
