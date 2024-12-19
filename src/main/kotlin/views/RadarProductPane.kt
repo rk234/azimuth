@@ -1,6 +1,6 @@
 package views
 
-import RadarVolume
+import meteo.radar.RadarProductVolume
 import map.MapView
 import map.layers.GeoJSONLayer
 import map.layers.RadarLayer
@@ -16,7 +16,7 @@ import java.time.format.DateTimeFormatter
 import javax.swing.*
 import kotlin.math.roundToInt
 
-class RadarProductPane(var volume: RadarVolume, var tilt: Int) : JPanel() {
+class RadarProductPane(var volume: RadarProductVolume, var tilt: Int) : JPanel() {
     var map: MapView = MapView()
 
     init {

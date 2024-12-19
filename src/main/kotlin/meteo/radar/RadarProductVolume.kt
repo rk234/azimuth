@@ -1,12 +1,10 @@
-import meteo.radar.Product
-import meteo.radar.RadarGate
-import meteo.radar.RadarScan
+package meteo.radar
+
 import ucar.ma2.ArrayByte
 import ucar.ma2.ArrayFloat
 import ucar.nc2.NetcdfFile
-import java.util.Date
 
-class RadarVolume(file: NetcdfFile, val product: Product) {
+class RadarProductVolume(file: NetcdfFile, val product: Product) {
     val scans: ArrayList<RadarScan<Float>> = arrayListOf()
 
     val station: String = file.findGlobalAttribute("Station")?.stringValue ?: "UNKNOWN"
@@ -46,9 +44,7 @@ class RadarVolume(file: NetcdfFile, val product: Product) {
         val belowThreshold: Byte = 0;
         val noData: Byte = 1;
 
-        println("${product.dataField} shape ${variableVar.shape.contentToString()}")
-        println("${product.distanceField} shape ${rangeVar.shape.contentToString()}")
-        println("${product.azimuthField} shape ${azimuthVar.shape.contentToString()}")
+        println("title: ${title}")
 
         val productData: ArrayByte.D3 = variableVar.read() as ArrayByte.D3
         val azimuthData: ArrayFloat.D2 = azimuthVar.read() as ArrayFloat.D2

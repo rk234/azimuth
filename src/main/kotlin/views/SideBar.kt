@@ -7,11 +7,11 @@ class SideBar : JPanel() {
     init {
         layout = BoxLayout(this, BoxLayout.Y_AXIS)
         preferredSize = Dimension(400, 300)
-        border = BorderFactory.createEmptyBorder(8, 8, 8, 8)
-        val title = JLabel("Sidebar")
-        title.alignmentX = JLabel.LEFT_ALIGNMENT
-        title.putClientProperty("FlatLaf.styleClass", "h2")
-        add(title)
+
+        val stationPanel = StationPanel()
+        stationPanel.alignmentX = JPanel.LEFT_ALIGNMENT
+        add(stationPanel)
+
         val tabs = JTabbedPane()
 
         val list = JList<String>(

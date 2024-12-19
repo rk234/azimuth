@@ -1,18 +1,14 @@
 import com.formdev.flatlaf.FlatDarkLaf
+import data.ShaderManager
 import meteo.radar.Product
+import meteo.radar.RadarProductVolume
 import org.lwjgl.opengl.GL
-import org.lwjgl.opengl.awt.GLData
 import ucar.nc2.NetcdfFiles
 import views.RadarProductPane
 import views.SideBar
 import java.awt.BorderLayout
 import java.awt.Dimension
-import java.awt.event.ActionListener
-import javax.swing.Action
-import javax.swing.BorderFactory
-import javax.swing.BoxLayout
 import javax.swing.JFrame
-import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.SwingUtilities
 import javax.swing.Timer
@@ -23,12 +19,10 @@ fun main() {
     FlatDarkLaf.setup()
 
     val file = NetcdfFiles.openInMemory("src/main/resources/KLWX_20240119_153921");
-    val vol = RadarVolume(file, Product.REFLECTIVITY_HIRES)
+    val vol = RadarProductVolume(file, Product.REFLECTIVITY_HIRES)
 
     val window = JFrame()
-    val panel = JPanel()
     val productPane = RadarProductPane(vol, 0)
-
 
     window.minimumSize = Dimension(1000, 700)
     window.layout = BorderLayout()
@@ -46,6 +40,8 @@ fun main() {
                 GL.setCapabilities(null)
                 return
             }
+
+            ShaderManager.init()
 
             Timer(1000 / 60) {
                 productPane.render()
