@@ -83,10 +83,10 @@ class Colormap(str: String) {
         }
     }
 
-    fun rescale(data: Float): Float {
+    fun rescale(data: Number): Float {
         val min = steps.first().low
         val max = steps.last().high
-        return Math.clamp((data - min) / (max - min), 0f, 1f)
+        return Math.clamp((data.toFloat() - min) / (max - min), 0f, 1f)
     }
 
 }

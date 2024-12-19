@@ -3,19 +3,15 @@ package map.layers
 import data.ShaderManager
 import meteo.radar.RadarProductVolume
 import map.projection.MercatorProjection
-import map.projection.aerToGeo
 import org.joml.Vector2f
 import org.joml.Vector3f
-import org.lwjgl.opengl.GL45.*;
 import org.lwjgl.system.MemoryUtil
 import rendering.*
-import java.io.File
-import java.nio.IntBuffer
 
 class RadarLayer(private val volume: RadarProductVolume, private val tilt: Int) : MapLayer {
     private lateinit var radarShader: ShaderProgram
     private lateinit var cmapTexture: Texture1D
-    private lateinit var radarRenderable: RadarRenderable
+    private lateinit var radarRenderable: RadarScanRenderable
 
     override fun init(camera: Camera) {
         radarShader = ShaderManager.instance.radarShader()
@@ -29,11 +25,11 @@ class RadarLayer(private val volume: RadarProductVolume, private val tilt: Int) 
         cmapTexture.uploadData(100, colormapImageData.flip())
         MemoryUtil.memFree(colormapImageData)
 
-        radarRenderable = RadarRenderable(volume, tilt, radarShader, cmapTexture)
+        radarRenderable = RadarScanRenderable(volume.scans[tilt], radarShader, cmapTexture)
         radarRenderable.init()
 
         val proj = MercatorProjection()
-        val camPos = proj.toCartesian(Vector2f(volume.latitude, volume.longitude))
+        val camPos = proj.toCartesian(Vector2f(volume.station.latitude, volume.station.longitude))
         camera.position = Vector3f(camPos.x, camPos.y, 0f)
         camera.zoom = 0.001f
         camera.recalcProjection()

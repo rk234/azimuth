@@ -5,20 +5,24 @@ import ucar.ma2.ArrayFloat
 import ucar.nc2.NetcdfFile
 
 class RadarProductVolume(file: NetcdfFile, val product: Product) {
-    val scans: ArrayList<RadarScan<Float>> = arrayListOf()
+    val scans: ArrayList<RadarScan> = arrayListOf()
 
-    val station: String = file.findGlobalAttribute("Station")?.stringValue ?: "UNKNOWN"
-    val stationName: String = file.findGlobalAttribute("StationName")?.stringValue ?: "UNKNOWN"
+    val station = Station(
+        file.findGlobalAttribute("Station")?.stringValue ?: "UNKNOWN",
+        file.findGlobalAttribute("StationName")?.stringValue ?: "UNKNOWN",
+        file.findGlobalAttribute("StationLatitude")?.numericValue?.toFloat() ?: 0f,
+        file.findGlobalAttribute("StationLongitude")?.numericValue?.toFloat() ?: 0f,
+        file.findGlobalAttribute("StationElevationInMeters")?.numericValue?.toFloat() ?: 0f,
+        file.findGlobalAttribute("VolumeCoveragePattern")?.numericValue?.toInt() ?: -1,
+        file.findGlobalAttribute("VolumeCoveragePatternName")?.stringValue ?: "UNKNOWN",
+        file.findGlobalAttribute("Title")?.stringValue ?: "UNKNOWN"
+    )
 
-    val latitude: Float = file.findGlobalAttribute("StationLatitude")?.numericValue?.toFloat() ?: 0f
-    val longitude: Float = file.findGlobalAttribute("StationLongitude")?.numericValue?.toFloat() ?: 0f
-    val elevationMeters: Float = file.findGlobalAttribute("StationElevationInMeters")?.numericValue?.toFloat() ?: 0f
 
     val timeCoverageStart: String =
         file.findGlobalAttribute("time_coverage_start")?.stringValue ?: "UNKNOWN" //should convert to dates later
     val timeCoverageEnd: String = file.findGlobalAttribute("time_coverage_end")?.stringValue ?: "UNKNOWN"
 
-    val title: String = file.findGlobalAttribute("Title")?.stringValue ?: "UNKNOWN"
     val summary: String = file.findGlobalAttribute("Summary")?.stringValue ?: "UNKNOWN"
 
     val vcp: Int = file.findGlobalAttribute("VolumeCoveragePattern")?.numericValue?.toInt() ?: -1
@@ -44,7 +48,7 @@ class RadarProductVolume(file: NetcdfFile, val product: Product) {
         val belowThreshold: Byte = 0;
         val noData: Byte = 1;
 
-        println("title: ${title}")
+        println("title: ${station.title}")
 
         val productData: ArrayByte.D3 = variableVar.read() as ArrayByte.D3
         val azimuthData: ArrayFloat.D2 = azimuthVar.read() as ArrayFloat.D2
@@ -55,13 +59,13 @@ class RadarProductVolume(file: NetcdfFile, val product: Product) {
 
         for (sweep in 0..<shape[0]) { //Sweeps
 //            println("---SWEEP $sweep---")
-            val scan: ArrayList<List<RadarGate<Float>>> = arrayListOf()
+            val scan: ArrayList<List<RadarGate>> = arrayListOf()
             var elevation = 0f;
             for (radial in 0..<shape[1]) { //Sweeps
                 val azimuth = azimuthData.get(sweep, radial)
                 elevation = elevationData.get(sweep, radial)
 
-                val gates: ArrayList<RadarGate<Float>> = arrayListOf()
+                val gates: ArrayList<RadarGate> = arrayListOf()
                 for (gate in 0..<shape[2]) { //Sweeps
                     val range = rangeData.get(gate)
                     val rawValue = productData.get(sweep, radial, gate).toUByte().toFloat()
@@ -71,13 +75,13 @@ class RadarProductVolume(file: NetcdfFile, val product: Product) {
 //                        println(if (scaledValue > 10) scaledValue else "")
 //                        println("Azimuth: $azimuth, Range: $range | Data: $scaledValue")
 //                        println(scaledValue)
-                        gates.add(RadarGate<Float>(elevation, azimuth, range, scaledValue))
+                        gates.add(RadarGate(elevation, azimuth, range, scaledValue))
                     }
                 }
                 scan.add(gates)
             }
 
-            scans.add(RadarScan(elevation, scan))
+            scans.add(RadarScan(elevation, scan, station, product))
         }
     }
 }

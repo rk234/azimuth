@@ -1,3 +1,3 @@
 package meteo.radar
 
-data class RadarScan<T>(val elevation: Float, val radials: List<List<RadarGate<T>>>)
+data class RadarScan(val elevation: Float, val radials: List<List<RadarGate>>, val station: Station, val product: Product)
