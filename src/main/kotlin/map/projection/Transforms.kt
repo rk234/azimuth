@@ -2,8 +2,6 @@ package map.projection
 
 import org.joml.Vector2f
 import org.joml.Vector3f
-import ucar.nc2.ft.fmrc.VertCoord
-import java.util.Vector
 import kotlin.math.*
 
 //https://arm-doe.github.io/pyart/_modules/pyart/core/transforms.html

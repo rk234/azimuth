@@ -1,5 +1,6 @@
 package map.layers
 
+import data.ShaderManager
 import map.projection.MercatorProjection
 import org.joml.Vector2f
 import org.joml.Vector3f
@@ -101,13 +102,7 @@ class GeoJSONLayer(private val json: JSONObject, val lineWidth: Float, val lineC
     }
 
     private fun initGraphics(vertices: ArrayList<Vector2f>) {
-        val vsSource = File("src/main/resources/shaders/lines/lines.vs.glsl").readText(Charsets.UTF_8)
-        val fsSource = File("src/main/resources/shaders/lines/lines.fs.glsl").readText(Charsets.UTF_8)
-
-        shader = ShaderProgram()
-        shader.createVertexShader(vsSource)
-        shader.createFragmentShader(fsSource)
-        shader.link()
+        shader = ShaderManager.instance.linesShader()
     }
 
     override fun render(camera: Camera) {
