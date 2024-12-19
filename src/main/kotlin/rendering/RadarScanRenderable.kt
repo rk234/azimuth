@@ -3,11 +3,12 @@ package rendering
 import map.projection.MercatorProjection
 import map.projection.aerToGeo
 import meteo.radar.RadarProductVolume
+import meteo.radar.RadarScan
 import org.lwjgl.opengl.GL45.*
 import org.lwjgl.system.MemoryUtil
 import java.nio.IntBuffer
 
-class RadarRenderable(private val volume: RadarProductVolume, private val tilt: Int, private val radarShader: ShaderProgram, private val cmapTexture: Texture1D) : Renderable {
+class RadarScanRenderable(private val scan: RadarScan, private val radarShader: ShaderProgram, private val cmapTexture: Texture1D) : Renderable {
     private var gateCount: Int = 0
     private lateinit var vbo: GLBufferObject
     private lateinit var vao: VertexArrayObject
@@ -15,14 +16,13 @@ class RadarRenderable(private val volume: RadarProductVolume, private val tilt: 
 
     override fun init() {
         val verts = MemoryUtil.memAllocFloat(720 * 1832 * 3 * 4)
-        val firstScan = volume.scans[tilt]
         val proj = MercatorProjection()
-        val cmap = volume.product.colormap
+        val cmap = scan.product.colormap
 
         val resolution =
-            360.0f / firstScan.radials.size
+            360.0f / scan.radials.size
         var gateSize: Float = -1f
-        for ((radialIndex, radial) in firstScan.radials.withIndex()) {
+        for ((radialIndex, radial) in scan.radials.withIndex()) {
             for ((gateIndex, gate) in radial.withIndex()) {
                 val azimuth = gate.azimuthDeg
                 val range = gate.rangeMeters // 1000
@@ -39,10 +39,10 @@ class RadarRenderable(private val volume: RadarProductVolume, private val tilt: 
                     proj.toCartesian(
                         aerToGeo(
                             startAngle.toFloat(),
-                            firstScan.elevation,
+                            scan.elevation,
                             range,
-                            volume.latitude,
-                            volume.longitude,
+                            scan.station.latitude,
+                            scan.station.longitude,
                         )
                     )
 
@@ -50,30 +50,30 @@ class RadarRenderable(private val volume: RadarProductVolume, private val tilt: 
                     proj.toCartesian(
                         aerToGeo(
                             startAngle.toFloat(),
-                            firstScan.elevation,
+                            scan.elevation,
                             range + gateSize,
-                            volume.latitude,
-                            volume.longitude,
+                            scan.station.latitude,
+                            scan.station.longitude,
                         )
                     )
                 val p3 =
                     proj.toCartesian(
                         aerToGeo(
                             endAngle.toFloat(),
-                            firstScan.elevation,
+                            scan.elevation,
                             range + gateSize,
-                            volume.latitude,
-                            volume.longitude,
+                            scan.station.latitude,
+                            scan.station.longitude,
                         )
                     )
                 val p4 =
                     proj.toCartesian(
                         aerToGeo(
                             endAngle.toFloat(),
-                            firstScan.elevation,
+                            scan.elevation,
                             range,
-                            volume.latitude,
-                            volume.longitude,
+                            scan.station.latitude,
+                            scan.station.longitude,
                         )
                     )
 
