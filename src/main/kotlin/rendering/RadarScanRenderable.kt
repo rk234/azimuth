@@ -2,20 +2,19 @@ package rendering
 
 import map.projection.MercatorProjection
 import map.projection.aerToGeo
-import meteo.radar.RadarProductVolume
-import meteo.radar.RadarScan
+import meteo.radar.RadarSweep
 import org.lwjgl.opengl.GL45.*
 import org.lwjgl.system.MemoryUtil
 import java.nio.IntBuffer
 
-class RadarScanRenderable(private val scan: RadarScan, private val radarShader: ShaderProgram, private val cmapTexture: Texture1D) : Renderable {
+class RadarScanRenderable(private val scan: RadarSweep, private val radarShader: ShaderProgram, private val cmapTexture: Texture1D) : Renderable {
     private var gateCount: Int = 0
     private lateinit var vbo: GLBufferObject
     private lateinit var vao: VertexArrayObject
     private lateinit var ibo: GLBufferObject
 
     override fun init() {
-        val verts = MemoryUtil.memAllocFloat(720 * 1832 * 3 * 4)
+        val verts = MemoryUtil.memAllocFloat(scan.numRadials * scan.numGates * 3 * 4)
         val proj = MercatorProjection()
         val cmap = scan.product.colormap
 

@@ -5,18 +5,21 @@ import map.MapView
 import map.layers.GeoJSONLayer
 import map.layers.RadarLayer
 import meteo.radar.Product
+import meteo.radar.RadarVolume
 import org.joml.Vector3f
 import org.json.JSONObject
 import java.awt.Color
 import java.awt.Dimension
 import java.io.File
 import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import javax.swing.*
 import kotlin.math.roundToInt
 
-class RadarProductPane(var volume: RadarProductVolume, var tilt: Int) : JPanel() {
+class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: Int) : JPanel() {
     var map: MapView = MapView()
 
     init {
@@ -26,7 +29,9 @@ class RadarProductPane(var volume: RadarProductVolume, var tilt: Int) : JPanel()
         val counties = JSONObject(
             File("src/main/resources/geo/counties.json").readText(Charsets.UTF_8)
         )
-        map.addLayer(RadarLayer(volume, tilt))
+
+        val productVolume = volume.getProductVolume(product)
+        map.addLayer(RadarLayer(productVolume!!, tilt))
         map.addLayer(GeoJSONLayer(countries, 0.05f, Vector3f(0.8f)))
         map.addLayer(GeoJSONLayer(counties, 0.03f, Vector3f(0.8f)))
 
@@ -44,7 +49,7 @@ class RadarProductPane(var volume: RadarProductVolume, var tilt: Int) : JPanel()
         for (product in Product.entries) {
             productSelect.addItem(product.displayName)
         }
-        productSelect.selectedItem = volume.product.displayName
+        productSelect.selectedItem = product.displayName
         productSelect.alignmentX = JLabel.LEFT_ALIGNMENT
 //        productLbl.putClientProperty("FlatLaf.styleClass", "h3")
 //        productSelect.putClientProperty("FlatLaf.style", "font: bold \$h3.regular.font");
@@ -58,11 +63,11 @@ class RadarProductPane(var volume: RadarProductVolume, var tilt: Int) : JPanel()
         row.isOpaque = false
         row.layout = BoxLayout(row, BoxLayout.X_AXIS)
 
-        val tiltLbl = JLabel("Tilt: ${volume.scans[tilt].elevation.roundToInt()} deg")
+        val tiltLbl = JLabel("Tilt: %.2f deg".format(productVolume.scans[tilt].elevation))
         tiltLbl.alignmentX = JLabel.LEFT_ALIGNMENT
 
-        val dateTime = ZonedDateTime.parse(volume.timeCoverageEnd)
-        val localTime = dateTime.toLocalDateTime()
+        val dateTime = ZonedDateTime.ofInstant(ZonedDateTime.parse(volume.timeCoverageEnd).toInstant(), ZoneOffset.UTC)
+        val localTime = dateTime.withZoneSameInstant(ZoneId.systemDefault())
 
         val timeLbl = JLabel(formatDateTime(localTime))
         timeLbl.alignmentX = JLabel.RIGHT_ALIGNMENT
@@ -73,14 +78,14 @@ class RadarProductPane(var volume: RadarProductVolume, var tilt: Int) : JPanel()
 
         header.add(Box.createVerticalStrut(4))
         header.add(row)
-        val cmapBar = ColormapBar(volume.product.colormap, 250)
+        val cmapBar = ColormapBar(product.colormap, 250)
         cmapBar.maximumSize = Dimension(Int.MAX_VALUE, 25)
         add(cmapBar)
         add(header)
         add(map)
     }
 
-    fun formatDateTime(dateTime: LocalDateTime): String {
+    private fun formatDateTime(dateTime: ZonedDateTime): String {
         val fmt: DateTimeFormatter = DateTimeFormatter.ofPattern("EEEE, MMMM d hh:mm:ss a")
         return fmt.format(dateTime)
     }

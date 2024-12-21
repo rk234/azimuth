@@ -4,31 +4,11 @@ import ucar.ma2.ArrayByte
 import ucar.ma2.ArrayFloat
 import ucar.nc2.NetcdfFile
 
-class RadarProductVolume(file: NetcdfFile, val product: Product) {
-    val scans: ArrayList<RadarScan> = arrayListOf()
-
-    val station = Station(
-        file.findGlobalAttribute("Station")?.stringValue ?: "UNKNOWN",
-        file.findGlobalAttribute("StationName")?.stringValue ?: "UNKNOWN",
-        file.findGlobalAttribute("StationLatitude")?.numericValue?.toFloat() ?: 0f,
-        file.findGlobalAttribute("StationLongitude")?.numericValue?.toFloat() ?: 0f,
-        file.findGlobalAttribute("StationElevationInMeters")?.numericValue?.toFloat() ?: 0f,
-        file.findGlobalAttribute("VolumeCoveragePattern")?.numericValue?.toInt() ?: -1,
-        file.findGlobalAttribute("VolumeCoveragePatternName")?.stringValue ?: "UNKNOWN",
-        file.findGlobalAttribute("Title")?.stringValue ?: "UNKNOWN"
-    )
-
-
-    val timeCoverageStart: String =
-        file.findGlobalAttribute("time_coverage_start")?.stringValue ?: "UNKNOWN" //should convert to dates later
-    val timeCoverageEnd: String = file.findGlobalAttribute("time_coverage_end")?.stringValue ?: "UNKNOWN"
-
-    val summary: String = file.findGlobalAttribute("Summary")?.stringValue ?: "UNKNOWN"
-
-    val vcp: Int = file.findGlobalAttribute("VolumeCoveragePattern")?.numericValue?.toInt() ?: -1
-    val vcpName: String = file.findGlobalAttribute("VolumeCoveragePatternName")?.stringValue ?: "UNKNOWN"
+class RadarProductVolume(file: NetcdfFile, val timeCoverageEnd: String, val station: Station, val product: Product) {
+    val scans: ArrayList<RadarSweep> = arrayListOf()
 
     init {
+//        println(file.variables)
         val azimuthVar = file.findVariable(product.azimuthField)
         val elevationVar = file.findVariable(product.elevationField)
         val rangeVar = file.findVariable(product.distanceField)
@@ -38,17 +18,16 @@ class RadarProductVolume(file: NetcdfFile, val product: Product) {
             throw Exception("Unable to read product data from file. Product: $product")
         }
 
-        println(variableVar.dataType.signedness)
+//        println(variableVar.dataType.signedness)
 
         val addOffset = variableVar.attributes().findAttributeDouble("add_offset", 0.0).toFloat()
         val scale = variableVar.attributes().findAttributeDouble("scale_factor", 1.0).toFloat()
-        println(addOffset)
-        println(scale)
+//        println(addOffset)
+//        println(scale)
 
-        val belowThreshold: Byte = 0;
-        val noData: Byte = 1;
-
-        println("title: ${station.title}")
+//        val belowThreshold: Byte = 0;
+        val belowThreshold: Float = variableVar.attributes().findAttribute("signal_below_threshold")?.numericValue?.toFloat() ?: 0.0f
+        val noData: Float = variableVar.attributes().findAttribute("missing_value")?.numericValue?.toFloat() ?: 0.0f
 
         val productData: ArrayByte.D3 = variableVar.read() as ArrayByte.D3
         val azimuthData: ArrayFloat.D2 = azimuthVar.read() as ArrayFloat.D2
@@ -57,20 +36,24 @@ class RadarProductVolume(file: NetcdfFile, val product: Product) {
 
         val shape = productData.shape
 
-        for (sweep in 0..<shape[0]) { //Sweeps
+        val numSweeps = shape[0]
+        val numRadials = shape[1]
+        val numGates = shape[2]
+
+        for (sweep in 0..<numSweeps) { //Sweeps
 //            println("---SWEEP $sweep---")
             val scan: ArrayList<List<RadarGate>> = arrayListOf()
             var elevation = 0f;
-            for (radial in 0..<shape[1]) { //Sweeps
+            for (radial in 0..<numRadials) { //Radials
                 val azimuth = azimuthData.get(sweep, radial)
                 elevation = elevationData.get(sweep, radial)
 
                 val gates: ArrayList<RadarGate> = arrayListOf()
-                for (gate in 0..<shape[2]) { //Sweeps
+                for (gate in 0..<numGates) { //Gates
                     val range = rangeData.get(gate)
                     val rawValue = productData.get(sweep, radial, gate).toUByte().toFloat()
 
-                    if (rawValue != belowThreshold.toFloat() && rawValue != noData.toFloat()) {
+                    if (rawValue != belowThreshold && rawValue != noData) {
                         val scaledValue = (rawValue * scale) + addOffset
 //                        println(if (scaledValue > 10) scaledValue else "")
 //                        println("Azimuth: $azimuth, Range: $range | Data: $scaledValue")
@@ -81,7 +64,7 @@ class RadarProductVolume(file: NetcdfFile, val product: Product) {
                 scan.add(gates)
             }
 
-            scans.add(RadarScan(elevation, scan, station, product))
+            scans.add(RadarSweep(elevation, scan, station, product, numRadials, numGates))
         }
     }
 }

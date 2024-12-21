@@ -1,5 +1,6 @@
 package views
 
+import data.state.AppState
 import java.awt.Color
 import javax.swing.*
 
@@ -11,7 +12,7 @@ class StationPanel : JPanel() {
         val stationHeader = JPanel()
         stationHeader.layout = BoxLayout(stationHeader, BoxLayout.X_AXIS)
 
-        val title = JLabel("KLWX")
+        val title = JLabel(AppState.activeVolume.value.station.code)
         title.alignmentX = JLabel.LEFT_ALIGNMENT
         title.putClientProperty("FlatLaf.styleClass", "h1")
         title.foreground = Color.CYAN
@@ -21,14 +22,11 @@ class StationPanel : JPanel() {
         stationHeader.alignmentX = JPanel.LEFT_ALIGNMENT
 
         add(stationHeader)
-        val stationLocation = JLabel("Baltimore/Washington")
+        val stationLocation = JLabel(AppState.activeVolume.value.station.name.replace(",", ", "))
         stationLocation.alignmentX = JLabel.LEFT_ALIGNMENT
-        val mode = JLabel("Precip Mode (VCP 212)")
+        val mode = JLabel("VCP: ${AppState.activeVolume.value.vcp} (${AppState.activeVolume.value.vcpName})")
         mode.alignmentX = JLabel.LEFT_ALIGNMENT
         add(stationLocation)
         add(mode)
-        val slider = JSlider()
-        slider.alignmentX = JSlider.LEFT_ALIGNMENT
-        add(slider)
     }
 }

@@ -1,7 +1,8 @@
 package views
 
-import data.AppState
-import data.ShaderManager
+import data.state.AppState
+import data.rendering.ShaderManager
+import meteo.radar.Product
 import org.lwjgl.opengl.GL
 import java.awt.BorderLayout
 import java.awt.Dimension
@@ -11,7 +12,7 @@ import javax.swing.Timer
 
 class AppWindow : JFrame("Azimuth") {
     init {
-        val productPane = RadarProductPane(AppState.activeVolume, 0)
+        val productPane = RadarProductPane(AppState.activeVolume.value, Product.REFLECTIVITY_HIRES, 0)
 
         minimumSize = Dimension(1000, 700)
         layout = BorderLayout()
