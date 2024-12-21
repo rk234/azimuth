@@ -1,6 +1,6 @@
 package map.layers
 
-import data.ShaderManager
+import data.rendering.ShaderManager
 import meteo.radar.RadarProductVolume
 import map.projection.MercatorProjection
 import org.joml.Vector2f

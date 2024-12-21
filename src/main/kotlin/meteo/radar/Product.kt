@@ -11,7 +11,7 @@ enum class Product(
     val colormap: Colormap
 ) {
     REFLECTIVITY_HIRES(
-        "Base Reflectivity",
+        "Base Reflectivity (Hi-Res)",
         "Reflectivity_HI",
         "elevationR_HI",
         "azimuthR_HI",
@@ -19,23 +19,20 @@ enum class Product(
         Colormap(File("src/main/resources/colormaps/reflectivity.cmap").readText())
     ),
     RADIAL_VEL_HIRES(
-        "Radial Velocity", "RadialVelocity_HI", "elevationV_HI", "azimuthV_HI", "distanceV_HI",
+        "Radial Velocity (Hi-Res)", "RadialVelocity_HI", "elevationV_HI", "azimuthV_HI", "distanceV_HI",
         Colormap(File("src/main/resources/colormaps/velocity.cmap").readText())
     ),
     CORRELATION_COEF_HIRES(
-        "Correlation Coefficient",
+        "Correlation Coefficient (Hi-Res)",
         "CorrelationCoefficient_HI", "elevationC_HI", "azimuthC_HI", "distanceC_HI",
         Colormap(File("src/main/resources/colormaps/crosscorrelation.cmap").readText())
-    );
-
-    companion object {
-        fun fromString(str: String): Product? {
-            when (str) {
-                "REF" -> return Product.REFLECTIVITY_HIRES
-                "VEL" -> return Product.RADIAL_VEL_HIRES
-                "RHO" -> return Product.CORRELATION_COEF_HIRES
-            }
-            return null
-        }
-    }
+    ),
+    REFLECTIVITY(
+        "Base Reflectivity",
+        "Reflectivity",
+        "elevationR",
+        "azimuthR",
+        "distanceR",
+        Colormap(File("src/main/resources/colormaps/reflectivity.cmap").readText())
+    )
 }

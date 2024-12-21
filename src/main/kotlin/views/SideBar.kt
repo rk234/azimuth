@@ -23,5 +23,8 @@ class SideBar : JPanel() {
         tabs.addTab("Map", JLabel("Map tab"))
         tabs.alignmentX = JTabbedPane.LEFT_ALIGNMENT
         add(tabs)
+        val loopControlPanel = LoopControlPanel()
+        loopControlPanel.alignmentX = LEFT_ALIGNMENT
+        add(loopControlPanel)
     }
 }

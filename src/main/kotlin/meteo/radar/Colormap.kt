@@ -6,9 +6,6 @@ import java.nio.ByteBuffer
 class Colormap(str: String) {
     var unit: String? = null
 
-//    lateinit var min: Float
-//    lateinit var max: Float
-
     val steps: ArrayList<ColorStep> = arrayListOf()
 
     init {
@@ -89,21 +86,20 @@ class Colormap(str: String) {
         return Math.clamp((data.toFloat() - min) / (max - min), 0f, 1f)
     }
 
-}
+    data class ColorStep(val low: Float, val high: Float, val lowColor: Vector3f, val highColor: Vector3f) {
+        fun contains(value: Float) = value in low..high
 
-data class ColorStep(val low: Float, val high: Float, val lowColor: Vector3f, val highColor: Vector3f) {
-    fun contains(value: Float) = value in low..high
-
-    fun sample(value: Float): Vector3f {
-        if (value <= low) {
-            return Vector3f(lowColor)
-        } else if (value >= high) {
-            return Vector3f(highColor)
-        } else {
-            val out = Vector3f(0f)
-            val t = (value - low) / (high - low)
-            lowColor.lerp(highColor, t, out)
-            return out
+        fun sample(value: Float): Vector3f {
+            if (value <= low) {
+                return Vector3f(lowColor)
+            } else if (value >= high) {
+                return Vector3f(highColor)
+            } else {
+                val out = Vector3f(0f)
+                val t = (value - low) / (high - low)
+                lowColor.lerp(highColor, t, out)
+                return out
+            }
         }
     }
 }

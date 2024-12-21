@@ -1,13 +1,12 @@
 package map.layers
 
-import data.ShaderManager
+import data.rendering.ShaderManager
 import map.projection.MercatorProjection
 import org.joml.Vector2f
 import org.joml.Vector3f
 import org.json.JSONArray
 import org.json.JSONObject
 import rendering.*
-import java.io.File
 
 class GeoJSONLayer(private val json: JSONObject, val lineWidth: Float, val lineColor: Vector3f) : MapLayer {
     private lateinit var shader: ShaderProgram
