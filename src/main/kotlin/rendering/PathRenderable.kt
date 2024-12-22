@@ -2,6 +2,7 @@ package rendering
 
 import org.joml.Vector2f
 import org.joml.Vector3f
+import org.joml.Vector4f
 import org.lwjgl.opengl.GL45.*
 import org.lwjgl.system.MemoryUtil
 import java.io.File
@@ -12,7 +13,8 @@ class PathRenderable(
     private val vertices: List<Vector2f>,
     private val shader: ShaderProgram,
     private val lineWidth: Float,
-    private val lineColor: Vector3f
+    private val lineColor: Vector3f,
+    private val zoomLevel: Float
 ) : Renderable {
     private lateinit var pathVBO: GLBufferObject
     private lateinit var prevVBO: GLBufferObject
@@ -95,7 +97,14 @@ class PathRenderable(
         shader.setUniformVec2f("resolution", camera.viewportDims)
         shader.setUniformFloat("thickness", lineWidth)
         shader.setUniformInt("miter", 0)
-        shader.setUniformVec3f("color", Vector3f(0.8f))
+        if(camera.zoom > zoomLevel) {
+            shader.setUniformVec4f("color", Vector4f(lineColor.x, lineColor.y, lineColor.z, 1.0f))
+        } else {
+            shader.setUniformVec4f("color", Vector4f(lineColor.x, lineColor.y, lineColor.z, camera.zoom / zoomLevel))
+        }
+
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
         vao.bind()
 

@@ -1,10 +1,9 @@
 package rendering
-import com.sun.jna.Memory
 import org.joml.Matrix4f
 import org.joml.Vector2f
 import org.joml.Vector3f
+import org.joml.Vector4f
 import org.lwjgl.opengl.GL45.*
-import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryUtil
 
 class ShaderProgram {
@@ -115,7 +114,7 @@ class ShaderProgram {
         if (id != 0) glDeleteProgram(id)
     }
 
-    fun setUniformVec3f(uniformName: String, color: Vector3f) {
+    fun setUniformVec3f(uniformName: String, value: Vector3f) {
         val loc: Int;
         if(uniforms.containsKey(uniformName)) {
             loc = uniforms[uniformName]!!
@@ -123,7 +122,17 @@ class ShaderProgram {
             loc = glGetUniformLocation(id, uniformName)
             uniforms[uniformName] = loc
         }
-        glUniform3f(loc, color.x, color.y, color.z)
+        glUniform3f(loc, value.x, value.y, value.z)
+    }
+    fun setUniformVec4f(uniformName: String, value: Vector4f) {
+        val loc: Int;
+        if(uniforms.containsKey(uniformName)) {
+            loc = uniforms[uniformName]!!
+        } else {
+            loc = glGetUniformLocation(id, uniformName)
+            uniforms[uniformName] = loc
+        }
+        glUniform4f(loc, value.x, value.y, value.z, value.w)
     }
 
 }
