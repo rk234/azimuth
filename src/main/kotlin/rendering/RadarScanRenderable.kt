@@ -22,8 +22,8 @@ class RadarScanRenderable(private val scan: RadarSweep, private val radarShader:
             360.0f / scan.radials.size
         var gateSize: Float = -1f
         for ((radialIndex, radial) in scan.radials.withIndex()) {
-            for ((gateIndex, gate) in radial.withIndex()) {
-                val azimuth = gate.azimuthDeg
+            for ((gateIndex, gate) in radial.gates.withIndex()) {
+                val azimuth = radial.azimuth
                 val range = gate.rangeMeters // 1000
                 val data = gate.data
 
@@ -31,7 +31,7 @@ class RadarScanRenderable(private val scan: RadarSweep, private val radarShader:
                 val endAngle = (azimuth.toDouble()) + (resolution / 2) * 1.15f
 
                 if (gateSize == -1f) {
-                    gateSize = (radial[gateIndex + 1].rangeMeters - radial[gateIndex].rangeMeters)
+                    gateSize = (radial.gates[gateIndex + 1].rangeMeters - radial.gates[gateIndex].rangeMeters)
                 }
 
                 val p1 =

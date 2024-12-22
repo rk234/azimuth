@@ -42,7 +42,7 @@ class RadarProductVolume(file: NetcdfFile, val timeCoverageEnd: String, val stat
 
         for (sweep in 0..<numSweeps) { //Sweeps
 //            println("---SWEEP $sweep---")
-            val scan: ArrayList<List<RadarGate>> = arrayListOf()
+            val scan: ArrayList<RadarRadial> = arrayListOf()
             var elevation = 0f;
             for (radial in 0..<numRadials) { //Radials
                 val azimuth = azimuthData.get(sweep, radial)
@@ -58,10 +58,10 @@ class RadarProductVolume(file: NetcdfFile, val timeCoverageEnd: String, val stat
 //                        println(if (scaledValue > 10) scaledValue else "")
 //                        println("Azimuth: $azimuth, Range: $range | Data: $scaledValue")
 //                        println(scaledValue)
-                        gates.add(RadarGate(elevation, azimuth, range, scaledValue))
+                        gates.add(RadarGate(range, scaledValue))
                     }
                 }
-                scan.add(gates)
+                scan.add(RadarRadial(azimuth, gates))
             }
 
             scans.add(RadarSweep(elevation, scan, station, product, numRadials, numGates))
