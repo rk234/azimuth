@@ -12,7 +12,7 @@ class StationPanel : JPanel() {
         val stationHeader = JPanel()
         stationHeader.layout = BoxLayout(stationHeader, BoxLayout.X_AXIS)
 
-        val title = JLabel(AppState.activeVolume.value.station.code)
+        val title = JLabel(AppState.activeVolume.value!!.station.code)
         title.alignmentX = JLabel.LEFT_ALIGNMENT
         title.putClientProperty("FlatLaf.styleClass", "h1")
         title.foreground = Color.CYAN
@@ -22,9 +22,9 @@ class StationPanel : JPanel() {
         stationHeader.alignmentX = JPanel.LEFT_ALIGNMENT
 
         add(stationHeader)
-        val stationLocation = JLabel(AppState.activeVolume.value.station.name.replace(",", ", "))
+        val stationLocation = JLabel(AppState.activeVolume.value!!.station.name.replace(",", ", "))
         stationLocation.alignmentX = JLabel.LEFT_ALIGNMENT
-        val mode = JLabel("VCP: ${AppState.activeVolume.value.vcp} (${AppState.activeVolume.value.vcpName})")
+        val mode = JLabel("VCP: ${AppState.activeVolume.value!!.vcp} (${AppState.activeVolume.value!!.vcpName})")
         mode.alignmentX = JLabel.LEFT_ALIGNMENT
         add(stationLocation)
         add(mode)

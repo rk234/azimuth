@@ -29,11 +29,15 @@ class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: 
         val counties = JSONObject(
             File("src/main/resources/geo/counties.json").readText(Charsets.UTF_8)
         )
+        val states = JSONObject(
+            File("src/main/resources/geo/states.geojson").readText(Charsets.UTF_8)
+        )
 
         val productVolume = volume.getProductVolume(product)
         map.addLayer(RadarLayer(productVolume!!, tilt))
-        map.addLayer(GeoJSONLayer(countries, 0.05f, Vector3f(0.8f)))
-        map.addLayer(GeoJSONLayer(counties, 0.03f, Vector3f(0.8f)))
+        map.addLayer(GeoJSONLayer(countries, 0.05f, Vector3f(0.8f), -10f))
+        map.addLayer(GeoJSONLayer(counties, 0.03f, Vector3f(0.8f), 0.0001f))
+        map.addLayer(GeoJSONLayer(states, 0.035f, Vector3f(1.0f), -10f))
 
         layout = BoxLayout(this, BoxLayout.Y_AXIS)
 

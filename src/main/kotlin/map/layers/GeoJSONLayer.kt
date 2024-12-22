@@ -8,7 +8,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import rendering.*
 
-class GeoJSONLayer(private val json: JSONObject, val lineWidth: Float, val lineColor: Vector3f) : MapLayer {
+class GeoJSONLayer(private val json: JSONObject, val lineWidth: Float, val lineColor: Vector3f, val zoomLevel: Float) : MapLayer {
     private lateinit var shader: ShaderProgram
     private var paths: ArrayList<PathRenderable> = ArrayList()
     private val vertsPerChunk = 60_000
@@ -43,7 +43,7 @@ class GeoJSONLayer(private val json: JSONObject, val lineWidth: Float, val lineC
 
             val chunks = vertices.chunked(vertsPerChunk)
             chunks.forEach { c ->
-                val renderable = PathRenderable(c, shader, lineWidth, lineColor)
+                val renderable = PathRenderable(c, shader, lineWidth, lineColor, zoomLevel)
                 paths.add(renderable)
                 renderable.init()
             }
