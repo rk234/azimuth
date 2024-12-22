@@ -27,8 +27,8 @@ class RadarScanRenderable(private val scan: RadarSweep, private val radarShader:
                 val range = gate.rangeMeters // 1000
                 val data = gate.data
 
-                val startAngle = (azimuth.toDouble()) - (resolution / 2) * 1.05f
-                val endAngle = (azimuth.toDouble()) + (resolution / 2) * 1.05f
+                val startAngle = (azimuth.toDouble()) - (resolution / 2) * 1.15f
+                val endAngle = (azimuth.toDouble()) + (resolution / 2) * 1.15f
 
                 if (gateSize == -1f) {
                     gateSize = (radial[gateIndex + 1].rangeMeters - radial[gateIndex].rangeMeters)

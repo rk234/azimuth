@@ -1,3 +1,3 @@
 package meteo.radar
 
-data class RadarSweep(val elevation: Float, val radials: List<List<RadarGate>>, val station: Station, val product: Product, val numRadials: Int, val numGates: Int)
+data class RadarSweep(var elevation: Float, var radials: ArrayList<ArrayList<RadarGate>>, var station: Station, var product: Product, var numRadials: Int, var numGates: Int)

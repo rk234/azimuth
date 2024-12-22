@@ -15,6 +15,9 @@ class RadarVolume(file: NetcdfFile) {
         val addOffset = variableVar.attributes().findAttributeDouble("add_offset", 0.0).toFloat()
         val scale = variableVar.attributes().findAttributeDouble("scale_factor", 1.0).toFloat()
 
+        val belowThreshold: Float = variableVar.attributes().findAttribute("signal_below_threshold")?.numericValue?.toFloat() ?: 0.0f
+        val noData: Float = variableVar.attributes().findAttribute("missing_value")?.numericValue?.toFloat() ?: 0.0f
+
         val productData: ArrayByte.D3 = variableVar.read() as ArrayByte.D3
         val azimuthData: ArrayFloat.D2 = azimuthVar.read() as ArrayFloat.D2
         val elevationData: ArrayFloat.D2 = elevationVar.read() as ArrayFloat.D2
@@ -50,6 +53,7 @@ class RadarVolume(file: NetcdfFile) {
 
     private fun interpretVCP(vcp: String): String {
         if(vcp == "215") return "General Surveillance"
+        else if(vcp == "212") return "Precip"
         else if(vcp.length == 2 && vcp.startsWith("1")) {
             return "Convection"
         } else if(vcp.length == 2 && vcp.startsWith("2")) {
@@ -64,40 +68,83 @@ class RadarVolume(file: NetcdfFile) {
     }
 
     init {
-//        val map = mutableMapOf<Product, ProductMetadata>()
-//        var sweeps: Int = 0
-//        var radials: Int = 0
-//        var gates: Int = 0
-//
-//        for (product in Product.entries) {
-//            try {
-//                map[product] = ProductMetadata(file, product)
-//                sweeps = max(sweeps, map[product]!!.numSweeps)
-//                radials = max(radials, map[product]!!.numRadials)
-//                gates = max(gates, map[product]!!.numGates)
-//            } catch (e: Exception) {
-//                println("Unable to load product from file. Product: $product")
-//                println("Exception: $e")
-//            }
-//        }
-//
-//        for(sweep in 0..<sweeps) {
-//            for(radial in 0..<radials) {
-//                for(gate in 0..<gates) {
-//
-//                }
-//            }
-//        }
-//
+        val startTime = System.currentTimeMillis()
+        val metadata = mutableMapOf<Product, ProductMetadata>()
+        var sweeps: Int = 0
+        var radials: Int = 0
+        var gates: Int = 0
 
         for (product in Product.entries) {
             try {
-                val productVolume = RadarProductVolume(file, timeCoverageEnd, station, product)
-                productVolumes[product] = productVolume
+                metadata[product] = ProductMetadata(file, product)
+                sweeps = max(sweeps, metadata[product]!!.numSweeps)
+                radials = max(radials, metadata[product]!!.numRadials)
+                gates = max(gates, metadata[product]!!.numGates)
             } catch (e: Exception) {
                 println("Unable to load product from file. Product: $product")
+                println("Exception: $e")
             }
         }
+
+
+        val productSweeps = mutableMapOf<Product, ArrayList<RadarSweep>>()
+        for(product in Product.entries)
+            productSweeps[product] = ArrayList()
+
+        for(sweep in 0..<sweeps) {
+            for(product in Product.entries)
+                if(sweep < metadata[product]!!.numSweeps)
+                    productSweeps[product]!!.add(RadarSweep(0f, ArrayList(metadata[product]!!.numRadials), station, product, metadata[product]!!.numRadials, metadata[product]!!.numGates))
+
+            for(radial in 0..<radials) {
+                for(product in Product.entries)
+                    if(radial < metadata[product]!!.numRadials && sweep < metadata[product]!!.numSweeps)
+                        productSweeps[product]!![sweep].radials.add(ArrayList(metadata[product]!!.numGates ))
+
+                for(gate in 0..<gates) {
+                    for(product in Product.entries) {
+                        val meta = metadata[product] ?: continue
+
+                        if(sweep < meta.numSweeps && radial < meta.numRadials && gate < meta.numGates) {
+                            val azimuth = meta.azimuthData.get(sweep, radial)
+                            val elevation = meta.elevationData.get(sweep, radial)
+                            val range = meta.rangeData.get(gate)
+                            val rawValue = meta.productData.get(sweep, radial, gate).toUByte().toFloat()
+
+                            if (rawValue != meta.belowThreshold && rawValue != meta.noData) {
+                                val scaledValue = (rawValue * meta.scale) + meta.addOffset
+                                productSweeps[product]!![sweep].radials[radial].add(RadarGate(elevation, azimuth, range, scaledValue))
+                                productSweeps[product]!![sweep].elevation = elevation
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        for(product in Product.entries) {
+            val productSweeps = productSweeps[product]!!
+            val volume = RadarProductVolume(timeCoverageEnd, station, product)
+            for((index, productSweep) in productSweeps.withIndex()) {
+                volume.scans.add(
+                    productSweep
+                )
+            }
+            productVolumes[product] = volume
+        }
+
+
+//        for (product in Product.entries) {
+//            try {
+//                val productVolume = RadarProductVolume(file, timeCoverageEnd, station, product)
+//                productVolumes[product] = productVolume
+//            } catch (e: Exception) {
+//                println("Unable to load product from file. Product: $product")
+//            }
+//        }
+        val dur = System.currentTimeMillis() - startTime
+        val durSec = dur / 1000.0f
+        println("time to process volume: $durSec")
     }
 
     fun getProductVolume(product: Product): RadarProductVolume? {
