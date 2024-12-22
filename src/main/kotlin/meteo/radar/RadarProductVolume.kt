@@ -51,7 +51,7 @@ class RadarProductVolume(file: NetcdfFile, val timeCoverageEnd: String, val stat
                 val gates: ArrayList<RadarGate> = arrayListOf()
                 for (gate in 0..<numGates) { //Gates
                     val range = rangeData.get(gate)
-                    val rawValue = productData.get(sweep, radial, gate).toUByte().toFloat()
+                    val rawValue = productData.get(sweep, radial, gate).toFloat()
 
                     if (rawValue != belowThreshold && rawValue != noData) {
                         val scaledValue = (rawValue * scale) + addOffset

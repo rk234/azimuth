@@ -1,8 +1,10 @@
 import com.formdev.flatlaf.FlatDarkLaf
 import data.radar.RadarDataProvider
+import data.state.AppState
 import ucar.nc2.NetcdfFiles
 import views.AppWindow
 import views.SplashWindow
+import javax.swing.SwingUtilities
 
 fun main() {
     System.setProperty("apple.laf.useScreenMenuBar", "true")
@@ -12,13 +14,12 @@ fun main() {
     val splash = SplashWindow()
     splash.isVisible = true
 
-    splash.onProgress(0.0, "Loading radar file...")
-
-    val file = NetcdfFiles.openInMemory("src/main/resources/KLWX_20240119_153921");
-//    val vol = RadarProductVolume(file, Product.REFLECTIVITY_HIRES)
-    splash.onProgress(1.0, "Done loading data file!")
+    AppState.radarDataService.addProgressListener(splash)
+    AppState.radarDataService.fillRepository()
+    AppState.init()
     splash.isVisible = false
 
     val window = AppWindow()
     window.isVisible = true
+
 }

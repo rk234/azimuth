@@ -12,7 +12,7 @@ import javax.swing.Timer
 
 class AppWindow : JFrame("Azimuth") {
     init {
-        val productPane = RadarProductPane(AppState.activeVolume.value, Product.REFLECTIVITY_HIRES, 0)
+        val productPane = RadarProductPane(AppState.activeVolume.value!!, Product.REFLECTIVITY_HIRES, 0)
 
         minimumSize = Dimension(1000, 700)
         layout = BorderLayout()

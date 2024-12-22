@@ -73,7 +73,8 @@ class RadarDataProvider {
             if(file != null) files.add(file)
         }
 
-        return files
+        return files.dropLast(1) // last file seems to be in the process of uploading,
+                                    // finding out a better solution here would be a good idea
     }
 
     fun getDataFile(name: String): NetcdfFile? {
@@ -81,7 +82,7 @@ class RadarDataProvider {
 
         val req = Request.Builder().url("$radarServiceURL/$station/$name").build()
         val resp = httpClient.newCall(req).execute()
-        if(!resp.isSuccessful) throw Exception("Failed to load data file, received response code: ${resp.code}")
+        if(!resp.isSuccessful) return null
 
         val bytes = resp.body?.bytes() ?: return null
 
