@@ -14,6 +14,7 @@ class RadarProductVolume(file: NetcdfFile, val timeCoverageEnd: String, val stat
         val rangeVar = file.findVariable(product.distanceField)
         val variableVar = file.findVariable(product.dataField)
 
+
         if (azimuthVar == null || elevationVar == null || rangeVar == null || variableVar == null) {
             throw Exception("Unable to read product data from file. Product: $product")
         }
@@ -50,21 +51,20 @@ class RadarProductVolume(file: NetcdfFile, val timeCoverageEnd: String, val stat
 
                 val gates: ArrayList<RadarGate> = arrayListOf()
                 for (gate in 0..<numGates) { //Gates
-                    val range = rangeData.get(gate)
-                    val rawValue = productData.get(sweep, radial, gate).toUByte().toFloat()
+                    val rawValue = productData.get(sweep, radial, gate).toUByte()
 
-                    if (rawValue != belowThreshold && rawValue != noData) {
-                        val scaledValue = (rawValue * scale) + addOffset
+                    if (rawValue.toFloat() != belowThreshold && rawValue.toFloat() != noData) {
+//                        val scaledValue = (rawValue.toFloat() * scale) + addOffset
 //                        println(if (scaledValue > 10) scaledValue else "")
 //                        println("Azimuth: $azimuth, Range: $range | Data: $scaledValue")
 //                        println(scaledValue)
-                        gates.add(RadarGate(range, scaledValue))
+                        gates.add(RadarGate.pack(gate.toUShort(), rawValue))
                     }
                 }
                 scan.add(RadarRadial(azimuth, gates))
             }
 
-            scans.add(RadarSweep(elevation, scan, station, product, numRadials, numGates))
+            scans.add(RadarSweep(elevation, scan, station, product, numRadials, numGates, rangeData.get(0), rangeData.get(1)-rangeData.get(0), scale, addOffset))
         }
     }
 }
