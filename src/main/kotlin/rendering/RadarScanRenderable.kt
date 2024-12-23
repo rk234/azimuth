@@ -2,6 +2,7 @@ package rendering
 
 import map.projection.MercatorProjection
 import map.projection.aerToGeo
+import meteo.radar.RadarGate
 import meteo.radar.RadarSweep
 import org.lwjgl.opengl.GL45.*
 import org.lwjgl.system.MemoryUtil
@@ -20,19 +21,16 @@ class RadarScanRenderable(private val scan: RadarSweep, private val radarShader:
 
         val resolution =
             360.0f / scan.radials.size
-        var gateSize: Float = -1f
+        var gateSize: Float = scan.gateWidth
         for ((radialIndex, radial) in scan.radials.withIndex()) {
-            for ((gateIndex, gate) in radial.gates.withIndex()) {
+            for (gateIndex in 0..<radial.gates.capacity()) {
+                val gate = RadarGate(radial.gates.get(gateIndex))
                 val azimuth = radial.azimuth
-                val range = gate.rangeMeters // 1000
-                val data = gate.data
+                val range = scan.rangeStart + (gateSize*gate.idx().toFloat()) // 1000
+                val data = gate.scaledValue(scan.scale, scan.addOffset)
 
                 val startAngle = (azimuth.toDouble()) - (resolution / 2) * 1.15f
                 val endAngle = (azimuth.toDouble()) + (resolution / 2) * 1.15f
-
-                if (gateSize == -1f) {
-                    gateSize = (radial.gates[gateIndex + 1].rangeMeters - radial.gates[gateIndex].rangeMeters)
-                }
 
                 val p1 =
                     proj.toCartesian(
