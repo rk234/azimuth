@@ -1,6 +1,8 @@
 import com.formdev.flatlaf.FlatDarkLaf
 import data.radar.RadarDataProvider
+import data.resources.GeoJSONManager
 import data.state.AppState
+import map.layers.GeoJSONLayer
 import ucar.nc2.NetcdfFiles
 import views.AppWindow
 import views.SplashWindow
@@ -13,6 +15,10 @@ fun main() {
 
     val splash = SplashWindow()
     splash.isVisible = true
+
+    splash.onProgress(null, "Loading Map Data...")
+    GeoJSONManager.init()
+    splash.onProgress(1.0, "Done!")
 
     AppState.radarDataService.addProgressListener(splash)
     AppState.radarDataService.fillRepository()
