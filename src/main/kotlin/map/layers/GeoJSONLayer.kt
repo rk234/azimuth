@@ -1,6 +1,6 @@
 package map.layers
 
-import data.rendering.ShaderManager
+import data.resources.ShaderManager
 import map.projection.MercatorProjection
 import org.joml.Vector2f
 import org.joml.Vector3f

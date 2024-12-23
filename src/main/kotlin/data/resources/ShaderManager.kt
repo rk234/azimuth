@@ -1,4 +1,4 @@
-package data.rendering
+package data.resources
 
 import rendering.ShaderProgram
 import java.io.File

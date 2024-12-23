@@ -1,5 +1,6 @@
 package views
 
+import data.resources.GeoJSONManager
 import meteo.radar.RadarProductVolume
 import map.MapView
 import map.layers.GeoJSONLayer
@@ -23,15 +24,9 @@ class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: 
     var map: MapView = MapView()
 
     init {
-        val countries = JSONObject(
-            File("src/main/resources/geo/countries.geojson").readText(Charsets.UTF_8)
-        )
-        val counties = JSONObject(
-            File("src/main/resources/geo/counties.json").readText(Charsets.UTF_8)
-        )
-        val states = JSONObject(
-            File("src/main/resources/geo/states.geojson").readText(Charsets.UTF_8)
-        )
+        val countries = GeoJSONManager.instance.countries
+        val counties = GeoJSONManager.instance.counties
+        val states = GeoJSONManager.instance.states
 
         val productVolume = volume.getProductVolume(product)
         map.addLayer(RadarLayer(productVolume!!, tilt))

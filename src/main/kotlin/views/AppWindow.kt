@@ -1,7 +1,7 @@
 package views
 
 import data.state.AppState
-import data.rendering.ShaderManager
+import data.resources.ShaderManager
 import meteo.radar.Product
 import org.lwjgl.opengl.GL
 import java.awt.BorderLayout
