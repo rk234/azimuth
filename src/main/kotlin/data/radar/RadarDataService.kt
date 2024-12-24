@@ -33,13 +33,12 @@ class RadarDataService(private val station: String, var autoPoll: Boolean, val p
 
         notifyProgress("Fetching data files...")
         val executor = Executors.newFixedThreadPool(8)
-        for((index, file) in fileList.withIndex()) {
+        for((index, fileName) in fileList.withIndex()) {
 
             executor.submit {
-//                notifyProgress("Downloading file ${index+1} of ${AppState.numLoopFrames.value}...", (index+1).toDouble() / AppState.numLoopFrames.value)
-                val dataFile = provider.getDataFile(file)
+                val dataFile = provider.getDataFile(fileName)
                 if(dataFile != null) {
-                    buf[index] = Pair(file, RadarVolume(dataFile))
+                    buf[index] = Pair(fileName, RadarVolume(dataFile, fileName))
                     dataFile.close()
                     notifyProgress("Fetched file ${buf.filterNotNull().size} of ${AppState.numLoopFrames.value}...", (buf.filterNotNull().size).toDouble() / AppState.numLoopFrames.value)
                 }
@@ -64,7 +63,7 @@ class RadarDataService(private val station: String, var autoPoll: Boolean, val p
                 if(!RadarDataRepository.containsFile(latest)) {
                     val file = provider.getDataFile(latest)
                     if(file != null) {
-                        RadarDataRepository.addDataFile(latest, RadarVolume(file))
+                        RadarDataRepository.addDataFile(latest, RadarVolume(file, latest))
                     } else {
                         println("auto poll error")
                     }

@@ -1,16 +1,22 @@
 package views
 
+import data.resources.ColormapManager
 import data.resources.GeoJSONManager
 import meteo.radar.RadarProductVolume
 import map.MapView
 import map.layers.GeoJSONLayer
+import map.layers.MapLayer
 import map.layers.RadarLayer
+import map.projection.MercatorProjection
 import meteo.radar.Product
 import meteo.radar.RadarVolume
+import org.joml.Vector2f
 import org.joml.Vector3f
 import org.json.JSONObject
+import rendering.Camera
 import java.awt.Color
 import java.awt.Dimension
+import java.awt.event.ActionEvent
 import java.io.File
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -18,18 +24,29 @@ import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import javax.swing.*
+import kotlin.concurrent.thread
 import kotlin.math.roundToInt
 
 class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: Int) : JPanel() {
-    var map: MapView = MapView()
+    private var map: MapView = MapView()
+    private var productVolume = volume.getProductVolume(product)
+    private var radarLayer: RadarLayer = RadarLayer(productVolume!!, tilt)
+    private val productSelect = JComboBox<Product>()
+    private lateinit var cmapBar: ColormapBar
 
     init {
         val countries = GeoJSONManager.instance.countries
         val counties = GeoJSONManager.instance.counties
         val states = GeoJSONManager.instance.states
 
-        val productVolume = volume.getProductVolume(product)
-        map.addLayer(RadarLayer(productVolume!!, tilt))
+        val proj = MercatorProjection()
+        val camPos = proj.toCartesian(Vector2f(volume.station.latitude, volume.station.longitude))
+        map.camera.position = Vector3f(camPos.x, camPos.y, 0f)
+        map.camera.zoom = 0.0001f
+        map.camera.recalcProjection()
+        map.camera.recalcTransform()
+
+        map.addLayer(radarLayer)
         map.addLayer(GeoJSONLayer(countries, 0.05f, Vector3f(0.8f), -10f))
         map.addLayer(GeoJSONLayer(counties, 0.03f, Vector3f(0.8f), 0.0001f))
         map.addLayer(GeoJSONLayer(states, 0.035f, Vector3f(1.0f), -10f))
@@ -44,12 +61,15 @@ class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: 
         val topRow = JPanel()
         topRow.isOpaque = false
         topRow.layout = BoxLayout(topRow, BoxLayout.X_AXIS)
-        val productSelect = JComboBox<String>()
+
         for (product in Product.entries) {
-            productSelect.addItem(product.displayName)
+            productSelect.addItem(product)
         }
+
         productSelect.selectedItem = product.displayName
         productSelect.alignmentX = JLabel.LEFT_ALIGNMENT
+        productSelect.addActionListener(::handleProductChange)
+
 //        productLbl.putClientProperty("FlatLaf.styleClass", "h3")
 //        productSelect.putClientProperty("FlatLaf.style", "font: bold \$h3.regular.font");
         productSelect.maximumSize = Dimension(300, 50)
@@ -62,7 +82,7 @@ class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: 
         row.isOpaque = false
         row.layout = BoxLayout(row, BoxLayout.X_AXIS)
 
-        val tiltLbl = JLabel("Tilt: %.2f deg".format(productVolume.scans[tilt].elevation))
+        val tiltLbl = JLabel("Tilt: %.2f deg".format(productVolume!!.scans[tilt].elevation))
         tiltLbl.alignmentX = JLabel.LEFT_ALIGNMENT
 
         val dateTime = ZonedDateTime.ofInstant(ZonedDateTime.parse(volume.timeCoverageEnd).toInstant(), ZoneOffset.UTC)
@@ -77,7 +97,7 @@ class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: 
 
         header.add(Box.createVerticalStrut(4))
         header.add(row)
-        val cmapBar = ColormapBar(product.colormap, 250)
+        cmapBar = ColormapBar(ColormapManager.instance.getDefault(product), 250)
         cmapBar.maximumSize = Dimension(Int.MAX_VALUE, 25)
         add(cmapBar)
         add(header)
@@ -92,4 +112,14 @@ class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: 
     fun render() {
         map.render()
     }
+
+    fun handleProductChange(e: ActionEvent) {
+        val selectedProduct = productSelect.selectedItem as Product
+        map.removeLayer(radarLayer)
+        radarLayer = RadarLayer(volume.getProductVolume(selectedProduct)!!, tilt)
+        map.insertLayer(0, radarLayer)
+        cmapBar.setColormap(ColormapManager.instance.getDefault(selectedProduct))
+        cmapBar.repaint()
+    }
+
 }

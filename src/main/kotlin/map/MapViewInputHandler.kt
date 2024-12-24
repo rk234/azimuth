@@ -1,17 +1,14 @@
 package map
 
 import org.joml.Vector2f
+import org.joml.Vector3f
+import org.joml.Vector4f
 import rendering.Camera
 import java.awt.event.*
 import java.util.Vector
 
-class MapViewInputHandler(camera: Camera) : MouseListener, MouseWheelListener, MouseMotionListener {
+class MapViewInputHandler(private val camera: Camera, private var view: MapView) : MouseListener, MouseWheelListener, MouseMotionListener {
     private var prevMousPos: Vector2f = Vector2f(-1f);
-    private val camera: Camera
-
-    init {
-        this.camera = camera
-    }
 
     override fun mouseClicked(e: MouseEvent?) {
     }
@@ -30,12 +27,12 @@ class MapViewInputHandler(camera: Camera) : MouseListener, MouseWheelListener, M
     }
 
     override fun mouseWheelMoved(e: MouseWheelEvent?) {
-        val rot = (e?.preciseWheelRotation ?: 0).toFloat()
+        val rot = (e?.wheelRotation ?: 0).toFloat()
 
         if (rot > 0f) {
-            camera.zoom *= 1.1f
+            camera.zoom /= 1.03f
         } else if (rot < 0f) {
-            camera.zoom /= 1.1f
+            camera.zoom *= 1.03f
         }
 
         camera.recalcProjection()

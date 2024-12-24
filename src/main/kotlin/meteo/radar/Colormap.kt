@@ -1,9 +1,12 @@
 package meteo.radar
 
+import com.formdev.flatlaf.extras.FlatSVGIcon
 import org.joml.Vector3f
 import java.nio.ByteBuffer
+import java.util.*
+import kotlin.collections.ArrayList
 
-class Colormap(str: String) {
+class Colormap(private val name: String, private val str: String) {
     var unit: String? = null
 
     val steps: ArrayList<ColorStep> = arrayListOf()
@@ -100,6 +103,18 @@ class Colormap(str: String) {
                 lowColor.lerp(highColor, t, out)
                 return out
             }
+        }
+    }
+
+    override fun hashCode(): Int {
+        return name.hashCode()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return if(other is Colormap) {
+            this.name == other.name
+        } else {
+            Objects.equals(this, other)
         }
     }
 }

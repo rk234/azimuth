@@ -7,11 +7,16 @@ import java.awt.Graphics
 import java.nio.ByteBuffer
 import javax.swing.JPanel
 
-class ColormapBar(val colormap: Colormap, val steps: Int) : JPanel() {
-
-    private val cmapData: ByteBuffer;
+class ColormapBar(colormap: Colormap, val steps: Int) : JPanel() {
+    private var cmapData: ByteBuffer;
 
     init {
+        cmapData = MemoryUtil.memAlloc(steps * 3)
+        colormap.genTextureData(steps, cmapData)
+    }
+
+    fun setColormap(colormap: Colormap) {
+        MemoryUtil.memFree(cmapData)
         cmapData = MemoryUtil.memAlloc(steps * 3)
         colormap.genTextureData(steps, cmapData)
     }
