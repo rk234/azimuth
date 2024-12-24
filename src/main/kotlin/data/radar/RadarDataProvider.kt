@@ -1,5 +1,6 @@
 package data.radar
 
+import meteo.radar.VolumeFileHandle
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import ucar.nc2.NetcdfFile
@@ -60,8 +61,8 @@ class RadarDataProvider {
     }
 
 
-    fun getDataFileList(station: String): List<String> {
-        val files = ArrayList<String>()
+    fun getDataFileList(station: String): List<VolumeFileHandle> {
+        val files = ArrayList<VolumeFileHandle>()
         val req = Request.Builder().url("$radarServiceURL/$station/$listFile").build()
         val res = httpClient.newCall(req).execute()
         if(!res.isSuccessful) throw Exception("Failed to load data file list, received response code: ${res.code}")
@@ -70,23 +71,23 @@ class RadarDataProvider {
 
         for(line in lines) {
             val file = line.split(" ").getOrNull(1)
-            if(file != null) files.add(file)
+            if(file != null) files.add(VolumeFileHandle(file))
         }
 
         return files.dropLast(1) // last file seems to be in the process of uploading,
                                     // finding out a better solution here would be a good idea
     }
 
-    fun getDataFile(name: String): NetcdfFile? {
-        val station = name.substringBefore("_")
+    fun getDataFile(handle: VolumeFileHandle): NetcdfFile? {
+        val station = handle.station()
 
-        val req = Request.Builder().url("$radarServiceURL/$station/$name").build()
+        val req = Request.Builder().url("$radarServiceURL/$station/$handle").build()
         val resp = httpClient.newCall(req).execute()
         if(!resp.isSuccessful) return null
 
         val bytes = resp.body?.bytes() ?: return null
 
-        return NetcdfFiles.openInMemory(name, bytes)
+        return NetcdfFiles.openInMemory(handle.fileName, bytes)
     }
 
     private fun reportProgress(progress: Double?, message: String) {

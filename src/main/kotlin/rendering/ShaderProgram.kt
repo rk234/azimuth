@@ -8,15 +8,14 @@ import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryUtil
 
 class ShaderProgram {
-    val id: Int
-    var vsID: Int = 0
-    var fsID: Int = 0
+    private val id: Int = glCreateProgram()
+    private var vsID: Int = 0
+    private var fsID: Int = 0
 
-    val uniforms = HashMap<String, Int>()
+    private val uniforms = HashMap<String, Int>()
+    private val matrix4fBuf = MemoryUtil.memAllocFloat(16)
 
     init {
-        id = glCreateProgram()
-
         if (id == 0) {
             throw Exception("Could not create shader program!")
         }
@@ -64,9 +63,7 @@ class ShaderProgram {
             loc = glGetUniformLocation(id, uniformName)
             uniforms[uniformName] = loc
         }
-        val buf = MemoryUtil.memAllocFloat(16)
-        glUniformMatrix4fv(loc, false, data.get(buf))
-        MemoryUtil.memFree(buf)
+        glUniformMatrix4fv(loc, false, data.get(matrix4fBuf))
     }
 
     fun setUniformInt(uniformName: String, data: Int) {
@@ -113,6 +110,7 @@ class ShaderProgram {
     fun destroy() {
         unbind()
         if (id != 0) glDeleteProgram(id)
+        MemoryUtil.memFree(matrix4fBuf)
     }
 
     fun setUniformVec3f(uniformName: String, value: Vector3f) {

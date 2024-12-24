@@ -4,7 +4,7 @@ import ucar.ma2.ArrayByte
 import ucar.ma2.ArrayFloat
 import ucar.nc2.NetcdfFile
 
-class RadarProductVolume(file: NetcdfFile, fileName: String, val station: Station, val product: Product) {
+class RadarProductVolume(file: NetcdfFile, handle: VolumeFileHandle, val station: Station, val product: Product) {
     val scans: ArrayList<RadarSweep> = arrayListOf()
 
     init {
@@ -53,7 +53,7 @@ class RadarProductVolume(file: NetcdfFile, fileName: String, val station: Statio
                 scan.add(RadarRadial(azimuth, gates))
             }
 
-            scans.add(RadarSweep(fileName, sweep, elevation, scan, station, product, numRadials, numGates, rangeData.get(0), rangeData.get(1)-rangeData.get(0), scale, addOffset))
+            scans.add(RadarSweep(handle, sweep, elevation, scan, station, product, numRadials, numGates, rangeData.get(0), rangeData.get(1)-rangeData.get(0), scale, addOffset))
         }
     }
 }

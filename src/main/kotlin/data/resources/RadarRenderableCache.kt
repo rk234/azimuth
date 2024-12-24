@@ -42,7 +42,7 @@ class RadarRenderableCache(var cacheSize: Int) {
     }
 
     private fun sweepKey(sweep: RadarSweep): String {
-        return sweep.fileName + "_" + sweep.product.dataField + "_" +
+        return sweep.fileHandle.toString() + "_" + sweep.product.dataField + "_" +
                 sweep.tiltIndex
     }
 }
