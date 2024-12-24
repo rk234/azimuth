@@ -1,42 +1,27 @@
 package map.layers
 
+import data.resources.ColormapManager
+import data.resources.ColormapTextureManager
+import data.resources.RadarRenderableCache
 import data.resources.ShaderManager
 import meteo.radar.RadarProductVolume
 import map.projection.MercatorProjection
+import meteo.radar.RadarVolume
 import org.joml.Vector2f
 import org.joml.Vector3f
-import org.lwjgl.system.MemoryUtil
 import rendering.*
 
-class RadarLayer(private val volume: RadarProductVolume, private val tilt: Int) : MapLayer {
-    private lateinit var radarShader: ShaderProgram
-    private lateinit var cmapTexture: Texture1D
+class RadarLayer(private var volume: RadarProductVolume, private var tilt: Int) : MapLayer {
     private lateinit var radarRenderable: RadarScanRenderable
+    private var initialized = false
 
     override fun init(camera: Camera) {
-        radarShader = ShaderManager.instance.radarShader()
+        radarRenderable = RadarRenderableCache.instance.get(volume.scans[tilt]) ?: throw Exception("failed to generate renderable")
+        if(!radarRenderable.initialized())
+            radarRenderable.init()
 
-        val cmap = volume.product.colormap
-        val colormapImageData = MemoryUtil.memAlloc(100 * 3)
-        cmap.genTextureData(100, colormapImageData)
-        println("Image Data: ${colormapImageData.get(0)}")
-        cmapTexture = Texture1D()
-        cmapTexture.bind()
-        cmapTexture.uploadData(100, colormapImageData.flip())
-        MemoryUtil.memFree(colormapImageData)
-
-        radarRenderable = RadarScanRenderable(volume.scans[tilt], radarShader, cmapTexture)
-        radarRenderable.init()
-
-        val proj = MercatorProjection()
-        val camPos = proj.toCartesian(Vector2f(volume.station.latitude, volume.station.longitude))
-        camera.position = Vector3f(camPos.x, camPos.y, 0f)
-        camera.zoom = 0.001f
-        camera.recalcProjection()
-        camera.recalcTransform()
+        initialized = true;
     }
-
-
 
     override fun render(camera: Camera) {
         radarRenderable.draw(camera)
@@ -44,7 +29,11 @@ class RadarLayer(private val volume: RadarProductVolume, private val tilt: Int) 
 
     override fun destroy() {
         radarRenderable.destroy()
-        radarShader.destroy()
-        cmapTexture.destroy()
+//        radarShader.destroy()
+//        cmapTexture.destroy()
+    }
+
+    override fun initialized(): Boolean {
+        return initialized
     }
 }

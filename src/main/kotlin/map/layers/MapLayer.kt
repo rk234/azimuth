@@ -6,4 +6,5 @@ interface MapLayer {
     fun init(camera: Camera)
     fun render(camera: Camera)
     fun destroy()
+    fun initialized(): Boolean
 }

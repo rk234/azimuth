@@ -12,6 +12,7 @@ class GeoJSONLayer(private val json: JSONObject, val lineWidth: Float, val lineC
     private lateinit var shader: ShaderProgram
     private var paths: ArrayList<PathRenderable> = ArrayList()
     private val vertsPerChunk = 60_000
+    private var initialized = false
 
     override fun init(camera: Camera) {
         val vertices = arrayListOf<Vector2f>()
@@ -47,6 +48,7 @@ class GeoJSONLayer(private val json: JSONObject, val lineWidth: Float, val lineC
                 paths.add(renderable)
                 renderable.init()
             }
+            initialized = true
         } else {
             println("Unsupported GeoJSON root type!")
         }
@@ -115,6 +117,10 @@ class GeoJSONLayer(private val json: JSONObject, val lineWidth: Float, val lineC
             path.destroy()
         }
         shader.destroy()
+    }
+
+    override fun initialized(): Boolean {
+        return initialized
     }
 
 }

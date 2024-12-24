@@ -8,7 +8,9 @@ class ShaderManager {
         lateinit var instance: ShaderManager
 
         fun init() {
-           instance = ShaderManager()
+            instance = ShaderManager()
+            instance.loadRadarShader()
+            instance.loadLinesShader()
         }
     }
 

@@ -5,7 +5,7 @@ import ucar.ma2.ArrayFloat
 import ucar.nc2.NetcdfFile
 import kotlin.math.max
 
-class RadarVolume(file: NetcdfFile) {
+class RadarVolume(file: NetcdfFile, val fileName: String) {
     private class ProductMetadata(file: NetcdfFile, product: Product) {
         val azimuthVar = file.findVariable(product.azimuthField) ?: throw Exception("Unable to read product meta data from file. Product: $product")
         val elevationVar = file.findVariable(product.elevationField) ?: throw Exception("Unable to read product meta data from file. Product: $product")
@@ -71,7 +71,7 @@ class RadarVolume(file: NetcdfFile) {
         val startTime = System.currentTimeMillis()
         for (product in Product.entries) {
             try {
-                val productVolume = RadarProductVolume(file, timeCoverageEnd, station, product)
+                val productVolume = RadarProductVolume(file, fileName, station, product)
                 productVolumes[product] = productVolume
             } catch (e: Exception) {
                 println("Unable to load product from file. Product: $product")
@@ -83,6 +83,6 @@ class RadarVolume(file: NetcdfFile) {
     }
 
     fun getProductVolume(product: Product): RadarProductVolume? {
-            return productVolumes[product]
+        return productVolumes[product]
     }
 }

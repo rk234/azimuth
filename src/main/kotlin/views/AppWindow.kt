@@ -1,5 +1,7 @@
 package views
 
+import data.resources.ColormapManager
+import data.resources.ColormapTextureManager
 import data.state.AppState
 import data.resources.ShaderManager
 import meteo.radar.Product
@@ -29,9 +31,7 @@ class AppWindow : JFrame("Azimuth") {
                     return
                 }
 
-                ShaderManager.init()
-
-                Timer(1000 / 60) {
+                Timer(1000/60) {
                     productPane.render()
                 }.start()
             }

@@ -1,5 +1,6 @@
 package rendering
 
+import data.resources.ColormapManager
 import map.projection.MercatorProjection
 import map.projection.aerToGeo
 import meteo.radar.RadarGate
@@ -8,38 +9,40 @@ import org.lwjgl.opengl.GL45.*
 import org.lwjgl.system.MemoryUtil
 import java.nio.IntBuffer
 
-class RadarScanRenderable(private val scan: RadarSweep, private val radarShader: ShaderProgram, private val cmapTexture: Texture1D) : Renderable {
+class RadarScanRenderable(private val sweep: RadarSweep, private val radarShader: ShaderProgram, private val cmapTexture: Texture1D) : Renderable {
     private var gateCount: Int = 0
     private lateinit var vbo: GLBufferObject
     private lateinit var vao: VertexArrayObject
     private lateinit var ibo: GLBufferObject
+    private var initialized = false
 
     override fun init() {
-        val verts = MemoryUtil.memAllocFloat(scan.numRadials * scan.numGates * 3 * 4)
+        if(initialized) return;
+        val verts = MemoryUtil.memAllocFloat(sweep.numRadials * sweep.numGates * 3 * 4)
         val proj = MercatorProjection()
-        val cmap = scan.product.colormap
+        val cmap = ColormapManager.instance.getDefault(sweep.product)
 
         val resolution =
-            360.0f / scan.radials.size
-        var gateSize: Float = scan.gateWidth
-        for ((radialIndex, radial) in scan.radials.withIndex()) {
+            360.0f / sweep.radials.size
+        var gateSize: Float = sweep.gateWidth
+        for ((radialIndex, radial) in sweep.radials.withIndex()) {
             for (gateIndex in 0..<radial.gates.capacity()) {
                 val gate = RadarGate(radial.gates.get(gateIndex))
                 val azimuth = radial.azimuth
-                val range = scan.rangeStart + (gateSize*gate.idx().toFloat()) // 1000
-                val data = gate.scaledValue(scan.scale, scan.addOffset)
+                val range = sweep.rangeStart + (gateSize*gate.idx().toFloat()) // 1000
+                val data = gate.scaledValue(sweep.scale, sweep.addOffset)
 
-                val startAngle = (azimuth.toDouble()) - (resolution / 2) * 1.15f
-                val endAngle = (azimuth.toDouble()) + (resolution / 2) * 1.15f
+                val startAngle = (azimuth.toDouble()) - (resolution / 2) * 1.12f
+                val endAngle = (azimuth.toDouble()) + (resolution / 2) * 1.12f
 
                 val p1 =
                     proj.toCartesian(
                         aerToGeo(
                             startAngle.toFloat(),
-                            scan.elevation,
+                            sweep.elevation,
                             range,
-                            scan.station.latitude,
-                            scan.station.longitude,
+                            sweep.station.latitude,
+                            sweep.station.longitude,
                         )
                     )
 
@@ -47,30 +50,30 @@ class RadarScanRenderable(private val scan: RadarSweep, private val radarShader:
                     proj.toCartesian(
                         aerToGeo(
                             startAngle.toFloat(),
-                            scan.elevation,
+                            sweep.elevation,
                             range + gateSize,
-                            scan.station.latitude,
-                            scan.station.longitude,
+                            sweep.station.latitude,
+                            sweep.station.longitude,
                         )
                     )
                 val p3 =
                     proj.toCartesian(
                         aerToGeo(
                             endAngle.toFloat(),
-                            scan.elevation,
+                            sweep.elevation,
                             range + gateSize,
-                            scan.station.latitude,
-                            scan.station.longitude,
+                            sweep.station.latitude,
+                            sweep.station.longitude,
                         )
                     )
                 val p4 =
                     proj.toCartesian(
                         aerToGeo(
                             endAngle.toFloat(),
-                            scan.elevation,
+                            sweep.elevation,
                             range,
-                            scan.station.latitude,
-                            scan.station.longitude,
+                            sweep.station.latitude,
+                            sweep.station.longitude,
                         )
                     )
 
@@ -88,6 +91,7 @@ class RadarScanRenderable(private val scan: RadarSweep, private val radarShader:
         }
 
         verts.flip()
+
 
         vao = VertexArrayObject()
         vao.bind()
@@ -112,6 +116,7 @@ class RadarScanRenderable(private val scan: RadarSweep, private val radarShader:
         indices.flip()
         ibo.uploadData(indices, GL_STATIC_DRAW)
         MemoryUtil.memFree(indices)
+        initialized = true
     }
 
     override fun draw(camera: Camera) {
@@ -142,5 +147,9 @@ class RadarScanRenderable(private val scan: RadarSweep, private val radarShader:
             indices.put(i)
             index += 4
         }
+    }
+
+    fun initialized(): Boolean {
+        return initialized
     }
 }
