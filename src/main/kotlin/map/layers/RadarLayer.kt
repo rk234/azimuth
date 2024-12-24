@@ -28,7 +28,7 @@ class RadarLayer(private var volume: RadarProductVolume, private var tilt: Int) 
     }
 
     override fun destroy() {
-        radarRenderable.destroy()
+//        radarRenderable.destroy()
 //        radarShader.destroy()
 //        cmapTexture.destroy()
     }

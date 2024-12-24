@@ -1,18 +1,19 @@
 package views
 
-import data.resources.ColormapManager
-import data.resources.ColormapTextureManager
 import data.state.AppState
-import data.resources.ShaderManager
+import data.state.UserPrefs
 import meteo.radar.Product
 import org.lwjgl.opengl.GL
 import java.awt.BorderLayout
 import java.awt.Dimension
+import java.awt.event.ActionEvent
 import javax.swing.JFrame
 import javax.swing.SwingUtilities
 import javax.swing.Timer
 
 class AppWindow : JFrame("Azimuth") {
+    val radarAutoPollTimer = Timer(1000 * UserPrefs.radarAutoPollFrequencySec(), ::onRadarAutoPoll)
+
     init {
         val productPane = RadarProductPane(AppState.activeVolume.value!!, Product.REFLECTIVITY_HIRES, 0)
 
@@ -34,7 +35,13 @@ class AppWindow : JFrame("Azimuth") {
                 Timer(1000/60) {
                     productPane.render()
                 }.start()
+
+                radarAutoPollTimer.start()
             }
         })
+    }
+
+    fun onRadarAutoPoll(actionEvent: ActionEvent) {
+        print("Autopolling!")
     }
 }
