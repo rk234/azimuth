@@ -11,7 +11,7 @@ object AppState {
     var radarDataProvider = RadarDataProvider()
     var activeVolume: State<RadarVolume?> = State(null)
     var numLoopFrames = State(UserPrefs.numLoopFrames())
-    var activeStation = State(UserPrefs.defaultStation())
+    var activeStation = State("KSHV")
     var radarDataService = RadarDataService(activeStation.value, radarDataProvider)
 
     fun init() {
@@ -38,12 +38,12 @@ object AppState {
         do {
             nextToPoll = radarDataService.peek()
 
-            if(nextToPoll != null) {
+            if(nextToPoll != null && index < numLoopFrames.value) {
                 toDownload[index] = radarDataService.poll()
                 println("Fetched file ${toDownload[index]}")
                 index++
             }
-        } while(nextToPoll != null)
+        } while(nextToPoll != null && index < numLoopFrames.value)
 
         val volumes = arrayOfNulls<RadarVolume>(numLoopFrames.value)
         val threads = mutableListOf<Thread>()

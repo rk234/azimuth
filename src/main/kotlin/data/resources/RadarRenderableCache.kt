@@ -12,8 +12,9 @@ class RadarRenderableCache(var cacheSize: Int) {
 
     fun put(radarSweep: RadarSweep, renderable: RadarScanRenderable) {
         cache[sweepKey(radarSweep)] = renderable
+
         if(cache.size > cacheSize) {
-            cache.remove(cache.firstEntry().key)
+            remove(cache.firstEntry().key)
         }
 
         println(cache.keys)
@@ -37,8 +38,22 @@ class RadarRenderableCache(var cacheSize: Int) {
         }
     }
 
+    fun remove(key: String) {
+        val renderable = cache[key]
+        if(renderable != null) {
+            cache.remove(key)
+            renderable.destroy()
+        }
+    }
+
+    fun remove(radarSweep: RadarSweep) {
+        remove(sweepKey(radarSweep))
+    }
+
     fun clear() {
-        cache.clear()
+        for(key in cache.keys) {
+            remove(key)
+        }
     }
 
     private fun sweepKey(sweep: RadarSweep): String {
