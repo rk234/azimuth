@@ -21,5 +21,6 @@
     <orderEntry type="library" name="okhttp-4.12.0" level="project" />
     <orderEntry type="library" name="okio-jvm-3.9.1" level="project" />
     <orderEntry type="library" name="flatlaf-extras-3.5.4" level="project" />
+    <orderEntry type="library" name="jsvg-1.6.1" level="project" />
   </component>
 </module>

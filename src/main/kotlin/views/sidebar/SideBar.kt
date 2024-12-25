@@ -1,4 +1,4 @@
-package views
+package views.sidebar
 
 import java.awt.Dimension
 import javax.swing.*
@@ -18,13 +18,10 @@ class SideBar : JPanel() {
             (0..<200).map { "Warning ${it.toString()}" }.toTypedArray()
         )
 
-        tabs.addTab("Radar", JLabel("Radar tab"))
+        tabs.addTab("Radar", RadarPanel())
         tabs.addTab("Warnings", JScrollPane(list))
         tabs.addTab("Map", JLabel("Map tab"))
         tabs.alignmentX = JTabbedPane.LEFT_ALIGNMENT
         add(tabs)
-        val loopControlPanel = LoopControlPanel()
-        loopControlPanel.alignmentX = LEFT_ALIGNMENT
-        add(loopControlPanel)
     }
 }
