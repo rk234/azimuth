@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: org.joml:joml-primitives:1.10.0" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="org.joml" artifactId="joml-primitives" version="1.10.0" baseVersion="1.10.0" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.joml/joml-primitives/1.10.0/b3ae3ae0dfee0bf5aef9f7964205cca0f3c6ea07/joml-primitives-1.10.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.joml/joml-primitives/1.10.0/6a56e9baec5ab610aa0ec0fb4d517a63bfe567db/joml-primitives-1.10.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

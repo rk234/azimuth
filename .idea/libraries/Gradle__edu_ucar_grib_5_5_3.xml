@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: edu.ucar:grib:5.5.3" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="edu.ucar" artifactId="grib" version="5.5.3" baseVersion="5.5.3" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/edu.ucar/grib/5.5.3/4c2b1e9c2d1f059f2a24534947f75e8043239ec9/grib-5.5.3.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/edu.ucar/grib/5.5.3/23d7aa1429d9ae8021344797630bea8284796ce4/grib-5.5.3-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

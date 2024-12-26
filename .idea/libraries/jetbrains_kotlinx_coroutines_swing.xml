@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="jetbrains.kotlinx.coroutines.swing" type="repository">
+    <properties maven-id="org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.10.1" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/kotlinx-coroutines-swing-1.10.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/kotlinx-coroutines-core-jvm-1.10.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/annotations-23.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/kotlin-stdlib-2.1.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

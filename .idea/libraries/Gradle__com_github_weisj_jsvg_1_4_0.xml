@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.github.weisj:jsvg:1.4.0" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="com.github.weisj" artifactId="jsvg" version="1.4.0" baseVersion="1.4.0" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.weisj/jsvg/1.4.0/3f057f61a79b63015dcdb3ae15f935951e4bedd9/jsvg-1.4.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.weisj/jsvg/1.4.0/46abf9bd17e6bca4a22d345e4b2b138c5c9a4445/jsvg-1.4.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
