@@ -1,8 +1,10 @@
 package meteo.radar
 
+import org.lwjgl.system.MemoryUtil
 import ucar.ma2.ArrayByte
 import ucar.ma2.ArrayFloat
 import ucar.nc2.NetcdfFile
+import java.nio.IntBuffer
 
 class RadarProductVolume(file: NetcdfFile, handle: VolumeFileHandle, val station: Station, val product: Product) {
     val scans: ArrayList<RadarSweep> = arrayListOf()
@@ -12,7 +14,6 @@ class RadarProductVolume(file: NetcdfFile, handle: VolumeFileHandle, val station
         val elevationVar = file.findVariable(product.elevationField)
         val rangeVar = file.findVariable(product.distanceField)
         val variableVar = file.findVariable(product.dataField)
-
 
         if (azimuthVar == null || elevationVar == null || rangeVar == null || variableVar == null) {
             throw Exception("Unable to read product data from file. Product: $product")

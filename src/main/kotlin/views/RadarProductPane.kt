@@ -3,6 +3,8 @@ package views
 import data.resources.ColormapManager
 import data.resources.GeoJSONManager
 import data.state.AppState
+import kotlinx.coroutines.*
+import kotlinx.coroutines.swing.Swing
 import map.MapView
 import map.layers.GeoJSONLayer
 import map.layers.RadarLayer
@@ -18,6 +20,7 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.util.concurrent.CompletableFuture.runAsync
 import javax.swing.*
 
 class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: Int) : JPanel() {
@@ -67,7 +70,11 @@ class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: 
 
         productSelect.selectedItem = product.displayName
         productSelect.alignmentX = JLabel.LEFT_ALIGNMENT
-        productSelect.addActionListener(::handleProductChange)
+        productSelect.addActionListener {
+            GlobalScope.launch(Dispatchers.Default) {
+                handleProductChange(it)
+            }
+        }
 
 //        productLbl.putClientProperty("FlatLaf.styleClass", "h3")
 //        productSelect.putClientProperty("FlatLaf.style", "font: bold \$h3.regular.font");
@@ -111,13 +118,17 @@ class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: 
         map.render()
     }
 
-    fun handleProductChange(e: ActionEvent) {
-        val selectedProduct = productSelect.selectedItem as Product
-        map.removeLayer(radarLayer)
-        radarLayer = RadarLayer(volume.getProductVolume(selectedProduct)!!, tilt)
-        map.insertLayer(0, radarLayer)
-        cmapBar.setColormap(ColormapManager.instance.getDefault(selectedProduct))
-        cmapBar.repaint()
+    private suspend fun handleProductChange(e: ActionEvent) = coroutineScope {
+        launch(Dispatchers.Swing) {
+            val selectedProduct = productSelect.selectedItem as Product
+            map.removeLayer(radarLayer)
+            radarLayer = withContext(Dispatchers.IO) {
+                RadarLayer(volume.getProductVolume(selectedProduct)!!, tilt)
+            }
+            map.insertLayer(0, radarLayer)
+            cmapBar.setColormap(ColormapManager.instance.getDefault(selectedProduct))
+            cmapBar.repaint()
+        }
     }
 
     fun handleVolumeChange(volume: RadarVolume?) {

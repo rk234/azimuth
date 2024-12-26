@@ -3,6 +3,8 @@ package data.state
 import data.radar.RadarDataProvider
 import data.radar.RadarDataRepository
 import data.radar.RadarDataService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.swing.Swing
 import meteo.radar.*
 import kotlin.concurrent.thread
 
@@ -10,7 +12,7 @@ object AppState {
     var radarDataProvider = RadarDataProvider()
     var activeVolume: State<RadarVolume?> = State(null)
     var numLoopFrames = State(UserPrefs.numLoopFrames())
-    var activeStation = State("KSHV")
+    var activeStation = State("KRTX")
     var radarDataService = RadarDataService(activeStation.value, radarDataProvider)
 
     fun init() {
