@@ -10,17 +10,22 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
-    <orderEntry type="library" name="netcdfAll-5.5.3" level="project" />
-    <orderEntry type="library" name="flatlaf-3.3" level="project" />
-    <orderEntry type="library" name="LWJGL3" level="project" />
-    <orderEntry type="library" name="json" level="project" />
-    <orderEntry type="library" name="json" level="project" />
-    <orderEntry type="library" name="okhttp-2.7.5" level="project" />
-    <orderEntry type="library" name="okio-3.9.1" level="project" />
-    <orderEntry type="library" name="okhttp-4.12.0" level="project" />
-    <orderEntry type="library" name="okio-jvm-3.9.1" level="project" />
-    <orderEntry type="library" name="flatlaf-extras-3.5.4" level="project" />
-    <orderEntry type="library" name="jsvg-1.6.1" level="project" />
+    <orderEntry type="library" exported="" name="KotlinJavaRuntime" level="project" />
+    <orderEntry type="library" exported="" name="netcdfAll-5.5.3" level="project" />
+    <orderEntry type="library" exported="" name="flatlaf-3.3" level="project" />
+    <orderEntry type="library" exported="" name="LWJGL3" level="project" />
+    <orderEntry type="library" exported="" name="json" level="project" />
+    <orderEntry type="library" exported="" name="json" level="project" />
+    <orderEntry type="library" exported="" name="okhttp-2.7.5" level="project" />
+    <orderEntry type="library" exported="" name="okio-3.9.1" level="project" />
+    <orderEntry type="library" exported="" name="okhttp-4.12.0" level="project" />
+    <orderEntry type="library" exported="" name="okio-jvm-3.9.1" level="project" />
+    <orderEntry type="library" exported="" name="flatlaf-extras-3.5.4" level="project" />
+    <orderEntry type="library" exported="" name="jsvg-1.6.1" level="project" />
+    <orderEntry type="library" exported="" name="kotlinx-coroutines-core-jvm-1.10.1" level="project" />
+    <orderEntry type="library" exported="" name="kotlinx-coroutines-core-1.10.1" level="project" />
+    <orderEntry type="library" exported="" name="kotlin-stdlib-2.1.0" level="project" />
+    <orderEntry type="library" exported="" name="annotations-23.0.0" level="project" />
+    <orderEntry type="library" exported="" name="jetbrains.kotlinx.coroutines.swing" level="project" />
   </component>
 </module>

@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: edu.ucar:cdm-core:5.5.3" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="edu.ucar" artifactId="cdm-core" version="5.5.3" baseVersion="5.5.3" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/edu.ucar/cdm-core/5.5.3/6b97491cea29c47604fdf026342635a842c639a0/cdm-core-5.5.3.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/edu.ucar/cdm-core/5.5.3/956b4cf0c26a1dc542d42fe8c1a1e9fd7e5cefdc/cdm-core-5.5.3-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

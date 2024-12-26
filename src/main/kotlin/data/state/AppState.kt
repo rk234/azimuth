@@ -4,7 +4,6 @@ import data.radar.RadarDataProvider
 import data.radar.RadarDataRepository
 import data.radar.RadarDataService
 import meteo.radar.*
-import ucar.nc2.NetcdfFiles
 import kotlin.concurrent.thread
 
 object AppState {
@@ -26,6 +25,7 @@ object AppState {
         if(file != null) {
             println("downloaded new radar data!")
             RadarDataRepository.addDataFile(RadarVolume(file, handle))
+            activeVolume.value = RadarDataRepository.lastFile()
         } else {
             println("could not find new radar data!")
         }

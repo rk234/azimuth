@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: edu.ucar:netcdf4:5.5.3" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="edu.ucar" artifactId="netcdf4" version="5.5.3" baseVersion="5.5.3" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/edu.ucar/netcdf4/5.5.3/4f431479202971c58ccdf9436bfee906b0945d36/netcdf4-5.5.3.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/edu.ucar/netcdf4/5.5.3/a2b8e278314317b94f9290a30e80b19e1ec1e165/netcdf4-5.5.3-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

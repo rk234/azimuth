@@ -43,6 +43,6 @@ class AppWindow : JFrame("Azimuth") {
     }
 
     fun onRadarAutoPoll(actionEvent: ActionEvent) {
-        print("Autopolling!")
+        AppState.pollRadarData()
     }
 }

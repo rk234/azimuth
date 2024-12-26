@@ -43,14 +43,16 @@ class RadarDataService(private val station: String, val provider: RadarDataProvi
             if(pollQueue.isEmpty()) {
                 val files = provider.getDataFileList(station)
                 val latest = files.last()
-                pollQueue.offer(latest)
+                if(latest != lastPoll)
+                    pollQueue.offer(latest)
             }
 
-            val toFetch = pollQueue.poll()
-
-            if(lastPoll != toFetch) {
+            if(!pollQueue.isEmpty()) {
+                val toFetch = pollQueue.poll()
+                lastPoll = toFetch
                 return toFetch
             }
+
         } catch (ex: Exception) {
             println("radar service poll error:")
             println(ex)

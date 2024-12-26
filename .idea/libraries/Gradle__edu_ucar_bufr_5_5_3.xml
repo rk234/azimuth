@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: edu.ucar:bufr:5.5.3" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="edu.ucar" artifactId="bufr" version="5.5.3" baseVersion="5.5.3" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/edu.ucar/bufr/5.5.3/3e34150536eff43b18fe9199e28413b3de07330f/bufr-5.5.3.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/edu.ucar/bufr/5.5.3/edc2b5ee4188ca39f6c52e30af4ef26bf5128d67/bufr-5.5.3-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
