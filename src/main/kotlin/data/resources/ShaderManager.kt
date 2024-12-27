@@ -1,16 +1,19 @@
 package data.resources
 
 import rendering.ShaderProgram
+import java.awt.GridLayout
 import java.io.File
 
 class ShaderManager {
     companion object {
         lateinit var instance: ShaderManager
+        var initialized = false
 
         fun init() {
             instance = ShaderManager()
             instance.loadRadarShader()
             instance.loadLinesShader()
+            initialized = true
         }
     }
 

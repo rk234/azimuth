@@ -12,9 +12,11 @@ class ColormapTextureManager {
     companion object {
         val colormapSampleCount = 100
         val instance = ColormapTextureManager()
+        var initialized = false
 
         fun init() {
             loadDefaultColormaps()
+            initialized = true
         }
 
         private fun loadDefaultColormaps() {

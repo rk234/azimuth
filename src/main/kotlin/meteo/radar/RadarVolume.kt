@@ -51,7 +51,7 @@ class RadarVolume(file: NetcdfFile, val handle: VolumeFileHandle) {
     val vcp: Int = file.findGlobalAttribute("VolumeCoveragePattern")?.numericValue?.toInt() ?: -1
     val vcpName: String = interpretVCP(vcp.toString())
 
-    private val productVolumes: EnumMap<Product, RadarProductVolume> = EnumMap(meteo.radar.Product::class.java)
+    private val productVolumes: EnumMap<Product, RadarProductVolume> = EnumMap(Product::class.java)
 
     private fun interpretVCP(vcp: String): String {
         if(vcp == "215") return "General Surveillance"

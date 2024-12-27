@@ -6,10 +6,13 @@ import map.layers.MapLayer
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL45.*;
 import org.lwjgl.opengl.awt.AWTGLCanvas
+import org.lwjgl.opengl.awt.GLData
 import rendering.*
 import java.awt.Cursor
 
-class MapView : AWTGLCanvas() {
+class MapView(data: GLData?) : AWTGLCanvas(data) {
+    constructor() : this(null)
+
     private var layers: ArrayList<MapLayer> = ArrayList()
     var camera: Camera
     private lateinit var inputHandler: MapViewInputHandler
@@ -35,8 +38,12 @@ class MapView : AWTGLCanvas() {
 
     override fun initGL() {
         GL.createCapabilities()
-        ShaderManager.init()
-        ColormapTextureManager.init()
+        if(!ShaderManager.initialized)
+            ShaderManager.init()
+
+        if(!ColormapTextureManager.initialized)
+            ColormapTextureManager.init()
+
         println("GL Version: ${effective.majorVersion}.${effective.minorVersion}")
         glClearColor(0f, 0.0f, 0.0f, 1.0f)
 
