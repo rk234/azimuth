@@ -13,6 +13,10 @@ class VertexArrayObject {
         glBindVertexArray(id)
     }
 
+    fun unbind() {
+        glBindVertexArray(0)
+    }
+
     fun enableAttrib(index: Int) {
         glEnableVertexAttribArray(index)
     }

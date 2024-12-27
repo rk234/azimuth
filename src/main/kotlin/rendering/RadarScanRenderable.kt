@@ -126,7 +126,17 @@ class RadarScanRenderable(private val sweep: RadarSweep, private val radarShader
 
         cmapTexture.bind()
         vao.bind()
+        vbo.bind()
+
+        vao.attrib(0, 2, GL_FLOAT, false, 3 * Float.SIZE_BYTES, 0)
+        vao.attrib(1, 1, GL_FLOAT, false, 3 * Float.SIZE_BYTES, (2 * Float.SIZE_BYTES).toLong())
+
+        vao.enableAttrib(0)
+        vao.enableAttrib(1)
+
+        ibo.bind()
         glDrawElements(GL_TRIANGLES, gateCount * 6, GL_UNSIGNED_INT, 0)
+        vao.unbind()
     }
 
     override fun destroy() {

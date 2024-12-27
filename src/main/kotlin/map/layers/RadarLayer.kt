@@ -22,7 +22,7 @@ class RadarLayer(private var volume: RadarProductVolume, private var tilt: Int) 
         this.volume = volume
         this.tilt = tilt
 
-        radarRenderable = RadarRenderableCache.instance.get(volume.scans[tilt])
+        radarRenderable = RadarRenderableCache.instance.get(this.volume.scans[tilt])
     }
 
     override fun init(camera: Camera) {

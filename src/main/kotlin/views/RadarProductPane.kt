@@ -13,6 +13,7 @@ import meteo.radar.Product
 import meteo.radar.RadarVolume
 import org.joml.Vector2f
 import org.joml.Vector3f
+import org.lwjgl.opengl.awt.GLData
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.event.ActionEvent
@@ -23,10 +24,9 @@ import java.time.format.DateTimeFormatter
 import java.util.concurrent.CompletableFuture.runAsync
 import javax.swing.*
 
-class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: Int) : JPanel() {
-    private var map: MapView = MapView()
-    private var productVolume = volume.getProductVolume(product)
-    private var radarLayer: RadarLayer = RadarLayer(productVolume!!, tilt)
+class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: Int, glData: GLData? = null) : JPanel() {
+    val map: MapView = MapView(glData)
+    private var radarLayer: RadarLayer = RadarLayer(volume.getProductVolume(product)!!, tilt)
 
     private val productSelect = JComboBox<Product>()
     private var cmapBar: ColormapBar
@@ -122,11 +122,10 @@ class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: 
         launch(Dispatchers.Swing) {
             val selectedProduct = productSelect.selectedItem as Product
             product = selectedProduct
-            productVolume = withContext(Dispatchers.IO) {
-                volume.getProductVolume(product)!!
-            }
             radarLayer.setProductVolumeAndTilt(
-                productVolume!!,
+                withContext(Dispatchers.IO) {
+                    volume.getProductVolume(product)!!
+                },
                 tilt
             )
             cmapBar.setColormap(ColormapManager.instance.getDefault(product))
@@ -155,6 +154,6 @@ class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: 
     }
 
     private fun updateTiltLabel() {
-        tiltLabel.text = ("Tilt: %.2f deg".format(productVolume!!.scans[tilt].elevation))
+        tiltLabel.text = ("Tilt: %.2f deg".format(volume.getProductVolume(product)!!.scans[tilt].elevation))
     }
 }
