@@ -21,10 +21,11 @@ class RadarRenderableCache(var cacheSize: Int) {
     }
 
     fun get(radarSweep: RadarSweep): RadarScanRenderable {
+        println("Attempting to get ${sweepKey(radarSweep)}")
         return if(cache.containsKey(sweepKey(radarSweep))) {
             cache[sweepKey(radarSweep)]!!
         } else {
-            val renderable =  RadarScanRenderable(
+            val renderable = RadarScanRenderable(
                 radarSweep,
                 ShaderManager.instance.radarShader(),
                 ColormapTextureManager.instance.get(

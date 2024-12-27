@@ -4,6 +4,9 @@ import data.resources.ColormapManager
 import data.resources.ColormapTextureManager
 import data.resources.RadarRenderableCache
 import data.resources.ShaderManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.runBlocking
 import meteo.radar.RadarProductVolume
 import map.projection.MercatorProjection
 import meteo.radar.RadarVolume
@@ -15,6 +18,13 @@ class RadarLayer(private var volume: RadarProductVolume, private var tilt: Int) 
     private lateinit var radarRenderable: RadarScanRenderable
     private var initialized = false
 
+    fun setProductVolumeAndTilt(volume: RadarProductVolume, tilt: Int) {
+        this.volume = volume
+        this.tilt = tilt
+
+        radarRenderable = RadarRenderableCache.instance.get(volume.scans[tilt])
+    }
+
     override fun init(camera: Camera) {
         radarRenderable = RadarRenderableCache.instance.get(volume.scans[tilt]) ?: throw Exception("failed to generate renderable")
         if(!radarRenderable.initialized())
@@ -24,6 +34,8 @@ class RadarLayer(private var volume: RadarProductVolume, private var tilt: Int) 
     }
 
     override fun render(camera: Camera) {
+        if(!radarRenderable.initialized())
+            radarRenderable.init()
         radarRenderable.draw(camera)
     }
 

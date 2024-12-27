@@ -3,6 +3,8 @@ package meteo.radar
 import ucar.ma2.ArrayByte
 import ucar.ma2.ArrayFloat
 import ucar.nc2.NetcdfFile
+import java.util.*
+import kotlin.collections.HashMap
 import kotlin.math.max
 
 class RadarVolume(file: NetcdfFile, val handle: VolumeFileHandle) {
@@ -49,7 +51,7 @@ class RadarVolume(file: NetcdfFile, val handle: VolumeFileHandle) {
     val vcp: Int = file.findGlobalAttribute("VolumeCoveragePattern")?.numericValue?.toInt() ?: -1
     val vcpName: String = interpretVCP(vcp.toString())
 
-    val productVolumes: HashMap<Product, RadarProductVolume> = hashMapOf()
+    private val productVolumes: EnumMap<Product, RadarProductVolume> = EnumMap(meteo.radar.Product::class.java)
 
     private fun interpretVCP(vcp: String): String {
         if(vcp == "215") return "General Surveillance"
