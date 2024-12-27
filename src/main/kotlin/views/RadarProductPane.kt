@@ -68,7 +68,7 @@ class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: 
             productSelect.addItem(product)
         }
 
-        productSelect.selectedItem = product.displayName
+        productSelect.selectedItem = product
         productSelect.alignmentX = JLabel.LEFT_ALIGNMENT
         productSelect.addActionListener {
             GlobalScope.launch(Dispatchers.Default) {
@@ -121,13 +121,18 @@ class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: 
     private suspend fun handleProductChange(e: ActionEvent) = coroutineScope {
         launch(Dispatchers.Swing) {
             val selectedProduct = productSelect.selectedItem as Product
-            map.removeLayer(radarLayer)
-            radarLayer = withContext(Dispatchers.IO) {
-                RadarLayer(volume.getProductVolume(selectedProduct)!!, tilt)
+            product = selectedProduct
+            productVolume = withContext(Dispatchers.IO) {
+                volume.getProductVolume(product)!!
             }
-            map.insertLayer(0, radarLayer)
-            cmapBar.setColormap(ColormapManager.instance.getDefault(selectedProduct))
+            radarLayer.setProductVolumeAndTilt(
+                productVolume!!,
+                tilt
+            )
+            cmapBar.setColormap(ColormapManager.instance.getDefault(product))
             cmapBar.repaint()
+            updateTiltLabel()
+            updateTimeLabel()
         }
     }
 
