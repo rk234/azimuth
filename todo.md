@@ -2,9 +2,9 @@
 - [ ] Implement multi pane switching
 - [ ] Asynchronous loading of radar layers, status bar
 - [ ] Async automatic data polling
+- [ ] Radar looping, handle changing number of frames on the fly, async loading too
 - [ ] Figure out cities and road rendering
   - [ ] Look into [R-Tree](https://en.wikipedia.org/wiki/R-tree)
   - [ ] Implement line string for geojson layer
   - [ ] Implement points for geojson layer
   - [ ] Font loading and text rendering with truetype
-  - 
