@@ -170,17 +170,19 @@ class RadarScanRenderable(private val sweep: RadarSweep, private val radarShader
         radarShader.setUniformMatrix4f("transformMatrix", camera.transformMatrix)
 
         cmapTexture.bind()
-        val vao = vaoContext.getVAO(this)
+        val vao = vaoContext.getVAO(this) { vao ->
+            vao.bind()
+            vbo.bind()
+
+            vao.attrib(0, 2, GL_FLOAT, false, 3 * Float.SIZE_BYTES, 0)
+            vao.attrib(1, 1, GL_FLOAT, false, 3 * Float.SIZE_BYTES, (2 * Float.SIZE_BYTES).toLong())
+
+            vao.enableAttrib(0)
+            vao.enableAttrib(1)
+
+            ibo.bind()
+        }
         vao.bind()
-//        vbo.bind()
-//
-//        vao.attrib(0, 2, GL_FLOAT, false, 3 * Float.SIZE_BYTES, 0)
-//        vao.attrib(1, 1, GL_FLOAT, false, 3 * Float.SIZE_BYTES, (2 * Float.SIZE_BYTES).toLong())
-//
-//        vao.enableAttrib(0)
-//        vao.enableAttrib(1)
-//
-//        ibo.bind()
         glDrawElements(GL_TRIANGLES, gateCount * 6, GL_UNSIGNED_INT, 0)
     }
 

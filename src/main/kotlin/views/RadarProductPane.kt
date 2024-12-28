@@ -37,10 +37,10 @@ class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: 
     init {
         AppState.activeVolume.onChange(::handleVolumeChange)
 
-        val countries = GeoJSONManager.instance.countries
-        val counties = GeoJSONManager.instance.counties
-        val states = GeoJSONManager.instance.states
-
+//        val countries = GeoJSONManager.instance.countries
+//        val counties = GeoJSONManager.instance.counties
+//        val states = GeoJSONManager.instance.states
+//
         val proj = MercatorProjection()
         val camPos = proj.toCartesian(Vector2f(volume.station.latitude, volume.station.longitude))
         map.camera.position = Vector3f(camPos.x, camPos.y, 0f)
@@ -49,9 +49,9 @@ class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: 
         map.camera.recalcTransform()
 
         map.addLayer(radarLayer)
-        map.addLayer(GeoJSONLayer(countries, 0.05f, Vector3f(0.8f), -10f))
-        map.addLayer(GeoJSONLayer(counties, 0.03f, Vector3f(0.8f), 0.0001f))
-        map.addLayer(GeoJSONLayer(states, 0.035f, Vector3f(1.0f), -10f))
+//        map.addLayer(GeoJSONLayer(countries, 0.05f, Vector3f(0.8f), -10f))
+//        map.addLayer(GeoJSONLayer(counties, 0.03f, Vector3f(0.8f), 0.0001f))
+//        map.addLayer(GeoJSONLayer(states, 0.035f, Vector3f(1.0f), -10f))
 
         layout = BoxLayout(this, BoxLayout.Y_AXIS)
 
