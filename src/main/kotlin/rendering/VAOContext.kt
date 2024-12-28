@@ -7,7 +7,7 @@ class VAOContext {
         if(mapping.containsKey(renderable)) {
             return mapping[renderable]!!
         } else {
-            println("creating for ${renderable}")
+//            println("creating for ${renderable}")
             mapping[renderable] = VertexArrayObject()
             if (onCreate != null) {
                 onCreate(mapping[renderable]!!)

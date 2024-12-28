@@ -8,7 +8,6 @@ class VertexArrayObject {
 
     init {
         id = glGenVertexArrays()
-        println("Created vao ${id}")
     }
 
     fun bind() {

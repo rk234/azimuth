@@ -20,11 +20,13 @@ class PathRenderable(
     private lateinit var prevVBO: GLBufferObject
     private lateinit var nextVBO: GLBufferObject
     private lateinit var dirVBO: GLBufferObject
+    private var initialized = false
 
     private lateinit var ibo: GLBufferObject
 //    private lateinit var vao: VertexArrayObject
 
     override fun init(vaoContext: VAOContext) {
+        if(initialized) return
         val verts = MemoryUtil.memAllocFloat((vertices.size * 2) * 2)
         val next = MemoryUtil.memAllocFloat((vertices.size * 2) * 2)
         val prev = MemoryUtil.memAllocFloat((vertices.size * 2) * 2)
@@ -87,6 +89,7 @@ class PathRenderable(
         vao.enableAttrib(3)
         ibo.bind()
         ibo.uploadData(indices, GL_STATIC_DRAW)
+        initialized = true
     }
 
     override fun draw(camera: Camera, vaoContext: VAOContext) {

@@ -1,1 +1,10 @@
 - [X] It seems that switching the renderable to a product used by another frame causes a crash b/c the vbo/ibo/attribs aren't bound for the new vao in the map's VAOContext. Look into adding a seperate `bindVAO` method to renderables
+- [ ] Implement multi pane switching
+- [ ] Asynchronous loading of radar layers, status bar
+- [ ] Async automatic data polling
+- [ ] Figure out cities and road rendering
+  - [ ] Look into [R-Tree](https://en.wikipedia.org/wiki/R-tree)
+  - [ ] Implement line string for geojson layer
+  - [ ] Implement points for geojson layer
+  - [ ] Font loading and text rendering with truetype
+  - 
