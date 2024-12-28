@@ -10,12 +10,13 @@ import org.lwjgl.opengl.awt.GLData
 import rendering.*
 import java.awt.Cursor
 
-class MapView(data: GLData?) : AWTGLCanvas(data) {
+class MapView(private val data: GLData?) : AWTGLCanvas(data) {
     constructor() : this(null)
 
     private var layers: ArrayList<MapLayer> = ArrayList()
     var camera: Camera
     private lateinit var inputHandler: MapViewInputHandler
+    private val vaoContext: VAOContext = VAOContext()
 
     init {
         cursor = Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR)
@@ -37,7 +38,8 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
     }
 
     override fun initGL() {
-        GL.createCapabilities()
+        if(data.shareContext == null)
+            GL.createCapabilities()
         if(!ShaderManager.initialized)
             ShaderManager.init()
 
@@ -54,7 +56,8 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
         addMouseListener(inputHandler)
 
         for (layer in layers) {
-            layer.init(camera)
+            if(!layer.initialized())
+                layer.init(camera, vaoContext)
         }
     }
 
@@ -66,9 +69,9 @@ class MapView(data: GLData?) : AWTGLCanvas(data) {
 
         for (layer in layers) {
             if(!layer.initialized()) {
-                layer.init(camera)
+                layer.init(camera, vaoContext)
             }
-            layer.render(camera)
+            layer.render(camera, vaoContext)
         }
 
         swapBuffers()

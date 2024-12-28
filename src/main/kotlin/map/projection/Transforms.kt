@@ -18,7 +18,7 @@ fun antennaToCartesian(azimuth: Float, range: Float, elevation: Float): Vector3f
     val R = 6371.0 * 1000.0 * 4.0 / 3.0
     val r = range
 
-    val z = (r.pow(2) + R.pow(2) + 2 * r * R * sin(thetaE)).pow(0.5) - R
+    val z = sqrt(r*r + R*R + 2 * r * R * sin(thetaE)) - R
     val s = R * asin(r * cos(thetaE) / (R + z))
     val x = s * sin(thetaA)
     val y = s * cos(thetaA)

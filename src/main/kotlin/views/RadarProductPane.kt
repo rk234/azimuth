@@ -139,9 +139,7 @@ class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: 
         if(volume == null) return
 
         this.volume = volume
-        map.removeLayer(radarLayer)
-        radarLayer = RadarLayer(volume.getProductVolume(productSelect.selectedItem as Product)!!, tilt)
-        map.insertLayer(0, radarLayer)
+        radarLayer.setProductVolumeAndTilt(volume.getProductVolume(product)!!, tilt)
         updateTiltLabel()
         updateTimeLabel()
         println("Volume updated!!")

@@ -24,7 +24,7 @@ class PathRenderable(
     private lateinit var ibo: GLBufferObject
     private lateinit var vao: VertexArrayObject
 
-    override fun init() {
+    override fun init(vaoContext: VAOContext) {
         val verts = MemoryUtil.memAllocFloat((vertices.size * 2) * 2)
         val next = MemoryUtil.memAllocFloat((vertices.size * 2) * 2)
         val prev = MemoryUtil.memAllocFloat((vertices.size * 2) * 2)
@@ -44,7 +44,7 @@ class PathRenderable(
         prev.flip()
         dirs.flip()
 
-        vao = VertexArrayObject()
+        vao = vaoContext.getVAO(this)
         vao.bind()
 
         pathVBO = GLBufferObject()
@@ -89,7 +89,7 @@ class PathRenderable(
         ibo.uploadData(indices, GL_STATIC_DRAW)
     }
 
-    override fun draw(camera: Camera) {
+    override fun draw(camera: Camera, vaoContext: VAOContext) {
         shader.bind()
         shader.setUniformMatrix4f("projection", camera.projectionMatrix)
         shader.setUniformMatrix4f("transform", camera.transformMatrix)

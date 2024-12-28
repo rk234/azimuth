@@ -3,10 +3,9 @@ package data.state
 import data.radar.RadarDataProvider
 import data.radar.RadarDataRepository
 import data.radar.RadarDataService
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.swing.Swing
+import kotlinx.coroutines.*
 import meteo.radar.*
-import kotlin.concurrent.thread
+import ucar.nc2.util.DiskCache
 
 object AppState {
     var radarDataProvider = RadarDataProvider()
@@ -34,37 +33,39 @@ object AppState {
     }
 
     private fun loadInitialData() {
-        var nextToPoll: VolumeFileHandle?
-        val toDownload = arrayOfNulls<VolumeFileHandle>(numLoopFrames.value)
-        var index = 0
-        do {
-            nextToPoll = radarDataService.peek()
+        runBlocking {
+            var nextToPoll: VolumeFileHandle?
+            val toDownload = arrayOfNulls<VolumeFileHandle>(numLoopFrames.value)
+            var index = 0
+            do {
+                nextToPoll = radarDataService.peek()
 
-            if(nextToPoll != null && index < numLoopFrames.value) {
-                toDownload[index] = radarDataService.poll()
-                println("Fetched file ${toDownload[index]}")
-                index++
+                if(nextToPoll != null && index < numLoopFrames.value) {
+                    toDownload[index] = radarDataService.poll()
+                    println("Fetched file ${toDownload[index]}")
+                    index++
+                }
+            } while(nextToPoll != null && index < numLoopFrames.value)
+
+            val volumes = arrayOfNulls<RadarVolume>(numLoopFrames.value)
+            val tasks = mutableListOf<Deferred<Unit>>()
+            for(i in toDownload.indices) {
+                if(toDownload[i] == null) continue
+                tasks.add(async(Dispatchers.IO) {
+                    val file = radarDataProvider.getDataFile(toDownload[i]!!)
+                    if(file != null) {
+                        volumes[i] = RadarVolume(file, toDownload[i]!!)
+                        file.close()
+                    }
+                })
             }
-        } while(nextToPoll != null && index < numLoopFrames.value)
 
-        val volumes = arrayOfNulls<RadarVolume>(numLoopFrames.value)
-        val threads = mutableListOf<Thread>()
-        for(i in toDownload.indices) {
-            if(toDownload[i] == null) continue
-            threads.add(thread {
-                val file = radarDataProvider.getDataFile(toDownload[i]!!)
-                if(file != null)
-                    volumes[i] = RadarVolume(file, toDownload[i]!!)
-            })
-        }
+            tasks.awaitAll()
 
-        for(thread in threads) {
-            thread.join()
-        }
-
-        for(volume in volumes) {
-            if(volume != null)
-                RadarDataRepository.addDataFile(volume)
+            for(volume in volumes) {
+                if(volume != null)
+                    RadarDataRepository.addDataFile(volume)
+            }
         }
     }
 }

@@ -14,7 +14,7 @@ class GeoJSONLayer(private val json: JSONObject, val lineWidth: Float, val lineC
     private val vertsPerChunk = 60_000
     private var initialized = false
 
-    override fun init(camera: Camera) {
+    override fun init(camera: Camera, vaoContext: VAOContext) {
         val vertices = arrayListOf<Vector2f>()
         if (json.getString("type") == "FeatureCollection") {
             val features = json.getJSONArray("features")
@@ -46,7 +46,7 @@ class GeoJSONLayer(private val json: JSONObject, val lineWidth: Float, val lineC
             chunks.forEach { c ->
                 val renderable = PathRenderable(c, shader, lineWidth, lineColor, zoomLevel)
                 paths.add(renderable)
-                renderable.init()
+                renderable.init(vaoContext)
             }
             initialized = true
         } else {
@@ -106,9 +106,9 @@ class GeoJSONLayer(private val json: JSONObject, val lineWidth: Float, val lineC
         shader = ShaderManager.instance.linesShader()
     }
 
-    override fun render(camera: Camera) {
+    override fun render(camera: Camera, vaoContext: VAOContext) {
         for (path in paths) {
-            path.draw(camera)
+            path.draw(camera, vaoContext)
         }
     }
 

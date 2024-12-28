@@ -1,7 +1,7 @@
 package rendering
 
 interface Renderable {
-    fun init()
-    fun draw(camera: Camera)
+    fun init(vaoContext: VAOContext)
+    fun draw(camera: Camera, vaoContext: VAOContext)
     fun destroy()
 }
