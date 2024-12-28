@@ -14,7 +14,7 @@ import javax.swing.Timer
 class RadarMultiPane : JPanel() {
     private val productPanes: Array<RadarProductPane?> = arrayOfNulls(4)
 
-    private val numPanes = 2
+    private val numPanes = 4
     init {
         layout = GridLayout(2,2)
 

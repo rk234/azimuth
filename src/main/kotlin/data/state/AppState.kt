@@ -11,7 +11,7 @@ object AppState {
     var radarDataProvider = RadarDataProvider()
     var activeVolume: State<RadarVolume?> = State(null)
     var numLoopFrames = State(UserPrefs.numLoopFrames())
-    var activeStation = State("KRTX")
+    var activeStation = State(UserPrefs.defaultStation())
     var radarDataService = RadarDataService(activeStation.value, radarDataProvider)
 
     fun init() {

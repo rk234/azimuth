@@ -15,6 +15,7 @@ class GeoJSONLayer(private val json: JSONObject, val lineWidth: Float, val lineC
     private var initialized = false
 
     override fun init(camera: Camera, vaoContext: VAOContext) {
+        if(initialized) return
         val vertices = arrayListOf<Vector2f>()
         if (json.getString("type") == "FeatureCollection") {
             val features = json.getJSONArray("features")
@@ -51,6 +52,7 @@ class GeoJSONLayer(private val json: JSONObject, val lineWidth: Float, val lineC
             initialized = true
         } else {
             println("Unsupported GeoJSON root type!")
+            initialized = false
         }
     }
 
