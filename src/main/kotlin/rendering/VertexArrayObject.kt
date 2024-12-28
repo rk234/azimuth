@@ -1,12 +1,14 @@
 package rendering
 
 import org.lwjgl.opengl.GL45.*
+import ucar.nc2.util.DiskCache
 
 class VertexArrayObject {
     val id: Int
 
     init {
         id = glGenVertexArrays()
+        println("Created vao ${id}")
     }
 
     fun bind() {

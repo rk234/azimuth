@@ -25,18 +25,20 @@ class RadarLayer(private var volume: RadarProductVolume, private var tilt: Int) 
         radarRenderable = RadarRenderableCache.instance.get(this.volume.scans[tilt])
     }
 
-    override fun init(camera: Camera) {
+    override fun init(camera: Camera, vaoContext: VAOContext) {
         radarRenderable = RadarRenderableCache.instance.get(volume.scans[tilt]) ?: throw Exception("failed to generate renderable")
         if(!radarRenderable.initialized())
-            radarRenderable.init()
+            radarRenderable.init(vaoContext)
 
         initialized = true;
     }
 
-    override fun render(camera: Camera) {
-        if(!radarRenderable.initialized())
-            radarRenderable.init()
-        radarRenderable.draw(camera)
+    override fun render(camera: Camera, vaoContext: VAOContext) {
+
+        radarRenderable.init(vaoContext)
+
+        if(radarRenderable.initialized())
+            radarRenderable.draw(camera, vaoContext)
     }
 
     override fun destroy() {

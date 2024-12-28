@@ -1,0 +1,1 @@
+- [ ] It seems that switching the renderable to a product used by another frame causes a crash b/c the vbo/ibo/attribs aren't bound for the new vao in the map's VAOContext. Look into adding a seperate `bindVAO` method to renderables
