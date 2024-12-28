@@ -22,7 +22,7 @@ class PathRenderable(
     private lateinit var dirVBO: GLBufferObject
 
     private lateinit var ibo: GLBufferObject
-    private lateinit var vao: VertexArrayObject
+//    private lateinit var vao: VertexArrayObject
 
     override fun init(vaoContext: VAOContext) {
         val verts = MemoryUtil.memAllocFloat((vertices.size * 2) * 2)
@@ -44,7 +44,7 @@ class PathRenderable(
         prev.flip()
         dirs.flip()
 
-        vao = vaoContext.getVAO(this)
+        val vao = vaoContext.getVAO(this)
         vao.bind()
 
         pathVBO = GLBufferObject()
@@ -106,13 +106,30 @@ class PathRenderable(
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
+        val vao = vaoContext.getVAO(this) { vao ->
+            vao.bind()
+            pathVBO.bind()
+            vao.attrib(0, 2, GL_FLOAT, false, 2 * Float.SIZE_BYTES, 0)
+            vao.enableAttrib(0)
+            nextVBO.bind()
+            vao.attrib(1, 2, GL_FLOAT, false, 2 * Float.SIZE_BYTES, 0)
+            vao.enableAttrib(1)
+            prevVBO.bind()
+            vao.attrib(2, 2, GL_FLOAT, false, 2 * Float.SIZE_BYTES, 0)
+            vao.enableAttrib(2)
+            dirVBO.bind()
+            vao.attrib(3, 1, GL_FLOAT, false, 1 * Float.SIZE_BYTES, 0)
+            vao.enableAttrib(3)
+            ibo.bind()
+        }
+
         vao.bind()
 
         glDrawElements(GL_TRIANGLES, vertices.size * 6, GL_UNSIGNED_INT, 0)
     }
 
     override fun destroy() {
-        vao.destroy()
+//        vao.destroy()
         pathVBO.destroy()
         dirVBO.destroy()
         prevVBO.destroy()
