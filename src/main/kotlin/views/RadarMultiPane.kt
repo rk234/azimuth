@@ -60,7 +60,7 @@ class RadarMultiPane(var paneLayout: PaneLayout) : JPanel() {
                 glData.shareContext = productPanes[0]?.map
 
                 productPanes[paneLayout.numPanes + i] =
-                    createPane(Product.entries.getOrElse(i) { _ -> Product.REFLECTIVITY_HIRES }, glData)
+                    createPane(Product.entries.getOrElse(paneLayout.numPanes + i) { _ -> Product.REFLECTIVITY_HIRES }, glData)
                 add(productPanes[paneLayout.numPanes + i])
             }
         }
