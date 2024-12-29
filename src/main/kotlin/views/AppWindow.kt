@@ -12,38 +12,26 @@ import javax.swing.JFrame
 import javax.swing.Timer
 
 class AppWindow : JFrame("Azimuth") {
-//    val radarAutoPollTimer = Timer(1000 * UserPrefs.radarAutoPollFrequencySec(), ::onRadarAutoPoll)
 
     init {
-//        val productPane = RadarProductPane(AppState.activeVolume.value!!, Product.REFLECTIVITY_HIRES, 0)
-        val multiPane = RadarMultiPane()
+        val multiPane = RadarMultiPane(PaneLayout.SINGLE)
+        val sideBar = SideBar()
+
+        sideBar.onPaneLayoutChange { layout ->
+            multiPane.setPaneLayout(layout)
+        }
 
         minimumSize = Dimension(1000, 700)
         layout = BorderLayout()
 
         add(multiPane, BorderLayout.CENTER)
-        add(SideBar(), BorderLayout.WEST)
-//        add(StatusBar(), BorderLayout.SOUTH)
+        add(sideBar, BorderLayout.WEST)
         defaultCloseOperation = JFrame.EXIT_ON_CLOSE
 
         pack()
         isVisible = true
 
         multiPane.startRendering()
-//        SwingUtilities.invokeLater(object : Runnable {
-//            override fun run() {
-//                if (!productPane.isValid) {
-//                    GL.setCapabilities(null)
-//                    return
-//                }
-//
-//                Timer(1000/60) {
-//                    productPane.render()
-//                }.start()
-//
-//                radarAutoPollTimer.start()
-//            }
-//        })
     }
 
     fun onRadarAutoPoll(actionEvent: ActionEvent) {
