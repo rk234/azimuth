@@ -67,6 +67,8 @@ class RadarMultiPane(var paneLayout: PaneLayout) : JPanel() {
         revalidate()
         repaint()
         paneLayout = newLayout
+        for(pane in productPanes)
+            pane?.revalidate()
     }
 
     fun createPane(product: Product, glData: GLData): RadarProductPane {

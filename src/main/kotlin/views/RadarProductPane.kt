@@ -103,9 +103,9 @@ class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: 
         header.add(Box.createVerticalStrut(4))
         header.add(row)
         cmapBar = ColormapBar(ColormapManager.instance.getDefault(product), 250)
-        cmapBar.maximumSize = Dimension(Int.MAX_VALUE, 25)
-        add(cmapBar)
+        cmapBar.maximumSize = Dimension(Int.MAX_VALUE, 40)
         add(header)
+        add(cmapBar)
         add(map)
     }
 
