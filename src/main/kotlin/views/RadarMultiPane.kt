@@ -11,42 +11,84 @@ import javax.swing.JPanel
 import javax.swing.SwingUtilities
 import javax.swing.Timer
 
-class RadarMultiPane : JPanel() {
+enum class PaneLayout(val numPanes: Int) {
+    SINGLE(1),
+    DUAL(2),
+    QUAD(4)
+}
+
+class RadarMultiPane(var paneLayout: PaneLayout) : JPanel() {
     private val productPanes: Array<RadarProductPane?> = arrayOfNulls(4)
 
-    private val numPanes = 4
+    private val countries = GeoJSONManager.instance.countries
+    private val counties = GeoJSONManager.instance.counties
+    private val states = GeoJSONManager.instance.states
+
+    val layers = arrayOf(
+        GeoJSONLayer(countries, 0.05f, Vector3f(0.8f), -10f),
+        GeoJSONLayer(counties, 0.03f, Vector3f(0.8f), 0.0001f),
+        GeoJSONLayer(states, 0.035f, Vector3f(1.0f), -10f)
+    )
+
     init {
-        layout = GridLayout(2,2)
+        layout = createLayout(paneLayout)
 
-        val countries = GeoJSONManager.instance.countries
-        val counties = GeoJSONManager.instance.counties
-        val states = GeoJSONManager.instance.states
-
-        val layers = arrayOf(
-            GeoJSONLayer(countries, 0.05f, Vector3f(0.8f), -10f),
-            GeoJSONLayer(counties, 0.03f, Vector3f(0.8f), 0.0001f),
-            GeoJSONLayer(states, 0.035f, Vector3f(1.0f), -10f)
-        )
-        for(i in 0..<numPanes) {
+        for(i in 0..<paneLayout.numPanes) {
             val glData = GLData()
-            glData.majorVersion = 4
-            glData.minorVersion = 6
 
             if(i > 0)
                 glData.shareContext = productPanes[0]?.map
 
-            productPanes[i] = RadarProductPane(AppState.activeVolume.value!!, Product.entries.getOrElse(i) {_ -> Product.REFLECTIVITY_HIRES}, 0, glData)
-            for(layer in layers) productPanes[i]?.map?.addLayer(layer)
+            productPanes[i] = createPane(Product.entries.getOrElse(i) {_ -> Product.REFLECTIVITY_HIRES}, glData)
 
             add(productPanes[i])
+        }
+    }
+
+    fun setPaneLayout(newLayout: PaneLayout, horizontalSplit: Boolean = true) {
+        layout = createLayout(newLayout, horizontalSplit)
+
+        if(newLayout.numPanes < paneLayout.numPanes) {
+            val diff = paneLayout.numPanes - newLayout.numPanes
+            for(i in 0..<diff) {
+                remove(productPanes[paneLayout.numPanes-1-i])
+            }
+        } else {
+            val diff = newLayout.numPanes - paneLayout.numPanes
+            for(i in 0..<diff) {
+                val glData = GLData()
+                glData.shareContext = productPanes[0]?.map
+
+                productPanes[paneLayout.numPanes + i] =
+                    createPane(Product.entries.getOrElse(i) { _ -> Product.REFLECTIVITY_HIRES }, glData)
+                add(productPanes[paneLayout.numPanes + i])
+            }
+        }
+        revalidate()
+        repaint()
+        paneLayout = newLayout
+    }
+
+    fun createPane(product: Product, glData: GLData): RadarProductPane {
+        val pane =  RadarProductPane(AppState.activeVolume.value!!, product, 0, glData)
+        for(layer in layers) pane.map.addLayer(layer)
+        return pane
+    }
+
+    fun createLayout(paneLayout: PaneLayout, horizontal: Boolean = true): GridLayout {
+        return when (paneLayout) {
+            PaneLayout.SINGLE, PaneLayout.DUAL -> {
+                if(horizontal) GridLayout(1, 0) else GridLayout(0, 1)
+            }
+            PaneLayout.QUAD -> GridLayout(2,2)
         }
     }
 
     fun startRendering() {
         SwingUtilities.invokeLater {
             Timer(1000/60) {
-                for(pane in productPanes) {
-                    pane?.render()
+                for(i in 0..<paneLayout.numPanes) {
+                    productPanes[i]?.render()
                 }
             }.start()
         }
