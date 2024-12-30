@@ -24,7 +24,8 @@ import java.time.format.DateTimeFormatter
 import java.util.concurrent.CompletableFuture.runAsync
 import javax.swing.*
 
-class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: Int, glData: GLData? = null) : JPanel() {
+class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: Int, glData: GLData? = null) :
+    JPanel() {
     val map: MapView = MapView(glData)
     private var radarLayer: RadarLayer = RadarLayer(volume.getProductVolume(product)!!, tilt)
 
@@ -136,7 +137,7 @@ class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: 
     }
 
     fun handleVolumeChange(volume: RadarVolume?) {
-        if(volume == null) return
+        if (volume == null) return
 
         this.volume = volume
         radarLayer.setProductVolumeAndTilt(volume.getProductVolume(product)!!, tilt)
