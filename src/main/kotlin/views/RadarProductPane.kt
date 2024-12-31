@@ -54,6 +54,7 @@ class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: 
 //        map.addLayer(GeoJSONLayer(states, 0.035f, Vector3f(1.0f), -10f))
 
         layout = BoxLayout(this, BoxLayout.Y_AXIS)
+        minimumSize = Dimension(100, 100)
 
         val header = JPanel()
         header.background = Color(50, 50, 50)

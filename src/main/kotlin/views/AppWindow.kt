@@ -16,8 +16,12 @@ import meteo.radar.RadarVolume
 import views.sidebar.SideBar
 import java.awt.BorderLayout
 import java.awt.Dimension
+import java.awt.Menu
+import java.awt.MenuBar
 import java.awt.event.ActionEvent
+import javax.swing.JButton
 import javax.swing.JFrame
+import javax.swing.JMenuBar
 import javax.swing.Timer
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.TimeMark
@@ -34,6 +38,9 @@ class AppWindow : JFrame("Azimuth") {
         multiPane = RadarMultiPane(PaneLayout.SINGLE)
         sideBar = SideBar()
         statusBar = StatusBar(multiPane)
+
+        jMenuBar = JMenuBar()
+        jMenuBar.add(JButton("Toggle Sidebar"))
 
         sideBar.onPaneLayoutChange { layout ->
             multiPane.setPaneLayout(layout)

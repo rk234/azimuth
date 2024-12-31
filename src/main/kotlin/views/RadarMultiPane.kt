@@ -27,12 +27,11 @@ class RadarMultiPane(var paneLayout: PaneLayout) : JPanel() {
 
     var fps: Int = 0
 
-    val layers = arrayOf(
+    private val layers = arrayOf(
         GeoJSONLayer(countries, 0.05f, Vector3f(0.8f), -10f),
         GeoJSONLayer(counties, 0.03f, Vector3f(0.8f), 0.0001f),
         GeoJSONLayer(states, 0.035f, Vector3f(1.0f), -10f)
     )
-
     init {
         layout = createLayout(paneLayout)
 
@@ -49,8 +48,6 @@ class RadarMultiPane(var paneLayout: PaneLayout) : JPanel() {
     }
 
     fun setPaneLayout(newLayout: PaneLayout, horizontalSplit: Boolean = true) {
-        layout = createLayout(newLayout, horizontalSplit)
-
         if(newLayout.numPanes < paneLayout.numPanes) {
             val diff = paneLayout.numPanes - newLayout.numPanes
             for(i in 0..<diff) {
@@ -67,20 +64,20 @@ class RadarMultiPane(var paneLayout: PaneLayout) : JPanel() {
                 add(productPanes[paneLayout.numPanes + i])
             }
         }
+
+        layout = createLayout(newLayout, horizontalSplit)
         revalidate()
         repaint()
         paneLayout = newLayout
-        for(pane in productPanes)
-            pane?.revalidate()
     }
 
-    fun createPane(product: Product, glData: GLData): RadarProductPane {
+    private fun createPane(product: Product, glData: GLData): RadarProductPane {
         val pane =  RadarProductPane(AppState.activeVolume.value!!, product, 0, glData)
         for(layer in layers) pane.map.addLayer(layer)
         return pane
     }
 
-    fun createLayout(paneLayout: PaneLayout, horizontal: Boolean = true): GridLayout {
+    private fun createLayout(paneLayout: PaneLayout, horizontal: Boolean = true): GridLayout {
         return when (paneLayout) {
             PaneLayout.SINGLE, PaneLayout.DUAL -> {
                 if(horizontal) GridLayout(1, 0) else GridLayout(0, 1)

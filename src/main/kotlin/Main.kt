@@ -4,7 +4,11 @@ import data.resources.ColormapManager
 import data.resources.GeoJSONManager
 import data.state.AppState
 import data.state.UserPrefs
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.swing.Swing
 import views.AppWindow
 import views.SplashWindow
 import javax.swing.JDialog
@@ -22,26 +26,32 @@ fun main() {
     val splash = SplashWindow()
     splash.isVisible = true
 
-    splash.notifyProgress(null, "Loading Map Data...")
-    GeoJSONManager.init()
-    splash.notifyProgress(1.0, "Done Loading Map Data!")
-    splash.notifyProgress(null, "Loading Colormap Data...")
-    ColormapManager.init()
-    splash.notifyProgress(1.0, "Done Loading Colormap Data!")
 
-    AppState.radarDataService.addProgressListener(splash)
-    AppState.radarDataService.init()
+    GlobalScope.launch(Dispatchers.IO) {
+        splash.notifyProgress(null, "Loading Map Data...")
+        GeoJSONManager.init()
+        splash.notifyProgress(1.0, "Done Loading Map Data!")
+        splash.notifyProgress(null, "Loading Colormap Data...")
+        ColormapManager.init()
+        splash.notifyProgress(1.0, "Done Loading Colormap Data!")
 
-    if(SystemInfo.isLinux) {
-        JFrame.setDefaultLookAndFeelDecorated(true);
-        JDialog.setDefaultLookAndFeelDecorated(true);
-    }
+        AppState.radarDataService.addProgressListener(splash)
+        AppState.radarDataService.init()
 
-    runBlocking {
         AppState.init(splash)
-    }
-    splash.isVisible = false
 
-    val window = AppWindow()
-    window.isVisible = true
+        launch(Dispatchers.Swing) {
+            splash.isVisible = false
+
+            if(SystemInfo.isLinux) {
+                JFrame.setDefaultLookAndFeelDecorated(true);
+                JDialog.setDefaultLookAndFeelDecorated(true);
+            }
+
+
+            val window = AppWindow()
+            window.isVisible = true
+        }
+    }
+
 }

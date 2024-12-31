@@ -15,7 +15,7 @@ class StatusBar(val multiPane: RadarMultiPane) : JPanel(), ProgressListener {
     val statusPanel = JPanel()
 
     val progressIndicatorPanel = JPanel()
-    val updateInLabel = JLabel("| Update in 10 seconds")
+    val updateInLabel = JLabel("Update in ?? seconds")
 
     val readyColor = Color(0x43FF46)
     val pendingColor = Color(0xFFBF50)
@@ -36,8 +36,11 @@ class StatusBar(val multiPane: RadarMultiPane) : JPanel(), ProgressListener {
                 layout = BoxLayout(this, BoxLayout.X_AXIS)
                 fpsLabel.alignmentX = JLabel.LEFT_ALIGNMENT
                 fpsLabel.minimumSize = Dimension(300, 100)
+                updateInLabel.alignmentX = JLabel.LEFT_ALIGNMENT
                 add(fpsLabel)
-                add(Box.createRigidArea(Dimension(8,0)))
+                add(Box.createHorizontalStrut(4))
+//                add(JSeparator(SwingConstants.VERTICAL))
+                add(Box.createHorizontalStrut(4))
                 add(updateInLabel)
             }
         })
@@ -79,9 +82,9 @@ class StatusBar(val multiPane: RadarMultiPane) : JPanel(), ProgressListener {
             val currentTime = TimeSource.Monotonic.markNow()
             val toUpdate = nextUpdateTime - currentTime
             if(toUpdate >= 0.seconds) {
-                updateInLabel.text = "| Update in ${toUpdate.inWholeSeconds} sec"
+                updateInLabel.text = "Update in ${toUpdate.inWholeSeconds} sec"
             } else {
-                updateInLabel.text = "| Checking for new data..."
+                updateInLabel.text = "Checking for new data..."
             }
         }
 
