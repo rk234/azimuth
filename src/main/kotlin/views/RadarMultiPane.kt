@@ -10,6 +10,7 @@ import java.awt.GridLayout
 import javax.swing.JPanel
 import javax.swing.SwingUtilities
 import javax.swing.Timer
+import kotlin.time.measureTime
 
 enum class PaneLayout(val numPanes: Int) {
     SINGLE(1),
@@ -23,6 +24,8 @@ class RadarMultiPane(var paneLayout: PaneLayout) : JPanel() {
     private val countries = GeoJSONManager.instance.countries
     private val counties = GeoJSONManager.instance.counties
     private val states = GeoJSONManager.instance.states
+
+    var fps: Int = 0
 
     val layers = arrayOf(
         GeoJSONLayer(countries, 0.05f, Vector3f(0.8f), -10f),
@@ -87,10 +90,16 @@ class RadarMultiPane(var paneLayout: PaneLayout) : JPanel() {
     }
 
     fun startRendering() {
+        var lastFrame = System.currentTimeMillis()
         SwingUtilities.invokeLater {
             Timer(1000/60) {
-                for(i in 0..<paneLayout.numPanes) {
+                for (i in 0..<paneLayout.numPanes) {
                     productPanes[i]?.render()
+                }
+                val dt = System.currentTimeMillis()-lastFrame
+                lastFrame = System.currentTimeMillis()
+                if(dt != 0L) {
+                    fps = Math.round(1000.0f / dt)
                 }
             }.start()
         }

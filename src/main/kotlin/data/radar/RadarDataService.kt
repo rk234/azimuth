@@ -2,7 +2,6 @@ package data.radar
 
 import data.PollableDataService
 import data.state.AppState
-import meteo.radar.RadarVolume
 import meteo.radar.VolumeFileHandle
 import utils.ProgressListener
 import java.util.*
@@ -19,7 +18,7 @@ class RadarDataService(private val station: String, val provider: RadarDataProvi
 
     private fun notifyProgress(message: String, progress: Double? = null) {
         for (listener in progressListeners) {
-            listener.onProgress(progress, message)
+            listener.notifyProgress(progress, message)
         }
     }
 
@@ -52,7 +51,6 @@ class RadarDataService(private val station: String, val provider: RadarDataProvi
                 lastPoll = toFetch
                 return toFetch
             }
-
         } catch (ex: Exception) {
             println("radar service poll error:")
             println(ex)

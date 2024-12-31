@@ -5,7 +5,7 @@ import data.radar.RadarDataRepository
 import data.radar.RadarDataService
 import kotlinx.coroutines.*
 import meteo.radar.*
-import ucar.nc2.util.DiskCache
+import utils.ProgressListener
 
 object AppState {
     var radarDataProvider = RadarDataProvider()
@@ -14,8 +14,8 @@ object AppState {
     var activeStation = State("KLCH")
     var radarDataService = RadarDataService(activeStation.value, radarDataProvider)
 
-    fun init() {
-        loadInitialData()
+    suspend fun init(progressListener: ProgressListener? = null) {
+        loadInitialData(progressListener)
         activeVolume.value = RadarDataRepository.lastFile()
     }
 
@@ -32,41 +32,46 @@ object AppState {
         }
     }
 
-    private fun loadInitialData() {
-        runBlocking {
-            var nextToPoll: VolumeFileHandle?
-            val toDownload = arrayOfNulls<VolumeFileHandle>(numLoopFrames.value)
-            var index = 0
-            do {
-                nextToPoll = radarDataService.peek()
+    private suspend fun loadInitialData(progressListener: ProgressListener? = null) = coroutineScope {
+        progressListener?.notifyProgress(null, "Loading initial data for ${activeStation.value}")
+        RadarDataRepository.clear()
 
-                if(nextToPoll != null && index < numLoopFrames.value) {
-                    toDownload[index] = radarDataService.poll()
-                    println("Fetched file ${toDownload[index]}")
-                    index++
+        var nextToPoll: VolumeFileHandle?
+        val toDownload = arrayOfNulls<VolumeFileHandle>(numLoopFrames.value)
+        var index = 0
+        do {
+            nextToPoll = radarDataService.peek()
+
+            if(nextToPoll != null && index < numLoopFrames.value) {
+                toDownload[index] = radarDataService.poll()
+                println("Fetched file ${toDownload[index]}")
+                index++
+            }
+        } while(nextToPoll != null && index < numLoopFrames.value)
+
+        val volumes = arrayOfNulls<RadarVolume>(numLoopFrames.value)
+        val tasks = mutableListOf<Deferred<Unit>>()
+        for(i in toDownload.indices) {
+            if(toDownload[i] == null) continue
+            tasks.add(async(Dispatchers.IO) {
+                val file = radarDataProvider.getDataFile(toDownload[i]!!)
+                if(file != null) {
+                    volumes[i] = RadarVolume(file, toDownload[i]!!)
+                    file.close()
+
+                    val progress = volumes.filterNotNull().size / volumes.size.toDouble()
+                    progressListener?.notifyProgress(progress, "Loaded file ${volumes.filterNotNull().size}/${volumes.size}")
                 }
-            } while(nextToPoll != null && index < numLoopFrames.value)
-
-            val volumes = arrayOfNulls<RadarVolume>(numLoopFrames.value)
-            val tasks = mutableListOf<Deferred<Unit>>()
-            for(i in toDownload.indices) {
-                if(toDownload[i] == null) continue
-                tasks.add(async(Dispatchers.IO) {
-                    val file = radarDataProvider.getDataFile(toDownload[i]!!)
-                    if(file != null) {
-                        volumes[i] = RadarVolume(file, toDownload[i]!!)
-                        file.close()
-                    }
-                })
-            }
-
-            tasks.awaitAll()
-
-            for(volume in volumes) {
-                if(volume != null)
-                    RadarDataRepository.addDataFile(volume)
-            }
+            })
         }
+
+        tasks.awaitAll()
+
+        for(volume in volumes) {
+            if(volume != null)
+                RadarDataRepository.addDataFile(volume)
+        }
+        progressListener?.notifyProgress(1.0, "READY")
     }
 }
 

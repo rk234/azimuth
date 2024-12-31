@@ -34,7 +34,7 @@ class SplashWindow : JFrame(), ProgressListener {
         setLocationRelativeTo(null)
     }
 
-    override fun onProgress(progress: Double?, message: String) {
+    override fun notifyProgress(progress: Double?, message: String) {
         progressLabel.text = message
         if(progress == null) {
             progressBar.isIndeterminate = true

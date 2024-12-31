@@ -91,7 +91,7 @@ class RadarDataProvider {
     }
 
     private fun reportProgress(progress: Double?, message: String) {
-        progressListeners.forEach { it.onProgress(progress, message) }
+        progressListeners.forEach { it.notifyProgress(progress, message) }
     }
 
 }
