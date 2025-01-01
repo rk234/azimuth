@@ -1,6 +1,7 @@
 package views.sidebar
 
 import com.formdev.flatlaf.extras.FlatSVGIcon
+import utils.loadIcon
 import views.PaneLayout
 import java.awt.Color
 import java.awt.Dimension
@@ -74,13 +75,6 @@ class PaneLayoutSelect : JPanel() {
                 }
             }
         })
-    }
-
-    fun loadIcon(name: String, width: Int, height: Int): FlatSVGIcon {
-        val icon = FlatSVGIcon("icons/$name", width, height)
-        icon.colorFilter = FlatSVGIcon.ColorFilter()
-        icon.colorFilter.add(Color.BLACK, Color.BLACK, Color.LIGHT_GRAY)
-        return icon
     }
 
     fun addListener(listener: (PaneLayout) -> Unit) {

@@ -88,17 +88,15 @@ class RadarMultiPane(var paneLayout: PaneLayout) : JPanel() {
 
     fun startRendering() {
         var lastFrame = System.currentTimeMillis()
-        SwingUtilities.invokeLater {
-            Timer(1000/60) {
-                for (i in 0..<paneLayout.numPanes) {
-                    productPanes[i]?.render()
-                }
-                val dt = System.currentTimeMillis()-lastFrame
-                lastFrame = System.currentTimeMillis()
-                if(dt != 0L) {
-                    fps = Math.round(1000.0f / dt)
-                }
-            }.start()
-        }
+        Timer(1000/60) {
+            for (i in 0..<paneLayout.numPanes) {
+                productPanes[i]?.render()
+            }
+            val dt = System.currentTimeMillis()-lastFrame
+            lastFrame = System.currentTimeMillis()
+            if(dt != 0L) {
+                fps = Math.round(1000.0f / dt)
+            }
+        }.start()
     }
 }

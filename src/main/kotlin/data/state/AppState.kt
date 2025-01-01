@@ -11,25 +11,13 @@ object AppState {
     var radarDataProvider = RadarDataProvider()
     var activeVolume: State<RadarVolume?> = State(null)
     var numLoopFrames = State(UserPrefs.numLoopFrames())
-    var activeStation = State("KLCH")
+    var activeStation = State(UserPrefs.defaultStation())
     var radarDataService = RadarDataService(activeStation.value, radarDataProvider)
 
     suspend fun init(progressListener: ProgressListener? = null) {
+        radarDataProvider.setup()
         loadInitialData(progressListener)
         activeVolume.value = RadarDataRepository.lastFile()
-    }
-
-    fun pollRadarData() {
-        val handle = radarDataService.poll() ?: return
-        println("Found new radar data!")
-        val file = radarDataProvider.getDataFile(handle)
-        if(file != null) {
-            println("downloaded new radar data!")
-            RadarDataRepository.addDataFile(RadarVolume(file, handle))
-            activeVolume.value = RadarDataRepository.lastFile()
-        } else {
-            println("could not find new radar data!")
-        }
     }
 
     private suspend fun loadInitialData(progressListener: ProgressListener? = null) = coroutineScope {

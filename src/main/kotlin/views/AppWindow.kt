@@ -13,6 +13,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import meteo.radar.Product
 import meteo.radar.RadarVolume
+import utils.ProgressListener
 import views.sidebar.SideBar
 import java.awt.BorderLayout
 import java.awt.Dimension
@@ -57,8 +58,8 @@ class AppWindow : JFrame("Azimuth") {
         pack()
         isVisible = true
 
+        radarDataProvider.addProgressListener(statusBar)
         multiPane.startRendering()
-
         radarAutoPollTimer.start()
     }
 
@@ -76,7 +77,7 @@ class AppWindow : JFrame("Azimuth") {
         }
     }
 
-    suspend fun pollRadarData(): RadarVolume? = coroutineScope {
+    private suspend fun pollRadarData(progressListener: ProgressListener? = null): RadarVolume? = coroutineScope {
         val handle = radarDataService.poll() ?: return@coroutineScope null
 
         val file = radarDataProvider.getDataFile(handle)

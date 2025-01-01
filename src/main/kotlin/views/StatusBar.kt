@@ -9,26 +9,24 @@ import kotlin.time.TimeMark
 import kotlin.time.TimeSource
 
 class StatusBar(val multiPane: RadarMultiPane) : JPanel(), ProgressListener {
-    val fpsLabel: JLabel = JLabel("FPS: ??")
-    val progressBar: JProgressBar = JProgressBar()
-    val statusLabel: JLabel = JLabel("READY")
-    val statusPanel = JPanel()
+    private val fpsLabel: JLabel = JLabel("FPS: ??")
+    private val progressBar: JProgressBar = JProgressBar()
+    private val statusLabel: JLabel = JLabel("READY")
+    private val statusPanel = JPanel()
 
-    val progressIndicatorPanel = JPanel()
-    val updateInLabel = JLabel("Update in ?? seconds")
+    private val progressIndicatorPanel = JPanel()
+    private val updateInLabel = JLabel("Update in ?? seconds")
 
-    val readyColor = Color(0x43FF46)
-    val pendingColor = Color(0xFFBF50)
+    private val readyColor = Color(0x43FF46)
+    private val pendingColor = Color(0xFFBF50)
 
-    var nextUpdateTime= TimeSource.Monotonic.markNow() + 10.seconds
+    var nextUpdateTime = TimeSource.Monotonic.markNow() + 10.seconds
 
     init {
         layout = BoxLayout(this, BoxLayout.X_AXIS)
         border = BorderFactory.createMatteBorder(1, 0, 0, 0, Color(0x2f2f2f))
         alignmentX = LEFT_ALIGNMENT
         minimumSize = Dimension(Int.MAX_VALUE,100)
-
-
 
         add(object : JPanel() {
             init {
@@ -94,7 +92,7 @@ class StatusBar(val multiPane: RadarMultiPane) : JPanel(), ProgressListener {
 
     override fun notifyProgress(progress: Double?, message: String) {
         if(progress != null && progress >= 1.0) {
-            statusLabel.text = "READY"
+//            statusLabel.text = "READY"
             statusPanel.background = readyColor
             progressBar.isVisible = false
             return

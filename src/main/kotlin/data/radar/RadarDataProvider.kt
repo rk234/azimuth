@@ -3,6 +3,7 @@ package data.radar
 import meteo.radar.VolumeFileHandle
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.internal.notify
 import ucar.nc2.NetcdfFile
 import ucar.nc2.NetcdfFiles
 import utils.ProgressListener
@@ -11,17 +12,16 @@ class RadarDataProvider {
     private var progressListeners: ArrayList<ProgressListener> = ArrayList()
     private val httpClient = OkHttpClient()
     private val radarServiceURL = "https://mesonet-nexrad.agron.iastate.edu/level2/raw"
-    private val listFile: String
+    private lateinit var listFile: String
 
-    init {
+    fun setup() {
         val req = Request.Builder().url("$radarServiceURL/config.cfg").build()
 
         val resp = httpClient.newCall(req).execute()
         if (!resp.isSuccessful) throw Exception("Failed to load station list, received response code: ${resp.code}")
         val config = resp.body?.string() ?: ""
-        val listFileLine = config.split("\n").getOrNull(0)
+        val listFileLine = config.split("\n").getOrNull(0) ?: throw Exception("Failed to find list file!")
 
-        if(listFileLine == null) throw Exception("Failed to find list file!")
         listFile = listFileLine.substringAfter("ListFile: ")
     }
 
@@ -64,6 +64,8 @@ class RadarDataProvider {
     fun getDataFileList(station: String): List<VolumeFileHandle> {
         val files = ArrayList<VolumeFileHandle>()
         val req = Request.Builder().url("$radarServiceURL/$station/$listFile").build()
+
+        reportProgress(null, "Downloading file list for ${station}...")
         val res = httpClient.newCall(req).execute()
         if(!res.isSuccessful) throw Exception("Failed to load data file list, received response code: ${res.code}")
 
@@ -74,20 +76,29 @@ class RadarDataProvider {
             if(file != null) files.add(VolumeFileHandle(file))
         }
 
+
+        reportProgress(1.0, "Done")
         return files.dropLast(1) // last file seems to be in the process of uploading,
                                     // finding out a better solution here would be a good idea
     }
 
-    fun getDataFile(handle: VolumeFileHandle): NetcdfFile? {
+    fun getDataFile(handle: VolumeFileHandle, progressListener: ProgressListener? = null): NetcdfFile? {
         val station = handle.station()
 
         val req = Request.Builder().url("$radarServiceURL/$station/$handle").build()
+
+        reportProgress(null, "Downloading...")
+
         val resp = httpClient.newCall(req).execute()
         if(!resp.isSuccessful) return null
 
         val bytes = resp.body?.bytes() ?: return null
 
-        return NetcdfFiles.openInMemory(handle.fileName, bytes)
+        reportProgress(null, "Opening...")
+        val file = NetcdfFiles.openInMemory(handle.fileName, bytes)
+        reportProgress(1.0, "Done")
+
+        return file
     }
 
     private fun reportProgress(progress: Double?, message: String) {

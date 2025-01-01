@@ -35,4 +35,8 @@ object RadarDataRepository {
     fun lastFile(): RadarVolume? {
         return dataFiles.lastOrNull()
     }
+
+    fun get(index: Int): RadarVolume? {
+        return dataFiles.getList().getOrNull(index)
+    }
 }

@@ -35,6 +35,8 @@ fun main() {
         ColormapManager.init()
         splash.notifyProgress(1.0, "Done Loading Colormap Data!")
 
+        AppState.radarDataProvider.addProgressListener(splash)
+        AppState.radarDataProvider.setup()
         AppState.radarDataService.addProgressListener(splash)
         AppState.radarDataService.init()
 

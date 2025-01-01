@@ -1,14 +1,24 @@
 package views
 
+import data.radar.RadarDataRepository
 import data.state.AppState
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.GridLayout
+import java.awt.event.ActionEvent
 import javax.swing.*
 
 class LoopControlPanel : JPanel() {
     private val frameSlider: JSlider = JSlider()
     private val loopFrameSelect: JComboBox<Int> = JComboBox()
+
+    private val togglePlayBtn: JButton = JButton("Play")
+    private val nextFrameBtn: JButton = JButton(">")
+    private val prevFrameBtn: JButton = JButton("<")
+
+    private val loopTimer: Timer = Timer(500, ::updateLoop)
+    private var loopFrame = 0
+
     init {
         layout = BoxLayout(this, BoxLayout.Y_AXIS)
         border = BorderFactory.createEmptyBorder(8, 8, 8, 8)
@@ -43,8 +53,17 @@ class LoopControlPanel : JPanel() {
         add(Box.createVerticalStrut(8))
         val btnGroup = ButtonGroup()
         btnGroup.add(JButton("<"))
-        btnGroup.add(JButton("Play"))
-        btnGroup.add(JButton("Pause"))
+
+        togglePlayBtn.addActionListener {
+            if(loopTimer.isRunning) {
+                loopTimer.stop()
+                togglePlayBtn.text = "Play"
+            } else {
+                loopTimer.start()
+                togglePlayBtn.text = "Pause"
+            }
+        }
+        btnGroup.add(togglePlayBtn)
         btnGroup.add(JButton(">"))
 
         val btnPanel = JPanel()
@@ -55,5 +74,20 @@ class LoopControlPanel : JPanel() {
         btnGroup.elements.toList().forEach { it.alignmentX = JButton.CENTER_ALIGNMENT }
         btnGroup.elements.toList().forEach { btnPanel.add(it) }
         add(btnPanel)
+    }
+
+    private fun updateLoop(e: ActionEvent) {
+        println("Looping frame: ${loopFrame}")
+        if(loopFrame < AppState.numLoopFrames.value-1) {
+            loopFrame++
+        } else {
+            loopFrame = 0
+        }
+
+        val volume = RadarDataRepository.get(loopFrame)
+
+        if(volume != null) {
+            AppState.activeVolume.value = volume
+        }
     }
 }
