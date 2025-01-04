@@ -143,7 +143,7 @@ class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: 
         radarLayer.setProductVolumeAndTilt(volume.getProductVolume(product)!!, tilt)
         updateTiltLabel()
         updateTimeLabel()
-        println("Volume updated!!")
+//        println("Volume updated!!")
     }
 
     private fun updateTimeLabel() {

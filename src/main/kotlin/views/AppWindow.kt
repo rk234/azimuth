@@ -73,6 +73,7 @@ class AppWindow : JFrame("Azimuth") {
             } else {
                 println("No new data..")
             }
+            statusBar.notifyProgress(1.0, "READY")
             statusBar.nextUpdateTime = TimeSource.Monotonic.markNow() + UserPrefs.radarAutoPollFrequencySec().seconds
         }
     }

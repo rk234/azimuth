@@ -77,7 +77,7 @@ class LoopControlPanel : JPanel() {
     }
 
     private fun updateLoop(e: ActionEvent) {
-        println("Looping frame: ${loopFrame}")
+//        println("Looping frame: ${loopFrame}")
         if(loopFrame < AppState.numLoopFrames.value-1) {
             loopFrame++
         } else {

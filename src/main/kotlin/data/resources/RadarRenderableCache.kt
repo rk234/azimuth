@@ -2,6 +2,7 @@ package data.resources
 
 import meteo.radar.RadarSweep
 import rendering.RadarScanRenderable
+import utils.invokeLaterOnRenderThread
 
 class RadarRenderableCache(var cacheSize: Int) {
     companion object {
@@ -21,7 +22,7 @@ class RadarRenderableCache(var cacheSize: Int) {
     }
 
     fun get(radarSweep: RadarSweep): RadarScanRenderable {
-        println("Attempting to get ${sweepKey(radarSweep)}")
+//        println("Attempting to get ${sweepKey(radarSweep)}")
         return if(cache.containsKey(sweepKey(radarSweep))) {
             cache[sweepKey(radarSweep)]!!
         } else {
@@ -43,7 +44,10 @@ class RadarRenderableCache(var cacheSize: Int) {
         val renderable = cache[key]
         if(renderable != null) {
             cache.remove(key)
-            renderable.destroy()
+            invokeLaterOnRenderThread {
+                println("Destroying renderable ${key}...")
+                renderable.destroy()
+            }
         }
     }
 

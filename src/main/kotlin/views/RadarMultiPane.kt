@@ -6,6 +6,7 @@ import map.layers.GeoJSONLayer
 import meteo.radar.Product
 import org.joml.Vector3f
 import org.lwjgl.opengl.awt.GLData
+import utils.RenderThreadTaskQueue
 import java.awt.GridLayout
 import javax.swing.JPanel
 import javax.swing.SwingUtilities
@@ -91,6 +92,9 @@ class RadarMultiPane(var paneLayout: PaneLayout) : JPanel() {
         Timer(1000/60) {
             for (i in 0..<paneLayout.numPanes) {
                 productPanes[i]?.render()
+
+                val task = RenderThreadTaskQueue.poll()
+                task?.run()
             }
             val dt = System.currentTimeMillis()-lastFrame
             lastFrame = System.currentTimeMillis()

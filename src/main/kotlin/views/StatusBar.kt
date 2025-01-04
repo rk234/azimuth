@@ -92,7 +92,7 @@ class StatusBar(val multiPane: RadarMultiPane) : JPanel(), ProgressListener {
 
     override fun notifyProgress(progress: Double?, message: String) {
         if(progress != null && progress >= 1.0) {
-//            statusLabel.text = "READY"
+            statusLabel.text = "READY"
             statusPanel.background = readyColor
             progressBar.isVisible = false
             return
