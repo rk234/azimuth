@@ -18,7 +18,7 @@ class RadarScanRenderable(private val sweep: RadarSweep, private val radarShader
     private lateinit var ibo: GLBufferObject
     private var initialized = false
 
-    private var hasGeometry = false
+    var hasGeometry = false
     private lateinit var vertBuffer: FloatBuffer
     private lateinit var indexBuffer: IntBuffer
 

@@ -35,7 +35,11 @@ class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: 
 
 
     init {
-        AppState.activeVolume.onChange(::handleVolumeChange)
+        AppState.activeVolume.onChange { vol ->
+            GlobalScope.launch(Dispatchers.IO) {
+                handleVolumeChange(vol)
+            }
+        }
 
 //        val countries = GeoJSONManager.instance.countries
 //        val counties = GeoJSONManager.instance.counties
@@ -136,7 +140,7 @@ class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: 
         }
     }
 
-    fun handleVolumeChange(volume: RadarVolume?) {
+    suspend fun handleVolumeChange(volume: RadarVolume?) {
         if(volume == null) return
 
         this.volume = volume

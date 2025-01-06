@@ -18,11 +18,15 @@ class RadarLayer(private var volume: RadarProductVolume, private var tilt: Int) 
     private lateinit var radarRenderable: RadarScanRenderable
     private var initialized = false
 
-    fun setProductVolumeAndTilt(volume: RadarProductVolume, tilt: Int) {
+    suspend fun setProductVolumeAndTilt(volume: RadarProductVolume, tilt: Int) {
         this.volume = volume
         this.tilt = tilt
 
-        radarRenderable = RadarRenderableCache.instance.get(this.volume.scans[tilt])
+        val newRenderable = RadarRenderableCache.instance.get(this.volume.scans[tilt])
+        if(!newRenderable.hasGeometry)
+            newRenderable.createGeometry()
+
+        radarRenderable = newRenderable
     }
 
     override fun init(camera: Camera, vaoContext: VAOContext) {
@@ -34,8 +38,8 @@ class RadarLayer(private var volume: RadarProductVolume, private var tilt: Int) 
     }
 
     override fun render(camera: Camera, vaoContext: VAOContext) {
-
-        radarRenderable.init(vaoContext)
+        if(radarRenderable.hasGeometry && !radarRenderable.initialized())
+            radarRenderable.init(vaoContext)
 
         if(radarRenderable.initialized())
             radarRenderable.draw(camera, vaoContext)

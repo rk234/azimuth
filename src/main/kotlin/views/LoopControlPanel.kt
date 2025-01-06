@@ -2,7 +2,6 @@ package views
 
 import data.radar.RadarDataRepository
 import data.state.AppState
-import java.awt.Color
 import java.awt.Dimension
 import java.awt.GridLayout
 import java.awt.event.ActionEvent
@@ -48,6 +47,16 @@ class LoopControlPanel : JPanel() {
         add(Box.createVerticalStrut(8))
 
         frameSlider.alignmentX = JSlider.LEFT_ALIGNMENT
+        frameSlider.minimum = 0
+        frameSlider.maximum = AppState.numLoopFrames.value-1
+        frameSlider.addChangeListener {
+            if(frameSlider.value != loopFrame) {
+                if(loopTimer.isRunning) loopTimer.stop()
+                loopFrame = frameSlider.value
+                setVolumeFrame(loopFrame)
+            }
+        }
+
         add(frameSlider)
 
         add(Box.createVerticalStrut(8))
@@ -63,6 +72,7 @@ class LoopControlPanel : JPanel() {
                 togglePlayBtn.text = "Pause"
             }
         }
+
         btnGroup.add(togglePlayBtn)
         btnGroup.add(JButton(">"))
 
@@ -84,7 +94,13 @@ class LoopControlPanel : JPanel() {
             loopFrame = 0
         }
 
-        val volume = RadarDataRepository.get(loopFrame)
+        frameSlider.value = loopFrame
+
+        setVolumeFrame(loopFrame)
+    }
+
+    private fun setVolumeFrame(frameIndex: Int) {
+        val volume = RadarDataRepository.get(frameIndex)
 
         if(volume != null) {
             AppState.activeVolume.value = volume
