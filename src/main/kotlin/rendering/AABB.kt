@@ -3,11 +3,14 @@ package rendering
 import org.joml.Vector2f
 
 data class AABB(
-    private var topLeft: Vector2f,
-    private var bottomRight: Vector2f,
+    var topLeft: Vector2f,
+    var bottomRight: Vector2f,
 ) {
     fun intersects(aabb: AABB): Boolean {
-        TODO()
+//        if(aabb.topLeft.x > topLeft.x) {
+//
+//        }
+        return false
     }
 
     fun contains(point: Vector2f): Boolean {

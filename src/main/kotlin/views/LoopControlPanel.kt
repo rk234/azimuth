@@ -2,6 +2,7 @@ package views
 
 import data.radar.RadarDataRepository
 import data.state.AppState
+import utils.loadIcon
 import java.awt.Dimension
 import java.awt.GridLayout
 import java.awt.event.ActionEvent
@@ -11,9 +12,7 @@ class LoopControlPanel : JPanel() {
     private val frameSlider: JSlider = JSlider()
     private val loopFrameSelect: JComboBox<Int> = JComboBox()
 
-    private val togglePlayBtn: JButton = JButton("Play")
-    private val nextFrameBtn: JButton = JButton(">")
-    private val prevFrameBtn: JButton = JButton("<")
+    private val togglePlayBtn: JButton = JButton(loadIcon("loop/play.svg", 20, 20))
 
     private val loopTimer: Timer = Timer(500, ::updateLoop)
     private var loopFrame = 0
@@ -32,7 +31,7 @@ class LoopControlPanel : JPanel() {
         loopFrameSelect.addItem(10)
         loopFrameSelect.addItem(15)
         loopFrameSelect.addItem(20)
-        loopFrameSelect.alignmentX = JComboBox.LEFT_ALIGNMENT
+        loopFrameSelect.alignmentX = LEFT_ALIGNMENT
         add(object : JPanel() {
             init {
                 layout = BoxLayout(this, BoxLayout.X_AXIS)
@@ -46,12 +45,15 @@ class LoopControlPanel : JPanel() {
 
         add(Box.createVerticalStrut(8))
 
-        frameSlider.alignmentX = JSlider.LEFT_ALIGNMENT
+        frameSlider.alignmentX = LEFT_ALIGNMENT
         frameSlider.minimum = 0
         frameSlider.maximum = AppState.numLoopFrames.value-1
         frameSlider.addChangeListener {
             if(frameSlider.value != loopFrame) {
-                if(loopTimer.isRunning) loopTimer.stop()
+                if(loopTimer.isRunning) {
+                    togglePlayBtn.icon = loadIcon("loop/play.svg", 20, 20)
+                    loopTimer.stop()
+                }
                 loopFrame = frameSlider.value
                 setVolumeFrame(loopFrame)
             }
@@ -61,27 +63,30 @@ class LoopControlPanel : JPanel() {
 
         add(Box.createVerticalStrut(8))
         val btnGroup = ButtonGroup()
-        btnGroup.add(JButton("<"))
+        val prevFrameBtn = JButton(loadIcon("loop/prev.svg", 20, 20))
+        btnGroup.add(prevFrameBtn)
 
         togglePlayBtn.addActionListener {
             if(loopTimer.isRunning) {
                 loopTimer.stop()
-                togglePlayBtn.text = "Play"
+                togglePlayBtn.icon = loadIcon("loop/play.svg", 20, 20)
             } else {
                 loopTimer.start()
-                togglePlayBtn.text = "Pause"
+                togglePlayBtn.icon = loadIcon("loop/pause.svg", 20, 20)
             }
         }
 
         btnGroup.add(togglePlayBtn)
-        btnGroup.add(JButton(">"))
+
+        val nextFrameBtn = JButton(loadIcon("loop/next.svg", 20, 20))
+        btnGroup.add(nextFrameBtn)
 
         val btnPanel = JPanel()
         btnPanel.maximumSize = Dimension(Int.MAX_VALUE, 50)
         btnPanel.alignmentX = LEFT_ALIGNMENT
         btnPanel.layout = GridLayout(1, 0, 4, 0)
 
-        btnGroup.elements.toList().forEach { it.alignmentX = JButton.CENTER_ALIGNMENT }
+        btnGroup.elements.toList().forEach { it.alignmentX = CENTER_ALIGNMENT }
         btnGroup.elements.toList().forEach { btnPanel.add(it) }
         add(btnPanel)
     }
