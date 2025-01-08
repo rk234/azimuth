@@ -15,7 +15,10 @@ class LoopControlPanel : JPanel() {
     private val togglePlayBtn: JButton = JButton(loadIcon("loop/play.svg", 20, 20))
 
     private val loopTimer: Timer = Timer(500, ::updateLoop)
-    private var loopFrame = 0
+    private var loopFrame = AppState.numLoopFrames.value-1
+
+    private val nextFrameBtn: JButton
+    private val prevFrameBtn: JButton
 
     init {
         layout = BoxLayout(this, BoxLayout.Y_AXIS)
@@ -63,7 +66,12 @@ class LoopControlPanel : JPanel() {
 
         add(Box.createVerticalStrut(8))
         val btnGroup = ButtonGroup()
-        val prevFrameBtn = JButton(loadIcon("loop/prev.svg", 20, 20))
+
+        prevFrameBtn = JButton(loadIcon("loop/prev.svg", 20, 20))
+        prevFrameBtn.addActionListener {
+            lastFrame()
+        }
+
         btnGroup.add(prevFrameBtn)
 
         togglePlayBtn.addActionListener {
@@ -78,7 +86,11 @@ class LoopControlPanel : JPanel() {
 
         btnGroup.add(togglePlayBtn)
 
-        val nextFrameBtn = JButton(loadIcon("loop/next.svg", 20, 20))
+        nextFrameBtn = JButton(loadIcon("loop/next.svg", 20, 20))
+        nextFrameBtn.addActionListener {
+            nextFrame()
+        }
+
         btnGroup.add(nextFrameBtn)
 
         val btnPanel = JPanel()
@@ -89,6 +101,26 @@ class LoopControlPanel : JPanel() {
         btnGroup.elements.toList().forEach { it.alignmentX = CENTER_ALIGNMENT }
         btnGroup.elements.toList().forEach { btnPanel.add(it) }
         add(btnPanel)
+
+        updateSeekBtns()
+    }
+
+    private fun nextFrame() {
+        if(loopFrame < AppState.numLoopFrames.value - 1) {
+            loopFrame++
+            loopTimer.stop()
+            togglePlayBtn.icon = loadIcon("loop/play.svg", 20, 20)
+            setVolumeFrame(loopFrame)
+        }
+    }
+
+    private fun lastFrame() {
+        if(loopFrame >= 1) {
+            loopFrame--
+            loopTimer.stop()
+            togglePlayBtn.icon = loadIcon("loop/play.svg", 20, 20)
+            setVolumeFrame(loopFrame)
+        }
     }
 
     private fun updateLoop(e: ActionEvent) {
@@ -99,7 +131,6 @@ class LoopControlPanel : JPanel() {
             loopFrame = 0
         }
 
-        frameSlider.value = loopFrame
 
         setVolumeFrame(loopFrame)
     }
@@ -109,6 +140,23 @@ class LoopControlPanel : JPanel() {
 
         if(volume != null) {
             AppState.activeVolume.value = volume
+        }
+
+        frameSlider.value = frameIndex
+        updateSeekBtns()
+    }
+
+    private fun updateSeekBtns() {
+        if(loopFrame == 0) {
+            prevFrameBtn.isEnabled = false
+        } else {
+            prevFrameBtn.isEnabled = true
+        }
+
+        if(loopFrame == AppState.numLoopFrames.value-1) {
+            nextFrameBtn.isEnabled = false
+        } else {
+            nextFrameBtn.isEnabled = true
         }
     }
 }

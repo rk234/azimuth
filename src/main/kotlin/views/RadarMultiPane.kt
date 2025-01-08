@@ -6,6 +6,7 @@ import map.layers.GeoJSONLayer
 import meteo.radar.Product
 import org.joml.Vector3f
 import org.lwjgl.opengl.awt.GLData
+import rendering.Camera
 import utils.RenderThreadTaskQueue
 import java.awt.GridLayout
 import javax.swing.JPanel
@@ -33,6 +34,7 @@ class RadarMultiPane(var paneLayout: PaneLayout) : JPanel() {
         GeoJSONLayer(counties, 0.03f, Vector3f(0.8f), 0.0001f),
         GeoJSONLayer(states, 0.035f, Vector3f(1.0f), -10f)
     )
+
     init {
         layout = createLayout(paneLayout)
 
