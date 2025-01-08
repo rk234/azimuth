@@ -2,7 +2,6 @@ package rendering
 
 import data.resources.ColormapManager
 import kotlinx.coroutines.*
-import kotlinx.coroutines.sync.Mutex
 import map.projection.MercatorProjection
 import map.projection.aerToGeo
 import meteo.radar.RadarGate
@@ -12,7 +11,7 @@ import org.lwjgl.system.MemoryUtil
 import java.nio.FloatBuffer
 import java.nio.IntBuffer
 
-class RadarScanRenderable(private val sweep: RadarSweep, private val radarShader: ShaderProgram, private val cmapTexture: Texture1D) : Renderable {
+class RadarSweepRenderable(private val sweep: RadarSweep, private val radarShader: ShaderProgram, private val cmapTexture: Texture1D) : Renderable {
     private var gateCount: Int = 0
     private lateinit var vbo: GLBufferObject
     private lateinit var ibo: GLBufferObject

@@ -1,6 +1,5 @@
 package meteo.radar
 
-import com.formdev.flatlaf.extras.FlatSVGIcon
 import org.joml.Vector3f
 import java.nio.ByteBuffer
 import java.util.*

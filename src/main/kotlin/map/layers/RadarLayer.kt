@@ -1,21 +1,12 @@
 package map.layers
 
-import data.resources.ColormapManager
-import data.resources.ColormapTextureManager
 import data.resources.RadarRenderableCache
-import data.resources.ShaderManager
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.runBlocking
 import meteo.radar.RadarProductVolume
-import map.projection.MercatorProjection
-import meteo.radar.RadarVolume
-import org.joml.Vector2f
-import org.joml.Vector3f
 import rendering.*
 
 class RadarLayer(private var volume: RadarProductVolume, private var tilt: Int) : MapLayer {
-    private lateinit var radarRenderable: RadarScanRenderable
+    private lateinit var radarRenderable: RadarSweepRenderable
     private var initialized = false
 
     suspend fun setProductVolumeAndTilt(volume: RadarProductVolume, tilt: Int) {

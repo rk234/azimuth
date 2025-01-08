@@ -84,6 +84,10 @@ class RadarVolume(file: NetcdfFile, val handle: VolumeFileHandle) {
         println("time to process volume: $durSec")
     }
 
+    fun getSupportedProducts(): Set<Product> {
+        return productVolumes.keys
+    }
+
     fun getProductVolume(product: Product): RadarProductVolume? {
         return productVolumes[product]
     }

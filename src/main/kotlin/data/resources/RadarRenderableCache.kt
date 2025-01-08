@@ -2,7 +2,7 @@ package data.resources
 
 import kotlinx.coroutines.sync.Mutex
 import meteo.radar.RadarSweep
-import rendering.RadarScanRenderable
+import rendering.RadarSweepRenderable
 import utils.invokeLaterOnRenderThread
 
 class RadarRenderableCache(var cacheSize: Int) {
@@ -11,9 +11,9 @@ class RadarRenderableCache(var cacheSize: Int) {
     }
 
     private var cacheMutex = Mutex()
-    private var cache = LinkedHashMap<String, RadarScanRenderable>()
+    private var cache = LinkedHashMap<String, RadarSweepRenderable>()
 
-    suspend fun put(radarSweep: RadarSweep, renderable: RadarScanRenderable) {
+    suspend fun put(radarSweep: RadarSweep, renderable: RadarSweepRenderable) {
         cacheMutex.lock()
         cache[sweepKey(radarSweep)] = renderable
 
@@ -25,12 +25,12 @@ class RadarRenderableCache(var cacheSize: Int) {
         println("RENDERABLE CACHE: ${cache.keys}")
     }
 
-    suspend fun get(radarSweep: RadarSweep): RadarScanRenderable {
+    suspend fun get(radarSweep: RadarSweep): RadarSweepRenderable {
 //        println("Attempting to get ${sweepKey(radarSweep)}")
         return if(cache.containsKey(sweepKey(radarSweep))) {
             cache[sweepKey(radarSweep)]!!
         } else {
-            val renderable = RadarScanRenderable(
+            val renderable = RadarSweepRenderable(
                 radarSweep,
                 ShaderManager.instance.radarShader(),
                 ColormapTextureManager.instance.get(
