@@ -69,7 +69,7 @@ class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: 
         topRow.isOpaque = false
         topRow.layout = BoxLayout(topRow, BoxLayout.X_AXIS)
 
-        for (product in Product.entries) {
+        for (product in volume.getSupportedProducts()) {
             productSelect.addItem(product)
         }
 
@@ -142,7 +142,7 @@ class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: 
 
     suspend fun handleVolumeChange(volume: RadarVolume?) {
         if(volume == null) return
-
+        println("volume change: ${volume.handle.fileName}")
         this.volume = volume
         radarLayer.setProductVolumeAndTilt(volume.getProductVolume(product)!!, tilt)
         updateTiltLabel()

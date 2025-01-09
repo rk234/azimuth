@@ -44,7 +44,12 @@ class RadarMultiPane(var paneLayout: PaneLayout) : JPanel() {
             if(i > 0)
                 glData.shareContext = productPanes[0]?.map
 
-            productPanes[i] = createPane(Product.entries.getOrElse(i) {_ -> Product.REFLECTIVITY_HIRES}, glData)
+            val volume = AppState.activeVolume.value ?: throw Error("No active volume found!")
+            productPanes[i] = createPane(volume
+                .getSupportedProducts()
+                .toList()
+                .getOrElse(i) {_ -> Product.REFLECTIVITY_HIRES}
+                , glData)
 
             add(productPanes[i])
         }
@@ -62,8 +67,10 @@ class RadarMultiPane(var paneLayout: PaneLayout) : JPanel() {
                 val glData = GLData()
                 glData.shareContext = productPanes[0]?.map
 
+                val volume = AppState.activeVolume.value ?: throw Error("No active volume found!")
+
                 productPanes[paneLayout.numPanes + i] =
-                    createPane(Product.entries.getOrElse(paneLayout.numPanes + i) { _ -> Product.REFLECTIVITY_HIRES }, glData)
+                    createPane(volume.getSupportedProducts().toList().getOrElse(paneLayout.numPanes + i) { _ -> Product.REFLECTIVITY_HIRES }, glData)
                 add(productPanes[paneLayout.numPanes + i])
             }
         }

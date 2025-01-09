@@ -20,16 +20,19 @@ class RadarRenderableCache(var cacheSize: Int) {
         if(cache.size > cacheSize) {
             remove(cache.firstEntry().key)
         }
-        cacheMutex.unlock()
-
         println("RENDERABLE CACHE: ${cache.keys}")
+
+        cacheMutex.unlock()
     }
 
     suspend fun get(radarSweep: RadarSweep): RadarSweepRenderable {
-//        println("Attempting to get ${sweepKey(radarSweep)}")
+        println("Attempting to get ${sweepKey(radarSweep)}")
+        println("RENDERABLE CACHE: ${cache.keys}")
         return if(cache.containsKey(sweepKey(radarSweep))) {
+            println("found in cache")
             cache[sweepKey(radarSweep)]!!
         } else {
+            println("not found in cache, generating")
             val renderable = RadarSweepRenderable(
                 radarSweep,
                 ShaderManager.instance.radarShader(),

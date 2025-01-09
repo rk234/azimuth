@@ -23,6 +23,7 @@ object RadarDataRepository {
 
     fun addDataFile(file: RadarVolume) {
         dataFiles.add(file)
+        println(dataFiles.getList().map { it.handle.fileName })
     }
 
     fun containsFile(handle: VolumeFileHandle): Boolean {
