@@ -6,7 +6,7 @@ import ucar.ma2.ArrayFloat
 import ucar.nc2.NetcdfFile
 import java.nio.IntBuffer
 
-class RadarProductVolume(file: NetcdfFile, handle: VolumeFileHandle, val station: Station, val product: Product) {
+class RadarProductVolume(file: NetcdfFile, val handle: VolumeFileHandle, val station: Station, val product: Product) {
     val scans: ArrayList<RadarSweep> = arrayListOf()
 
     init {

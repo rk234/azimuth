@@ -142,7 +142,7 @@ class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: 
 
     suspend fun handleVolumeChange(volume: RadarVolume?) {
         if(volume == null) return
-        println("volume change: ${volume.handle.fileName}")
+        println("${product.displayName} PANEL => volume change: ${volume.handle.fileName}")
         this.volume = volume
         radarLayer.setProductVolumeAndTilt(volume.getProductVolume(product)!!, tilt)
         updateTiltLabel()

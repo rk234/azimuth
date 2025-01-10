@@ -1,6 +1,7 @@
 package data.resources
 
 import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import meteo.radar.RadarSweep
 import rendering.RadarSweepRenderable
 import utils.invokeLaterOnRenderThread
@@ -14,25 +15,25 @@ class RadarRenderableCache(var cacheSize: Int) {
     private var cache = LinkedHashMap<String, RadarSweepRenderable>()
 
     suspend fun put(radarSweep: RadarSweep, renderable: RadarSweepRenderable) {
-        cacheMutex.lock()
-        cache[sweepKey(radarSweep)] = renderable
+        cacheMutex.withLock {
+            cache[sweepKey(radarSweep)] = renderable
+
+            println("RENDERABLE CACHE: ${cache.keys}")
+        }
 
         if(cache.size > cacheSize) {
             remove(cache.firstEntry().key)
         }
-        println("RENDERABLE CACHE: ${cache.keys}")
-
-        cacheMutex.unlock()
     }
 
     suspend fun get(radarSweep: RadarSweep): RadarSweepRenderable {
         println("Attempting to get ${sweepKey(radarSweep)}")
-        println("RENDERABLE CACHE: ${cache.keys}")
+//        println("RENDERABLE CACHE: ${cache.keys}")
         return if(cache.containsKey(sweepKey(radarSweep))) {
-            println("found in cache")
+            println("\t${sweepKey(radarSweep)} found in cache")
             cache[sweepKey(radarSweep)]!!
         } else {
-            println("not found in cache, generating")
+            println("\t${sweepKey(radarSweep)} not found in cache, generating")
             val renderable = RadarSweepRenderable(
                 radarSweep,
                 ShaderManager.instance.radarShader(),
@@ -42,22 +43,22 @@ class RadarRenderableCache(var cacheSize: Int) {
             )
 
             put(radarSweep, renderable)
-
-            return renderable
+            println("HERE: ${sweepKey(radarSweep)}")
+            renderable
         }
     }
 
     suspend fun remove(key: String) {
-        cacheMutex.lock()
-        val renderable = cache[key]
-        if(renderable != null) {
-            cache.remove(key)
-            invokeLaterOnRenderThread {
-                println("Destroying renderable ${key}...")
-                renderable.destroy()
+        cacheMutex.withLock {
+            val renderable = cache[key]
+            if(renderable != null) {
+                cache.remove(key)
+                invokeLaterOnRenderThread {
+                    println("Destroying renderable ${key}...")
+                    renderable.destroy()
+                }
             }
         }
-        cacheMutex.unlock()
     }
 
     suspend fun remove(radarSweep: RadarSweep) {

@@ -14,6 +14,8 @@ class RadarLayer(private var volume: RadarProductVolume, private var tilt: Int) 
         this.tilt = tilt
 
         val newRenderable = RadarRenderableCache.instance.get(this.volume.scans[tilt])
+
+        println("${volume.handle} [${volume.product.displayName}] => received renderable with geom: ${newRenderable.hasGeometry}")
         if(!newRenderable.hasGeometry) {
             println("Generating geometry...")
             newRenderable.createGeometry()
