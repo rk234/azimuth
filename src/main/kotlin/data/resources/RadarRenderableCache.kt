@@ -17,23 +17,21 @@ class RadarRenderableCache(var cacheSize: Int) {
     suspend fun put(radarSweep: RadarSweep, renderable: RadarSweepRenderable) {
         cacheMutex.withLock {
             cache[sweepKey(radarSweep)] = renderable
-
-            println("RENDERABLE CACHE: ${cache.keys}")
         }
 
-        if(cache.size > cacheSize) {
-            remove(cache.firstEntry().key)
+        if (cache.size > cacheSize) {
+            val toRemove: String
+            cacheMutex.withLock {
+                toRemove = cache.firstEntry().key
+            }
+            remove(toRemove)
         }
     }
 
     suspend fun get(radarSweep: RadarSweep): RadarSweepRenderable {
-        println("Attempting to get ${sweepKey(radarSweep)}")
-//        println("RENDERABLE CACHE: ${cache.keys}")
-        return if(cache.containsKey(sweepKey(radarSweep))) {
-            println("\t${sweepKey(radarSweep)} found in cache")
+        return if (cache.containsKey(sweepKey(radarSweep))) {
             cache[sweepKey(radarSweep)]!!
         } else {
-            println("\t${sweepKey(radarSweep)} not found in cache, generating")
             val renderable = RadarSweepRenderable(
                 radarSweep,
                 ShaderManager.instance.radarShader(),
@@ -43,20 +41,19 @@ class RadarRenderableCache(var cacheSize: Int) {
             )
 
             put(radarSweep, renderable)
-            println("HERE: ${sweepKey(radarSweep)}")
             renderable
         }
     }
 
     suspend fun remove(key: String) {
-        cacheMutex.withLock {
-            val renderable = cache[key]
-            if(renderable != null) {
+        val renderable = cache[key]
+        if (renderable != null) {
+            cacheMutex.withLock {
                 cache.remove(key)
-                invokeLaterOnRenderThread {
-                    println("Destroying renderable ${key}...")
-                    renderable.destroy()
-                }
+            }
+            invokeLaterOnRenderThread {
+                println("Destroying renderable ${key}...")
+                renderable.destroy()
             }
         }
     }
@@ -66,7 +63,7 @@ class RadarRenderableCache(var cacheSize: Int) {
     }
 
     suspend fun clear() {
-        for(key in cache.keys) {
+        for (key in cache.keys) {
             remove(key)
         }
     }

@@ -28,15 +28,20 @@ class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: 
     val map: MapView = MapView(glData)
     private var radarLayer: RadarLayer = RadarLayer(volume.getProductVolume(product)!!, tilt)
 
+    private val scope: CoroutineScope = MainScope()
+
     private val productSelect = JComboBox<Product>()
     private var cmapBar: ColormapBar
     private var tiltLabel: JLabel
     private var timeLabel: JLabel
-
+    private var volChangeJob: Job? = null
 
     init {
         AppState.activeVolume.onChange { vol ->
-            GlobalScope.launch(Dispatchers.IO) {
+            runBlocking {
+                volChangeJob?.cancelAndJoin()
+            }
+            volChangeJob = scope.launch(Dispatchers.IO) {
                 handleVolumeChange(vol)
             }
         }
@@ -140,9 +145,9 @@ class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: 
         }
     }
 
-    suspend fun handleVolumeChange(volume: RadarVolume?) {
+    private suspend fun handleVolumeChange(volume: RadarVolume?) {
         if(volume == null) return
-        println("${product.displayName} PANEL => volume change: ${volume.handle.fileName}")
+//        println("${product.displayName} PANEL => volume change: ${volume.handle.fileName}")
         this.volume = volume
         radarLayer.setProductVolumeAndTilt(volume.getProductVolume(product)!!, tilt)
         updateTiltLabel()

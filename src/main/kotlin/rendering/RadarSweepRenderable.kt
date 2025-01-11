@@ -116,8 +116,8 @@ class RadarSweepRenderable(private val sweep: RadarSweep, private val radarShade
             })
         }
 
-
         jobs.awaitAll()
+
         val dur = System.currentTimeMillis() - startTime
         println("VERT GEN: ${dur}ms")
 //        vertBuffer.flip()
