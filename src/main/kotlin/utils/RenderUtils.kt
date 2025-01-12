@@ -1,21 +1,28 @@
 package utils
 
-import java.util.concurrent.LinkedBlockingQueue
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import java.util.concurrent.ConcurrentLinkedQueue
 
 object RenderThreadTaskQueue {
-    private val queue = LinkedBlockingQueue<Runnable>()
+    private val queue = ConcurrentLinkedQueue<Runnable>()
+    private val mutex = Mutex()
 
-    fun offer(runnable: Runnable) {
-        queue.offer(runnable)
+    suspend fun offer(runnable: Runnable) {
+        mutex.withLock {
+            queue.offer(runnable)
+        }
     }
 
-    fun poll(): Runnable? {
-        return queue.poll()
+    suspend fun poll(): Runnable? {
+        mutex.withLock {
+            return queue.poll()
+        }
     }
 
-    fun isEmpty() = queue.isEmpty()
+    suspend fun isEmpty() = mutex.withLock {queue.isEmpty()}
 }
 
-fun invokeLaterOnRenderThread(runnable: Runnable) {
+suspend fun invokeLaterOnRenderThread(runnable: Runnable) {
     RenderThreadTaskQueue.offer(runnable)
 }

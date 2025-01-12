@@ -2,6 +2,7 @@ package views
 
 import data.resources.GeoJSONManager
 import data.state.AppState
+import kotlinx.coroutines.runBlocking
 import map.layers.GeoJSONLayer
 import meteo.radar.Product
 import org.joml.Vector3f
@@ -102,8 +103,10 @@ class RadarMultiPane(var paneLayout: PaneLayout) : JPanel() {
             for (i in 0..<paneLayout.numPanes) {
                 productPanes[i]?.render()
 
-                val task = RenderThreadTaskQueue.poll()
-                task?.run()
+                runBlocking {
+                    val task = RenderThreadTaskQueue.poll()
+                    task?.run()
+                }
             }
             val dt = System.currentTimeMillis()-lastFrame
             lastFrame = System.currentTimeMillis()

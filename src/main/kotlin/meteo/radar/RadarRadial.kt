@@ -9,7 +9,6 @@ data class RadarRadial(val azimuth: Float, val gates: IntBuffer) {
         fun gatesToBuffer(gates: List<RadarGate>): IntBuffer {
             val buf = IntBuffer.allocate(gates.size)
             gates.forEach { gate -> buf.put(gate.packedData)}
-            buf.compact()
             return buf
         }
     }

@@ -22,6 +22,7 @@ class RadarSweepRenderable(private val sweep: RadarSweep, private val radarShade
     private lateinit var indexBuffer: IntBuffer
 
     suspend fun createGeometry() = coroutineScope {
+        if(hasGeometry || initialized) return@coroutineScope
         val jobStartIdx: IntArray = IntArray(sweep.radials.size+1)
         for((i, radial) in sweep.radials.withIndex()) {
             jobStartIdx[i] = gateCount

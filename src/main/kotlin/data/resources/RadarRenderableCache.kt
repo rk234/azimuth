@@ -6,7 +6,7 @@ import meteo.radar.RadarSweep
 import rendering.RadarSweepRenderable
 import utils.invokeLaterOnRenderThread
 
-class RadarRenderableCache(var cacheSize: Int) {
+class RadarRenderableCache(var maxCacheSize: Int) {
     companion object {
         val instance = RadarRenderableCache(20)
     }
@@ -19,12 +19,18 @@ class RadarRenderableCache(var cacheSize: Int) {
             cache[sweepKey(radarSweep)] = renderable
         }
 
-        if (cache.size > cacheSize) {
+        while (cacheSize() > maxCacheSize) {
             val toRemove: String
             cacheMutex.withLock {
                 toRemove = cache.firstEntry().key
             }
             remove(toRemove)
+        }
+    }
+
+    suspend fun cacheSize(): Int {
+        cacheMutex.withLock {
+            return cache.size
         }
     }
 
@@ -49,11 +55,13 @@ class RadarRenderableCache(var cacheSize: Int) {
         val renderable = cache[key]
         if (renderable != null) {
             cacheMutex.withLock {
+                println("cache size: ${cache.size}")
+                println("cache keys: ${cache.keys}")
                 cache.remove(key)
-            }
-            invokeLaterOnRenderThread {
-                println("Destroying renderable ${key}...")
-                renderable.destroy()
+                invokeLaterOnRenderThread {
+                    println("Destroying renderable ${key}...")
+                    renderable.destroy()
+                }
             }
         }
     }
