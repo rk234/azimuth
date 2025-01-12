@@ -46,10 +46,6 @@ class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: 
             }
         }
 
-//        val countries = GeoJSONManager.instance.countries
-//        val counties = GeoJSONManager.instance.counties
-//        val states = GeoJSONManager.instance.states
-//
         val proj = MercatorProjection()
         val camPos = proj.toCartesian(Vector2f(volume.station.latitude, volume.station.longitude))
         map.camera.position = Vector3f(camPos.x, camPos.y, 0f)
@@ -81,7 +77,7 @@ class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: 
         productSelect.selectedItem = product
         productSelect.alignmentX = JLabel.LEFT_ALIGNMENT
         productSelect.addActionListener {
-            GlobalScope.launch(Dispatchers.Default) {
+            scope.launch(Dispatchers.Default) {
                 handleProductChange(it)
             }
         }

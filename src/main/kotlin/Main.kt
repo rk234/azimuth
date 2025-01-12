@@ -4,10 +4,7 @@ import data.resources.ColormapManager
 import data.resources.GeoJSONManager
 import data.state.AppState
 import data.state.UserPrefs
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import kotlinx.coroutines.swing.Swing
 import views.AppWindow
 import views.SplashWindow
@@ -26,8 +23,9 @@ fun main() {
     val splash = SplashWindow()
     splash.isVisible = true
 
+    val scope = MainScope()
 
-    GlobalScope.launch(Dispatchers.IO) {
+    scope.launch(Dispatchers.IO) {
         splash.notifyProgress(null, "Loading Map Data...")
         GeoJSONManager.init()
         splash.notifyProgress(1.0, "Done Loading Map Data!")
@@ -55,5 +53,4 @@ fun main() {
             window.isVisible = true
         }
     }
-
 }

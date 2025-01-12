@@ -7,10 +7,7 @@ import data.state.AppState.activeVolume
 import data.state.AppState.radarDataProvider
 import data.state.AppState.radarDataService
 import data.state.UserPrefs
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import meteo.radar.Product
 import meteo.radar.RadarVolume
 import utils.ProgressListener
@@ -30,10 +27,12 @@ import kotlin.time.TimeSource
 
 class AppWindow : JFrame("Azimuth") {
 
-    val radarAutoPollTimer = Timer(UserPrefs.radarAutoPollFrequencySec() * 1000, ::onRadarAutoPoll)
-    val multiPane: RadarMultiPane
-    val sideBar: SideBar
-    val statusBar: StatusBar
+    private val radarAutoPollTimer = Timer(UserPrefs.radarAutoPollFrequencySec() * 1000, ::onRadarAutoPoll)
+    private val multiPane: RadarMultiPane
+    private val sideBar: SideBar
+    private val statusBar: StatusBar
+
+    private val scope = MainScope()
 
     init {
         multiPane = RadarMultiPane(PaneLayout.SINGLE)
@@ -64,7 +63,7 @@ class AppWindow : JFrame("Azimuth") {
     }
 
     fun onRadarAutoPoll(actionEvent: ActionEvent) {
-        GlobalScope.launch(Dispatchers.IO) {
+        scope.launch(Dispatchers.IO) {
             statusBar.nextUpdateTime = TimeSource.Monotonic.markNow()
             val data = pollRadarData()
             if(data != null) {
