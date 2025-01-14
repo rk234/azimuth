@@ -26,6 +26,13 @@ inline fun antennaToCartesian(azimuth: Float, range: Float, elevation: Float): V
     return Vector3f(x.toFloat(), y.toFloat(), z.toFloat())
 }
 
+inline fun fastArcSin(x: Float): Float {
+    val x2 = x * x
+    var a = 0.96466 + x2 * (-0.0011511 + x2 * 0.00012127)
+    a = a + x2 * x2 * x2 * (0.000019065 + x2 * -0.0000031983)
+    return (a * x).toFloat()
+}
+
 inline fun antennaRelativeCartesianToGeographic(x: Float, y: Float, antennaLat: Float, antennaLon: Float): Vector2f {
     val R = 6370997.0
     val antennaLatRad = Math.toRadians(antennaLat.toDouble())

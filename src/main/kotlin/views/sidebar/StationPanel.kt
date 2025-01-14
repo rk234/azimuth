@@ -2,14 +2,15 @@ package views.sidebar
 
 import data.state.AppState
 import meteo.radar.RadarVolume
+import views.StationPicker
 import java.awt.Color
 import javax.swing.*
 
 class StationPanel : JPanel() {
-    val stationCodeLabel: JLabel
-    val changeStationButton: JButton
-    val stationLocationLabel: JLabel
-    val vcpLabel: JLabel
+    private val stationCodeLabel: JLabel
+    private val changeStationButton: JButton
+    private val stationLocationLabel: JLabel
+    private val vcpLabel: JLabel
 
     init {
         AppState.activeVolume.onChange(::handleVolumeChange)
@@ -28,6 +29,10 @@ class StationPanel : JPanel() {
         stationHeader.add(Box.createHorizontalGlue())
 
         changeStationButton = JButton("Change Station")
+        changeStationButton.addActionListener {
+            val stationPicker = StationPicker(AppState.radarDataProvider)
+            stationPicker.isVisible = true
+        }
         stationHeader.add(changeStationButton)
         stationHeader.alignmentX = JPanel.LEFT_ALIGNMENT
 
