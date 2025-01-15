@@ -1,14 +1,14 @@
 package data.radar
 
 import data.PollableDataService
-import data.state.AppState
 import meteo.radar.VolumeFileHandle
+import ucar.nc2.NetcdfFile
 import utils.ProgressListener
 import java.util.*
 
-class RadarDataService(private val station: String, val provider: RadarDataProvider) :
+class RadarDataService(private val station: String, private val provider: RadarDataProvider) :
     PollableDataService<VolumeFileHandle> {
-    private val progressListeners: MutableList<ProgressListener> = mutableListOf()
+    private val progressListeners: MutableSet<ProgressListener> = mutableSetOf()
     private val pollQueue: Queue<VolumeFileHandle> = LinkedList()
     private var lastPoll: VolumeFileHandle? = null
 
@@ -22,15 +22,31 @@ class RadarDataService(private val station: String, val provider: RadarDataProvi
         }
     }
 
-    override fun init() {
+    fun getFile(handle: VolumeFileHandle): NetcdfFile? {
+        return provider.getDataFile(handle)
+    }
+
+    override fun init(numInitialData: Int) {
+        pollQueue.clear()
+        lastPoll = null;
+
         notifyProgress("Loading radar data for $station...")
         var fileList = provider.getDataFileList(station)
         notifyProgress("Fetched data file list for $station")
 
-        fileList = fileList.slice((fileList.size- AppState.numLoopFrames.value)..<fileList.size)
+        fileList = fileList.slice((fileList.size-numInitialData)..<fileList.size)
         for(fileName in fileList) {
             pollQueue.offer(fileName)
         }
+    }
+
+    fun pollRemaining(): List<VolumeFileHandle> {
+        val remaining = mutableListOf<VolumeFileHandle>()
+        while(!pollQueue.isEmpty()) {
+            val next = poll() ?: break
+            remaining.add(next)
+        }
+        return remaining
     }
 
     fun peek(): VolumeFileHandle? {

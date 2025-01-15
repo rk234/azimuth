@@ -17,7 +17,7 @@ class StationPicker(radarDataProvider: RadarDataProvider) : JFrame("Choose a Sta
     private val applyBtn: JButton = JButton("Apply")
     private val cancelBtn: JButton = JButton("Cancel")
 
-    private val listeners = mutableListOf<(String?) -> Unit>()
+    private val listeners = mutableSetOf<(String?) -> Unit>()
 
     init {
         panel.layout = BoxLayout(panel, BoxLayout.Y_AXIS)

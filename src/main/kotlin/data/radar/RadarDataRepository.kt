@@ -1,36 +1,61 @@
 package data.radar
 
 import data.state.AppState
+import kotlinx.coroutines.*
 import meteo.radar.RadarVolume
 import meteo.radar.VolumeFileHandle
 import utils.CircularBuffer
+import utils.ProgressListener
 
 object RadarDataRepository {
-    var dataFiles: CircularBuffer<RadarVolume?> = CircularBuffer(AppState.numLoopFrames.value)
+    private var dataFiles: CircularBuffer<RadarVolume> = CircularBuffer(AppState.numLoopFrames.value)
+    private val scope = MainScope()
 
-    fun resize(newCapacity: Int) {
-        val newBuffer = CircularBuffer<RadarVolume?>(newCapacity)
-        if(newCapacity > dataFiles.capacity) {
-            for(i in 0..<newCapacity-dataFiles.capacity) {
-                newBuffer.add(null)
-            }
+    suspend fun loadInitialData(numFrames: Int, radarDataService: RadarDataService, progressListener: ProgressListener? = null) {
+        val newBuffer = CircularBuffer<RadarVolume>(numFrames)
+        if(progressListener != null)
+            radarDataService.addProgressListener(progressListener)
 
-            for(i in 0..<dataFiles.capacity) {
-                newBuffer.add(dataFiles.get(i))
-            }
-        } else if(newCapacity < dataFiles.capacity) {
-            for(i in dataFiles.capacity - newCapacity..<dataFiles.capacity) {
-                newBuffer.add(dataFiles.get(i))
-            }
+        radarDataService.init(numFrames)
+
+        val toDownload = radarDataService.pollRemaining()
+        val volumes = arrayOfNulls<RadarVolume>(numFrames)
+        val tasks = mutableListOf<Deferred<Unit>>()
+
+        for(i in toDownload.indices) {
+            if(toDownload[i] == null) continue
+            tasks.add(scope.async(Dispatchers.IO) {
+                val file = radarDataService.getFile(toDownload[i])
+                if(file != null) {
+                    volumes[i] = RadarVolume(file, toDownload[i])
+                    file.close()
+
+                    val progress = volumes.filterNotNull().size / volumes.size.toDouble()
+                    progressListener?.notifyProgress(progress, "Loaded file ${volumes.filterNotNull().size}/${volumes.size}")
+                }
+            })
         }
-        dataFiles = newBuffer
+
+        tasks.awaitAll()
+
+        for(volume in volumes) {
+            if(volume != null)
+                newBuffer.add(volume)
+        }
+
+        setDataFiles(newBuffer)
     }
 
     fun clear() {
         dataFiles.clear()
     }
 
+    fun setDataFiles(buffer: CircularBuffer<RadarVolume>) {
+        this.dataFiles = buffer
+    }
+
     fun setDataFiles(dataFiles: Iterable<RadarVolume>) {
+        clear()
         for(file in dataFiles) {
             println("Adding file ${file.handle}...")
             addDataFile(file)

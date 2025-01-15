@@ -9,7 +9,7 @@ import ucar.nc2.NetcdfFiles
 import utils.ProgressListener
 
 class RadarDataProvider {
-    private var progressListeners: ArrayList<ProgressListener> = ArrayList()
+    private var progressListeners: MutableSet<ProgressListener> = mutableSetOf()
     private val httpClient = OkHttpClient()
     private val radarServiceURL = "https://mesonet-nexrad.agron.iastate.edu/level2/raw"
     private lateinit var listFile: String
@@ -29,8 +29,8 @@ class RadarDataProvider {
         progressListeners.add(listener)
     }
 
-    fun setProgressListeners(listeners: List<ProgressListener>) {
-        progressListeners = ArrayList(listeners)
+    fun setProgressListeners(listeners: MutableSet<ProgressListener>) {
+        progressListeners = listeners
     }
 
     fun getStationList(): List<String> {

@@ -9,7 +9,7 @@ class State<T>(value: T) {
             }
         }
 
-    private var listeners: MutableList<(T) -> Unit> = mutableListOf()
+    private var listeners: MutableSet<(T) -> Unit> = mutableSetOf()
 
     fun onChange(listener: (T) -> Unit) {
         listeners.add(listener)

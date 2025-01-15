@@ -10,7 +10,7 @@ import javax.swing.*
 
 class PaneLayoutSelect : JPanel() {
     private var selectedLayout = PaneLayout.SINGLE
-    private var listeners: MutableList<(PaneLayout) -> Unit> = mutableListOf()
+    private var listeners: MutableSet<(PaneLayout) -> Unit> = mutableSetOf()
     init {
         layout = BoxLayout(this, BoxLayout.Y_AXIS)
         border = BorderFactory.createEmptyBorder(8, 8, 8, 8)
