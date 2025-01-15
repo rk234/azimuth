@@ -1,14 +1,30 @@
 package data.radar
 
 import data.state.AppState
-import data.state.UserPrefs
 import meteo.radar.RadarVolume
 import meteo.radar.VolumeFileHandle
-import ucar.nc2.NetcdfFile
 import utils.CircularBuffer
 
 object RadarDataRepository {
-    var dataFiles: CircularBuffer<RadarVolume> = CircularBuffer(AppState.numLoopFrames.value)
+    var dataFiles: CircularBuffer<RadarVolume?> = CircularBuffer(AppState.numLoopFrames.value)
+
+    fun resize(newCapacity: Int) {
+        val newBuffer = CircularBuffer<RadarVolume?>(newCapacity)
+        if(newCapacity > dataFiles.capacity) {
+            for(i in 0..<newCapacity-dataFiles.capacity) {
+                newBuffer.add(null)
+            }
+
+            for(i in 0..<dataFiles.capacity) {
+                newBuffer.add(dataFiles.get(i))
+            }
+        } else if(newCapacity < dataFiles.capacity) {
+            for(i in dataFiles.capacity - newCapacity..<dataFiles.capacity) {
+                newBuffer.add(dataFiles.get(i))
+            }
+        }
+        dataFiles = newBuffer
+    }
 
     fun clear() {
         dataFiles.clear()
