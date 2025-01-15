@@ -3,13 +3,14 @@ package utils
 class CircularBuffer<T>(val capacity: Int) : Iterable<T> {
     private var buffer: Array<Any?> = arrayOfNulls(capacity)
     private var index = 0
-    private var size = 0
+    var size = 0
+        private set
 
     fun add(element: T) {
         buffer[index] = element
         index = (index + 1) % capacity
 
-        size = Math.min(capacity, size + 1)
+        size = minOf(capacity, size + 1)
     }
 
     fun clear() {
@@ -27,6 +28,10 @@ class CircularBuffer<T>(val capacity: Int) : Iterable<T> {
         }
 
         return list
+    }
+
+    fun get(i: Int): T? {
+        return buffer[index + i % capacity] as T?
     }
 
     override fun iterator(): Iterator<T> {
