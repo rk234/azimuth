@@ -1,12 +1,18 @@
 package views
 
 import data.radar.RadarDataProvider
+import data.radar.RadarDataRepository
+import data.state.AppState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
+import utils.ProgressListener
 import java.awt.Dimension
 import javax.swing.*
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 
-class StationPicker(radarDataProvider: RadarDataProvider) : JFrame("Choose a Station") {
+class StationPicker(radarDataProvider: RadarDataProvider) : JFrame("Choose a Station"), ProgressListener {
     private val stationList: JList<String>
     private val scrollPane: JScrollPane
     private val panel: JPanel = JPanel()
@@ -17,7 +23,12 @@ class StationPicker(radarDataProvider: RadarDataProvider) : JFrame("Choose a Sta
     private val applyBtn: JButton = JButton("Apply")
     private val cancelBtn: JButton = JButton("Cancel")
 
+    private val progressBar = JProgressBar()
+    private val progressMessage = JLabel()
+
     private val listeners = mutableSetOf<(String?) -> Unit>()
+
+    val scope = MainScope()
 
     init {
         panel.layout = BoxLayout(panel, BoxLayout.Y_AXIS)
@@ -58,8 +69,17 @@ class StationPicker(radarDataProvider: RadarDataProvider) : JFrame("Choose a Sta
         add(Box.createVerticalStrut(8))
 
         applyBtn.addActionListener {
-            notifyListeners()
-            isVisible = false
+            val listener = this
+            val selectedStation = getSelectedStation()
+
+            if(selectedStation != null) {
+                AppState.activeStation.value = selectedStation
+                scope.launch(Dispatchers.IO) {
+                    RadarDataRepository.loadInitialData(AppState.numLoopFrames.value, AppState.radarDataService, listener)
+                    isVisible = false
+                    notifyListeners()
+                }
+            }
         }
 
         cancelBtn.addActionListener {
@@ -75,6 +95,17 @@ class StationPicker(radarDataProvider: RadarDataProvider) : JFrame("Choose a Sta
             add(Box.createHorizontalStrut(8))
             add(cancelBtn)
         })
+
+        add(Box.createVerticalStrut(8))
+
+        progressBar.alignmentX = JProgressBar.LEFT_ALIGNMENT
+        progressMessage.alignmentX = JLabel.LEFT_ALIGNMENT
+
+        add(progressBar)
+        add(progressMessage)
+
+        progressBar.isVisible = false
+        progressMessage.isVisible = false
 
         pack()
     }
@@ -96,5 +127,17 @@ class StationPicker(radarDataProvider: RadarDataProvider) : JFrame("Choose a Sta
 
     fun getSelectedStation(): String? {
         return stationList.selectedValue
+    }
+
+    override fun notifyProgress(progress: Double?, message: String) {
+        progressBar.isVisible = true
+        progressMessage.isVisible = true
+        if(progress == null) {
+            progressBar.isIndeterminate = true
+        } else {
+            progressBar.isIndeterminate = false
+            progressBar.value = (progress * 100).toInt()
+            progressMessage.text = message
+        }
     }
 }

@@ -1,5 +1,6 @@
 package views.sidebar
 
+import data.radar.RadarDataRepository
 import data.state.AppState
 import meteo.radar.RadarVolume
 import views.StationPicker
@@ -31,6 +32,12 @@ class StationPanel : JPanel() {
         changeStationButton = JButton("Change Station")
         changeStationButton.addActionListener {
             val stationPicker = StationPicker(AppState.radarDataProvider)
+            stationPicker.addStationSelectListener { station ->
+                if(station != null) {
+                    println("Station selected $station and data loaded!")
+                    AppState.activeVolume.value = RadarDataRepository.lastFile()
+                }
+            }
             stationPicker.isVisible = true
         }
         stationHeader.add(changeStationButton)
