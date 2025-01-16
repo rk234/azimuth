@@ -2,6 +2,8 @@ package rendering
 
 import data.resources.ColormapManager
 import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import map.projection.MercatorProjection
 import map.projection.aerToGeo
 import meteo.radar.RadarGate
@@ -21,116 +23,121 @@ class RadarSweepRenderable(private val sweep: RadarSweep, private val radarShade
     private lateinit var vertBuffer: FloatBuffer
     private lateinit var indexBuffer: IntBuffer
 
+    private val geomMutex = Mutex()
+    private val graphicsMutex = Mutex()
+
     suspend fun createGeometry() = coroutineScope {
-        if(hasGeometry || initialized) return@coroutineScope
-        val jobStartIdx: IntArray = IntArray(sweep.radials.size+1)
-        for((i, radial) in sweep.radials.withIndex()) {
-            jobStartIdx[i] = gateCount
-            gateCount+=radial.gates.capacity()
-        }
-        jobStartIdx[jobStartIdx.lastIndex] = gateCount
+        geomMutex.withLock {
+            if (hasGeometry || initialized) return@coroutineScope
+            val jobStartIdx: IntArray = IntArray(sweep.radials.size + 1)
+            for ((i, radial) in sweep.radials.withIndex()) {
+                jobStartIdx[i] = gateCount
+                gateCount += radial.gates.capacity()
+            }
+            jobStartIdx[jobStartIdx.lastIndex] = gateCount
 
-        vertBuffer = MemoryUtil.memAllocFloat(gateCount * 3 * 4)
-        val proj = MercatorProjection()
-        val cmap = ColormapManager.instance.getDefault(sweep.product)
+            vertBuffer = MemoryUtil.memAllocFloat(gateCount * 3 * 4)
+            val proj = MercatorProjection()
+            val cmap = ColormapManager.instance.getDefault(sweep.product)
 
-        val resolution =
-            360.0f / sweep.radials.size
-        val gateSize: Float = sweep.gateWidth
-        val jobs = mutableListOf<Deferred<Unit>>()
+            val resolution =
+                360.0f / sweep.radials.size
+            val gateSize: Float = sweep.gateWidth
+            val jobs = mutableListOf<Deferred<Unit>>()
 
-        val startTime = System.currentTimeMillis()
-        for ((i, radial) in sweep.radials.withIndex()) {
-            jobs.add(async(Dispatchers.Default) {
-                val azimuth = radial.azimuth
-                val startAngle = (azimuth.toDouble()) - (resolution / 2) * 1.12f
-                val endAngle = (azimuth.toDouble()) + (resolution / 2) * 1.12f
-                val quad = FloatArray(12)
-                for (gateIndex in jobStartIdx[i]..<jobStartIdx[i + 1]) {
-                    val gate = RadarGate(radial.gates.get(gateIndex - jobStartIdx[i]))
-                    val range = sweep.rangeStart + (gateSize * gate.idx().toFloat()) // 1000
-                    val data = gate.scaledValue(sweep.scale, sweep.addOffset)
+            val startTime = System.currentTimeMillis()
+            for ((i, radial) in sweep.radials.withIndex()) {
+                jobs.add(async(Dispatchers.Default) {
+                    val azimuth = radial.azimuth
+                    val startAngle = (azimuth.toDouble()) - (resolution / 2) * 1.12f
+                    val endAngle = (azimuth.toDouble()) + (resolution / 2) * 1.12f
+                    val quad = FloatArray(12)
+                    for (gateIndex in jobStartIdx[i]..<jobStartIdx[i + 1]) {
+                        val gate = RadarGate(radial.gates.get(gateIndex - jobStartIdx[i]))
+                        val range = sweep.rangeStart + (gateSize * gate.idx().toFloat()) // 1000
+                        val data = gate.scaledValue(sweep.scale, sweep.addOffset)
 
-                    val p1 =
-                        proj.toCartesian(
-                            aerToGeo(
-                                startAngle.toFloat(),
-                                sweep.elevation,
-                                range,
-                                sweep.station.latitude,
-                                sweep.station.longitude,
+                        val p1 =
+                            proj.toCartesian(
+                                aerToGeo(
+                                    startAngle.toFloat(),
+                                    sweep.elevation,
+                                    range,
+                                    sweep.station.latitude,
+                                    sweep.station.longitude,
+                                )
                             )
-                        )
 
-                    val p2 =
-                        proj.toCartesian(
-                            aerToGeo(
-                                startAngle.toFloat(),
-                                sweep.elevation,
-                                range + gateSize,
-                                sweep.station.latitude,
-                                sweep.station.longitude,
+                        val p2 =
+                            proj.toCartesian(
+                                aerToGeo(
+                                    startAngle.toFloat(),
+                                    sweep.elevation,
+                                    range + gateSize,
+                                    sweep.station.latitude,
+                                    sweep.station.longitude,
+                                )
                             )
-                        )
-                    val p3 =
-                        proj.toCartesian(
-                            aerToGeo(
-                                endAngle.toFloat(),
-                                sweep.elevation,
-                                range + gateSize,
-                                sweep.station.latitude,
-                                sweep.station.longitude,
+                        val p3 =
+                            proj.toCartesian(
+                                aerToGeo(
+                                    endAngle.toFloat(),
+                                    sweep.elevation,
+                                    range + gateSize,
+                                    sweep.station.latitude,
+                                    sweep.station.longitude,
+                                )
                             )
-                        )
-                    val p4 =
-                        proj.toCartesian(
-                            aerToGeo(
-                                endAngle.toFloat(),
-                                sweep.elevation,
-                                range,
-                                sweep.station.latitude,
-                                sweep.station.longitude,
+                        val p4 =
+                            proj.toCartesian(
+                                aerToGeo(
+                                    endAngle.toFloat(),
+                                    sweep.elevation,
+                                    range,
+                                    sweep.station.latitude,
+                                    sweep.station.longitude,
+                                )
                             )
-                        )
 
 
-                    val rescaled = cmap.rescale(data)
-                    val gateVertIndex = gateIndex * 4 * 3
-                    quad[0] = p1.x
-                    quad[1] = p1.y
-                    quad[2] = rescaled
+                        val rescaled = cmap.rescale(data)
+                        val gateVertIndex = gateIndex * 4 * 3
+                        quad[0] = p1.x
+                        quad[1] = p1.y
+                        quad[2] = rescaled
 
-                    quad[3] = p2.x
-                    quad[4] = p2.y
-                    quad[5] = rescaled
+                        quad[3] = p2.x
+                        quad[4] = p2.y
+                        quad[5] = rescaled
 
-                    quad[6] = p3.x
-                    quad[7] = p3.y
-                    quad[8] = rescaled
+                        quad[6] = p3.x
+                        quad[7] = p3.y
+                        quad[8] = rescaled
 
-                    quad[9] = p4.x
-                    quad[10] = p4.y
-                    quad[11] = rescaled
+                        quad[9] = p4.x
+                        quad[10] = p4.y
+                        quad[11] = rescaled
 
-                    vertBuffer.put(gateVertIndex, quad)
-                }
-            })
-        }
+                        vertBuffer.put(gateVertIndex, quad)
+                    }
+                })
+            }
 
-        jobs.awaitAll()
+            jobs.awaitAll()
 
-        val dur = System.currentTimeMillis() - startTime
-        println("VERT GEN: ${dur}ms")
+            val dur = System.currentTimeMillis() - startTime
+            println("VERT GEN: ${dur}ms")
 //        vertBuffer.flip()
 
-        val iboGenStart = System.currentTimeMillis()
-        indexBuffer = MemoryUtil.memAllocInt(gateCount*6)
+            val iboGenStart = System.currentTimeMillis()
+            indexBuffer = MemoryUtil.memAllocInt(gateCount * 6)
 
-        indexBuffer = MemoryUtil.memAllocInt((gateCount) * 6)
-        generateIndices(indexBuffer, gateCount)
-        indexBuffer.flip()
-        println("IBO GEN: ${System.currentTimeMillis()-iboGenStart}ms")
-        hasGeometry = true
+            indexBuffer = MemoryUtil.memAllocInt((gateCount) * 6)
+            generateIndices(indexBuffer, gateCount)
+            indexBuffer.flip()
+            println("IBO GEN: ${System.currentTimeMillis() - iboGenStart}ms")
+            hasGeometry = true
+        }
     }
 
     override fun init(vaoContext: VAOContext) {
