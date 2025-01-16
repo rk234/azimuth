@@ -35,12 +35,10 @@ class AppWindow : JFrame("Azimuth") {
     private val scope = MainScope()
 
     init {
+        AppState.window = this
         multiPane = RadarMultiPane(PaneLayout.SINGLE)
         sideBar = SideBar()
         statusBar = StatusBar(multiPane)
-
-        jMenuBar = JMenuBar()
-        jMenuBar.add(JButton("Toggle Sidebar"))
 
         sideBar.onPaneLayoutChange { layout ->
             multiPane.setPaneLayout(layout)
@@ -59,6 +57,14 @@ class AppWindow : JFrame("Azimuth") {
 
         radarDataProvider.addProgressListener(statusBar)
         multiPane.startRendering()
+        radarAutoPollTimer.start()
+    }
+
+    fun pauseAutoPoll() {
+        radarAutoPollTimer.stop()
+    }
+
+    fun resumeAutoPoll() {
         radarAutoPollTimer.start()
     }
 

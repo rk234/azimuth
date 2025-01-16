@@ -74,10 +74,12 @@ class StationPicker(radarDataProvider: RadarDataProvider) : JFrame("Choose a Sta
 
             if(selectedStation != null) {
                 AppState.activeStation.value = selectedStation
+                AppState.window?.pauseAutoPoll()
                 scope.launch(Dispatchers.IO) {
                     RadarDataRepository.loadInitialData(AppState.numLoopFrames.value, AppState.radarDataService, listener)
-                    isVisible = false
+                    AppState.window?.resumeAutoPoll()
                     notifyListeners()
+                    isVisible = false
                 }
             }
         }

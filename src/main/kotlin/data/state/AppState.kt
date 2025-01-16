@@ -6,6 +6,7 @@ import data.radar.RadarDataService
 import kotlinx.coroutines.*
 import meteo.radar.*
 import utils.ProgressListener
+import views.AppWindow
 
 object AppState {
     var radarDataProvider = RadarDataProvider()
@@ -13,6 +14,7 @@ object AppState {
     var numLoopFrames = State(UserPrefs.numLoopFrames())
     var activeStation = State(UserPrefs.defaultStation())
     var radarDataService = RadarDataService(activeStation.value, radarDataProvider)
+    var window: AppWindow? = null
 
     suspend fun init(progressListener: ProgressListener? = null) {
         radarDataProvider.setup()

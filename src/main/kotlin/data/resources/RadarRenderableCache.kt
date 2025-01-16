@@ -11,50 +11,50 @@ class RadarRenderableCache(var maxCacheSize: Int) {
         val instance = RadarRenderableCache(20)
     }
 
-    private var cacheMutex = Mutex()
+    private var putMutex = Mutex()
+    private var getMutex = Mutex()
+    private var removeMutex = Mutex()
     private var cache = LinkedHashMap<String, RadarSweepRenderable>()
 
     suspend fun put(radarSweep: RadarSweep, renderable: RadarSweepRenderable) {
-        cacheMutex.withLock {
+        putMutex.withLock {
+            println("Putting renderable ${sweepKey(radarSweep)} in cache...")
             cache[sweepKey(radarSweep)] = renderable
-        }
 
-        while (cacheSize() > maxCacheSize) {
-            val toRemove: String
-            cacheMutex.withLock {
-                toRemove = cache.firstEntry().key
+            while (cacheSize() > maxCacheSize) {
+                val toRemove = cache.firstEntry().key
+                remove(toRemove)
             }
-            remove(toRemove)
         }
     }
 
-    suspend fun cacheSize(): Int {
-        cacheMutex.withLock {
-            return cache.size
-        }
+    fun cacheSize(): Int {
+        return cache.size
     }
 
     suspend fun get(radarSweep: RadarSweep): RadarSweepRenderable {
-        return if (cache.containsKey(sweepKey(radarSweep))) {
-            cache[sweepKey(radarSweep)]!!
-        } else {
-            val renderable = RadarSweepRenderable(
-                radarSweep,
-                ShaderManager.instance.radarShader(),
-                ColormapTextureManager.instance.get(
-                    ColormapManager.instance.getDefault(radarSweep.product)
-                )!!
-            )
+        getMutex.withLock {
+            return if (cache.containsKey(sweepKey(radarSweep))) {
+                cache[sweepKey(radarSweep)]!!
+            } else {
+                val renderable = RadarSweepRenderable(
+                    radarSweep,
+                    ShaderManager.instance.radarShader(),
+                    ColormapTextureManager.instance.get(
+                        ColormapManager.instance.getDefault(radarSweep.product)
+                    )!!
+                )
 
-            put(radarSweep, renderable)
-            renderable
+                put(radarSweep, renderable)
+                renderable
+            }
         }
     }
 
-    suspend fun remove(key: String) {
-        val renderable = cache[key]
-        if (renderable != null) {
-            cacheMutex.withLock {
+    private suspend fun remove(key: String) {
+        removeMutex.withLock {
+            val renderable = cache[key]
+            if (renderable != null) {
                 println("cache size: ${cache.size}")
                 println("cache keys: ${cache.keys}")
                 cache.remove(key)
@@ -66,7 +66,7 @@ class RadarRenderableCache(var maxCacheSize: Int) {
         }
     }
 
-    suspend fun remove(radarSweep: RadarSweep) {
+    private suspend fun remove(radarSweep: RadarSweep) {
         remove(sweepKey(radarSweep))
     }
 
