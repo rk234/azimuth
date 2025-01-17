@@ -23,8 +23,10 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.CompletableFuture.runAsync
 import javax.swing.*
+import kotlin.math.max
+import kotlin.math.min
 
-class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: Int, glData: GLData? = null) : JPanel() {
+class RadarProductPane(private var volume: RadarVolume, var product: Product, private var tilt: Int, glData: GLData? = null) : JPanel() {
     val map: MapView = MapView(glData)
     private var radarLayer: RadarLayer = RadarLayer(volume.getProductVolume(product)!!, tilt)
 
@@ -158,6 +160,7 @@ class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: 
             }
 
             if(productVolume != null) {
+                tilt = min(tilt, productVolume.scans.size - 1)
                 radarLayer.setProductVolumeAndTilt(
                     productVolume,
                     tilt
@@ -177,6 +180,7 @@ class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: 
         this.volume = volume
         val productVolume = volume.getProductVolume(product)
         if(productVolume != null) {
+            tilt = min(tilt, productVolume.scans.size - 1)
             radarLayer.setProductVolumeAndTilt(volume.getProductVolume(product)!!, tilt)
             updateTiltLabel()
             updateTimeLabel()

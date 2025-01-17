@@ -45,6 +45,7 @@ class StatusBar(val multiPane: RadarMultiPane) : JPanel(), ProgressListener {
         add(Box.createHorizontalGlue())
 
         progressBar.maximumSize = Dimension(400,50)
+        progressBar.isVisible = false
         progressIndicatorPanel.layout = BoxLayout(progressIndicatorPanel, BoxLayout.X_AXIS)
         progressIndicatorPanel.add(progressBar)
 
