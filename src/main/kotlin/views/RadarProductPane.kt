@@ -31,6 +31,8 @@ class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: 
     private val scope: CoroutineScope = MainScope()
 
     private val productSelect = JComboBox<Product>()
+    private val upTiltBtn = JButton("+")
+    private val downTiltBtn = JButton("-")
     private var cmapBar: ColormapBar
     private var tiltLabel: JLabel
     private var timeLabel: JLabel
@@ -102,7 +104,28 @@ class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: 
         updateTimeLabel()
         timeLabel.alignmentX = JLabel.RIGHT_ALIGNMENT
 
+        upTiltBtn.alignmentX = JButton.LEFT_ALIGNMENT
+        upTiltBtn.isEnabled = false
+        downTiltBtn.alignmentX = JButton.LEFT_ALIGNMENT
+        downTiltBtn.isEnabled = false
+
+        upTiltBtn.addActionListener {
+            scope.launch(Dispatchers.Default) {
+                handleTiltChange(tilt + 1)
+            }
+        }
+
+        downTiltBtn.addActionListener {
+            scope.launch(Dispatchers.Default) {
+                handleTiltChange(tilt - 1)
+            }
+        }
+
         row.add(tiltLabel)
+        row.add(Box.createRigidArea(Dimension(4, 0)))
+        row.add(upTiltBtn)
+        row.add(Box.createRigidArea(Dimension(4, 0)))
+        row.add(downTiltBtn)
         row.add(Box.createHorizontalGlue())
         row.add(timeLabel)
 
@@ -113,6 +136,8 @@ class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: 
         add(header)
         add(cmapBar)
         add(map)
+
+        updateTiltBtns(volume.getProductVolume(product)?.scans?.size ?: 0)
     }
 
     private fun formatDateTime(dateTime: ZonedDateTime): String {
@@ -128,16 +153,21 @@ class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: 
         launch(Dispatchers.Swing) {
             val selectedProduct = productSelect.selectedItem as Product
             product = selectedProduct
-            radarLayer.setProductVolumeAndTilt(
-                withContext(Dispatchers.IO) {
-                    volume.getProductVolume(product)!!
-                },
-                tilt
-            )
-            cmapBar.setColormap(ColormapManager.instance.getDefault(product))
-            cmapBar.repaint()
-            updateTiltLabel()
-            updateTimeLabel()
+            val productVolume = withContext(Dispatchers.IO) {
+                volume.getProductVolume(selectedProduct)
+            }
+
+            if(productVolume != null) {
+                radarLayer.setProductVolumeAndTilt(
+                    productVolume,
+                    tilt
+                )
+                cmapBar.setColormap(ColormapManager.instance.getDefault(product))
+                cmapBar.repaint()
+                updateTiltLabel()
+                updateTimeLabel()
+                updateTiltBtns(productVolume.scans.size)
+            }
         }
     }
 
@@ -145,10 +175,40 @@ class RadarProductPane(var volume: RadarVolume, var product: Product, var tilt: 
         if(volume == null) return
 //        println("${product.displayName} PANEL => volume change: ${volume.handle.fileName}")
         this.volume = volume
-        radarLayer.setProductVolumeAndTilt(volume.getProductVolume(product)!!, tilt)
-        updateTiltLabel()
-        updateTimeLabel()
+        val productVolume = volume.getProductVolume(product)
+        if(productVolume != null) {
+            radarLayer.setProductVolumeAndTilt(volume.getProductVolume(product)!!, tilt)
+            updateTiltLabel()
+            updateTimeLabel()
+            updateTiltBtns(productVolume.scans.size)
+        }
 //        println("Volume updated!!")
+    }
+
+    private suspend fun handleTiltChange(tilt: Int) {
+        this.tilt = tilt
+        val productVolume = volume.getProductVolume(product)
+
+        if(productVolume != null && tilt >= 0 && tilt < productVolume.scans.size) {
+            radarLayer.setProductVolumeAndTilt(productVolume, tilt)
+            updateTiltLabel()
+            updateTiltBtns(productVolume.scans.size)
+            updateTimeLabel()
+        }
+    }
+
+    private fun updateTiltBtns(numScans: Int) {
+        if(tilt < numScans - 1) {
+            upTiltBtn.isEnabled = true
+        } else {
+            upTiltBtn.isEnabled = false
+        }
+
+        if(tilt > 0) {
+            downTiltBtn.isEnabled = true
+        } else {
+            downTiltBtn.isEnabled = false
+        }
     }
 
     private fun updateTimeLabel() {

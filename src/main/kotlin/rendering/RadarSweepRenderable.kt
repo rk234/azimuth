@@ -24,7 +24,6 @@ class RadarSweepRenderable(private val sweep: RadarSweep, private val radarShade
     private lateinit var indexBuffer: IntBuffer
 
     private val geomMutex = Mutex()
-    private val graphicsMutex = Mutex()
 
     suspend fun createGeometry() = coroutineScope {
         geomMutex.withLock {
@@ -194,10 +193,12 @@ class RadarSweepRenderable(private val sweep: RadarSweep, private val radarShade
     }
 
     override fun destroy() {
-        //TODO pass vao context here
+        if(initialized) {
+            //TODO pass vao context here
 //        vao.destroy()
-        vbo.destroy()
-        ibo.destroy()
+            vbo.destroy()
+            ibo.destroy()
+        }
     }
 
     private fun generateIndices(indices: IntBuffer, gateCount: Int) {

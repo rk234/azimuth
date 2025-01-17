@@ -23,16 +23,22 @@ object RadarDataRepository {
         val tasks = mutableListOf<Deferred<Unit>>()
 
         for(i in toDownload.indices) {
-            if(toDownload[i] == null) continue
             tasks.add(scope.async(Dispatchers.IO) {
-                val file = radarDataService.getFile(toDownload[i])
-                if(file != null) {
-                    volumes[i] = RadarVolume(file, toDownload[i])
-                    file.close()
-
-                    val progress = volumes.filterNotNull().size / volumes.size.toDouble()
-                    progressListener?.notifyProgress(progress, "Loaded file ${volumes.filterNotNull().size}/${volumes.size}")
+                val existingVolume = getHandle(toDownload[i])
+                if(existingVolume != null) {
+                    // already have the volume in the repository
+                    volumes[i] = existingVolume
+                } else {
+                    // need to fetch the volume
+                    val file = radarDataService.getFile(toDownload[i])
+                    if(file != null) {
+                        volumes[i] = RadarVolume(file, toDownload[i])
+                        file.close()
+                    }
                 }
+                val progress = volumes.filterNotNull().size / volumes.size.toDouble()
+                progressListener?.notifyProgress(progress, "Loaded file ${volumes.filterNotNull().size}/${volumes.size}")
+                return@async
             })
         }
 
@@ -67,11 +73,11 @@ object RadarDataRepository {
         println(dataFiles.getList().map { it.handle.fileName })
     }
 
-    fun containsFile(handle: VolumeFileHandle): Boolean {
+    fun getHandle(handle: VolumeFileHandle): RadarVolume? {
         dataFiles.forEach {
-           if(it.handle == handle) return true
+            if(it.handle == handle) return it
         }
-        return false
+        return null
     }
 
     fun lastFile(): RadarVolume? {
