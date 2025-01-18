@@ -3,16 +3,14 @@ package views
 import data.radar.RadarDataProvider
 import data.radar.RadarDataRepository
 import data.state.AppState
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import utils.ProgressListener
 import java.awt.Dimension
 import javax.swing.*
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 
-class StationPicker(radarDataProvider: RadarDataProvider) : JFrame("Choose a Station"), ProgressListener {
+class StationPicker(parent: JFrame, radarDataProvider: RadarDataProvider) : JDialog(parent, "Choose a Station", true), ProgressListener {
     private val stationList: JList<String>
     private val scrollPane: JScrollPane
     private val panel: JPanel = JPanel()
@@ -28,7 +26,9 @@ class StationPicker(radarDataProvider: RadarDataProvider) : JFrame("Choose a Sta
 
     private val listeners = mutableSetOf<(String?) -> Unit>()
 
-    val scope = MainScope()
+    private val scope = MainScope()
+
+    private var loadJob: Job? = null
 
     init {
         panel.layout = BoxLayout(panel, BoxLayout.Y_AXIS)
@@ -73,13 +73,32 @@ class StationPicker(radarDataProvider: RadarDataProvider) : JFrame("Choose a Sta
             val selectedStation = getSelectedStation()
 
             if(selectedStation != null) {
-                AppState.activeStation.value = selectedStation
-                AppState.window?.pauseAutoPoll()
-                scope.launch(Dispatchers.IO) {
-                    RadarDataRepository.loadInitialData(AppState.numLoopFrames.value, AppState.radarDataService, listener)
-                    AppState.window?.resumeAutoPoll()
-                    notifyListeners()
-                    isVisible = false
+                disableBtns()
+
+                runBlocking {
+                    loadJob?.cancelAndJoin()
+                }
+
+                val prevStation = AppState.activeStation.value
+
+                loadJob = scope.launch(Dispatchers.IO) {
+                    try {
+                        AppState.activeStation.value = selectedStation
+                        AppState.window?.pauseAutoPoll()
+
+                        RadarDataRepository.loadInitialData(
+                            AppState.numLoopFrames.value,
+                            AppState.radarDataService,
+                            listener
+                        )
+                        AppState.window?.resumeAutoPoll()
+                        notifyListeners()
+                        isVisible = false
+                    } catch(e: CancellationException) {
+                        println("Load job cancelled")
+                        AppState.window?.resumeAutoPoll()
+                        AppState.activeStation.value = prevStation
+                    }
                 }
             }
         }
@@ -109,6 +128,15 @@ class StationPicker(radarDataProvider: RadarDataProvider) : JFrame("Choose a Sta
         progressBar.isVisible = false
         progressMessage.isVisible = false
 
+        addWindowListener(object : java.awt.event.WindowAdapter() {
+            override fun windowClosing(e: java.awt.event.WindowEvent?) {
+                super.windowClosing(e)
+                runBlocking {
+                    loadJob?.cancelAndJoin()
+                }
+            }
+        })
+
         pack()
     }
 
@@ -129,6 +157,11 @@ class StationPicker(radarDataProvider: RadarDataProvider) : JFrame("Choose a Sta
 
     fun getSelectedStation(): String? {
         return stationList.selectedValue
+    }
+
+    fun disableBtns() {
+        applyBtn.isEnabled = false
+        cancelBtn.isEnabled = false
     }
 
     override fun notifyProgress(progress: Double?, message: String) {

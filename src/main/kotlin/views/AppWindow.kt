@@ -73,8 +73,10 @@ class AppWindow : JFrame("Azimuth") {
             statusBar.nextUpdateTime = TimeSource.Monotonic.markNow()
             val data = pollRadarData()
             if(data != null) {
-                RadarDataRepository.addDataFile(data)
-                activeVolume.value = RadarDataRepository.lastFile()
+                if(RadarDataRepository.getHandle(data.handle) == null) {
+                    RadarDataRepository.addDataFile(data)
+                    activeVolume.value = RadarDataRepository.lastFile()
+                }
             } else {
                 println("No new data..")
             }

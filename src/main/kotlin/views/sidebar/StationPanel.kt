@@ -31,7 +31,7 @@ class StationPanel : JPanel() {
 
         changeStationButton = JButton("Change Station")
         changeStationButton.addActionListener {
-            val stationPicker = StationPicker(AppState.radarDataProvider)
+            val stationPicker = StationPicker(AppState.window!!, AppState.radarDataProvider)
             stationPicker.addStationSelectListener { station ->
                 if(station != null) {
                     println("Station selected $station and data loaded!")
