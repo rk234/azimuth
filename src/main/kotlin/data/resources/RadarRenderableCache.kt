@@ -6,7 +6,7 @@ import meteo.radar.RadarSweep
 import rendering.RadarSweepRenderable
 import utils.invokeLaterOnRenderThread
 
-class RadarRenderableCache(var maxCacheSize: Int) {
+class RadarRenderableCache(private var maxCacheSize: Int) {
     companion object {
         val instance = RadarRenderableCache(20)
     }

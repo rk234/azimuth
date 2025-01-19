@@ -2,6 +2,7 @@ package views
 
 import data.radar.RadarDataRepository
 import data.state.AppState
+import kotlinx.coroutines.*
 import utils.loadIcon
 import java.awt.Dimension
 import java.awt.GridLayout
@@ -20,6 +21,10 @@ class LoopControlPanel : JPanel() {
     private val nextFrameBtn: JButton
     private val prevFrameBtn: JButton
 
+    private val scope = MainScope()
+
+    private var frameLoadJob: Job? = null
+
     init {
         layout = BoxLayout(this, BoxLayout.Y_AXIS)
         border = BorderFactory.createEmptyBorder(8, 8, 8, 8)
@@ -34,6 +39,43 @@ class LoopControlPanel : JPanel() {
         loopFrameSelect.addItem(10)
         loopFrameSelect.addItem(15)
         loopFrameSelect.addItem(20)
+        loopFrameSelect.addItem(30)
+        loopFrameSelect.addItem(50)
+
+        loopFrameSelect.selectedItem = AppState.numLoopFrames.value
+
+        loopFrameSelect.addActionListener {
+            val selectedFrames = loopFrameSelect.selectedItem as Int
+
+            if(selectedFrames != AppState.numLoopFrames.value) {
+                pauseLoop()
+
+                runBlocking {
+                    frameLoadJob?.cancelAndJoin()
+                }
+
+                frameLoadJob = scope.launch {
+                    try {
+                        AppState.window?.pauseAutoPoll()
+                        RadarDataRepository.loadInitialData(
+                            selectedFrames,
+                            AppState.radarDataService,
+                        )
+
+                        AppState.numLoopFrames.value = selectedFrames
+                        frameSlider.maximum = selectedFrames-1
+                        loopFrame = selectedFrames-1
+                        setVolumeFrame(loopFrame)
+                    } catch (e: Exception) {
+                        println("Error loading frames: ${e.message}")
+                    } finally {
+                        AppState.window?.resumeAutoPoll()
+                    }
+                }
+
+            }
+        }
+
         loopFrameSelect.alignmentX = LEFT_ALIGNMENT
         add(object : JPanel() {
             init {
@@ -76,11 +118,9 @@ class LoopControlPanel : JPanel() {
 
         togglePlayBtn.addActionListener {
             if(loopTimer.isRunning) {
-                loopTimer.stop()
-                togglePlayBtn.icon = loadIcon("loop/play.svg", 20, 20)
+                pauseLoop()
             } else {
-                loopTimer.start()
-                togglePlayBtn.icon = loadIcon("loop/pause.svg", 20, 20)
+                startLoop()
             }
         }
 
@@ -105,20 +145,28 @@ class LoopControlPanel : JPanel() {
         updateSeekBtns()
     }
 
+    private fun pauseLoop() {
+        loopTimer.stop()
+        togglePlayBtn.icon = loadIcon("loop/play.svg", 20, 20)
+    }
+
+    private fun startLoop() {
+        loopTimer.start()
+        togglePlayBtn.icon = loadIcon("loop/pause.svg", 20, 20)
+    }
+
     private fun nextFrame() {
         if(loopFrame < AppState.numLoopFrames.value - 1) {
+            pauseLoop()
             loopFrame++
-            loopTimer.stop()
-            togglePlayBtn.icon = loadIcon("loop/play.svg", 20, 20)
             setVolumeFrame(loopFrame)
         }
     }
 
     private fun lastFrame() {
         if(loopFrame >= 1) {
+            pauseLoop()
             loopFrame--
-            loopTimer.stop()
-            togglePlayBtn.icon = loadIcon("loop/play.svg", 20, 20)
             setVolumeFrame(loopFrame)
         }
     }
