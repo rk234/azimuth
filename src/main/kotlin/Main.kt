@@ -1,5 +1,6 @@
 import com.formdev.flatlaf.FlatDarkLaf
 import com.formdev.flatlaf.util.SystemInfo
+import data.radar.RadarCache
 import data.resources.ColormapManager
 import data.resources.GeoJSONManager
 import data.state.AppState
@@ -17,6 +18,8 @@ fun main() {
 
     // This resets user prefs to defaults, remove when not in dev
     UserPrefs.reset()
+
+    RadarCache.init(UserPrefs.radarCachePath())
 
     FlatDarkLaf.setup()
 

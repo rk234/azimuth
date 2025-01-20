@@ -1,6 +1,7 @@
 package views
 
 //import com.sun.java.swing.ui.StatusBar
+import data.radar.RadarCache
 import data.radar.RadarDataRepository
 import data.state.AppState
 import data.state.AppState.activeVolume
@@ -17,6 +18,7 @@ import java.awt.Dimension
 import java.awt.Menu
 import java.awt.MenuBar
 import java.awt.event.ActionEvent
+import javax.swing.Action
 import javax.swing.JButton
 import javax.swing.JFrame
 import javax.swing.JMenuBar
@@ -28,6 +30,8 @@ import kotlin.time.TimeSource
 class AppWindow : JFrame("Azimuth") {
 
     private val radarAutoPollTimer = Timer(UserPrefs.radarAutoPollFrequencySec() * 1000, ::onRadarAutoPoll)
+    private val cleanCacheTimer = Timer(1000 * 60 * 30, ::cleanCache)
+
     private val multiPane: RadarMultiPane
     private val sideBar: SideBar
     private val statusBar: StatusBar
@@ -58,6 +62,7 @@ class AppWindow : JFrame("Azimuth") {
         radarDataProvider.addProgressListener(statusBar)
         multiPane.startRendering()
         radarAutoPollTimer.start()
+        cleanCacheTimer.start()
     }
 
     fun pauseAutoPoll() {
@@ -66,6 +71,13 @@ class AppWindow : JFrame("Azimuth") {
 
     fun resumeAutoPoll() {
         radarAutoPollTimer.start()
+    }
+
+    fun cleanCache(actionEvent: ActionEvent) {
+        println("Cleaning Cache...")
+        val sb = StringBuilder()
+        RadarCache.clearCache(100 * 1000 * 1000, sb)
+        println(sb)
     }
 
     fun onRadarAutoPoll(actionEvent: ActionEvent) {

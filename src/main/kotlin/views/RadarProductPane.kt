@@ -222,6 +222,6 @@ class RadarProductPane(private var volume: RadarVolume, var product: Product, pr
     }
 
     private fun updateTiltLabel() {
-        tiltLabel.text = ("Tilt: %.2f deg".format(volume.getProductVolume(product)!!.scans[tilt].elevation))
+        tiltLabel.text = ("Elevation: %.2f deg".format(volume.getProductVolume(product)!!.scans[tilt].elevation))
     }
 }
