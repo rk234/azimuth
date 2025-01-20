@@ -48,6 +48,9 @@ class LoopControlPanel : JPanel() {
             val selectedFrames = loopFrameSelect.selectedItem as Int
 
             if(selectedFrames != AppState.numLoopFrames.value) {
+                val progressDialog = ProgressDialog( "Loading Frames")
+                progressDialog.isVisible = true
+
                 pauseLoop()
 
                 runBlocking {
@@ -60,6 +63,7 @@ class LoopControlPanel : JPanel() {
                         RadarDataRepository.loadInitialData(
                             selectedFrames,
                             AppState.radarDataService,
+                            progressDialog
                         )
 
                         AppState.numLoopFrames.value = selectedFrames
@@ -69,6 +73,7 @@ class LoopControlPanel : JPanel() {
                     } catch (e: Exception) {
                         println("Error loading frames: ${e.message}")
                     } finally {
+                        progressDialog.isVisible = false
                         AppState.window?.resumeAutoPoll()
                     }
                 }
