@@ -8,3 +8,4 @@
   - [ ] Implement line string for geojson layer
   - [ ] Implement points for geojson layer
   - [ ] Font loading and text rendering with truetype
+- [ ] Zoom level can be calculated by minimum sized tile that contains viewport

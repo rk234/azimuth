@@ -30,7 +30,7 @@ import kotlin.time.TimeSource
 class AppWindow : JFrame("Azimuth") {
 
     private val radarAutoPollTimer = Timer(UserPrefs.radarAutoPollFrequencySec() * 1000, ::onRadarAutoPoll)
-    private val cleanCacheTimer = Timer(1000 * 60 * 30, ::cleanCache)
+    private val cleanCacheTimer = Timer(1000 * UserPrefs.cacheCleanupFrequencySec(), ::cleanCache)
 
     private val multiPane: RadarMultiPane
     private val sideBar: SideBar
@@ -73,10 +73,10 @@ class AppWindow : JFrame("Azimuth") {
         radarAutoPollTimer.start()
     }
 
-    fun cleanCache(actionEvent: ActionEvent) {
+    fun cleanCache(actionEvent: ActionEvent? = null) {
         println("Cleaning Cache...")
         val sb = StringBuilder()
-        RadarCache.clearCache(100 * 1000 * 1000, sb)
+        RadarCache.clearCache(UserPrefs.cacheSizeBytes(), sb)
         println(sb)
     }
 
