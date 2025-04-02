@@ -1,0 +1,1067 @@
+{
+    "@context": [
+        "https://geojson.org/geojson-ld/geojson-context.jsonld",
+        {
+            "@version": "1.1",
+            "wx": "https://api.weather.gov/ontology#",
+            "@vocab": "https://api.weather.gov/ontology#"
+        }
+    ],
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.1d23c7e6d550b110d91701da5a9ab4f479a123b1.001.1",
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -92.08,
+                            36.5
+                        ],
+                        [
+                            -92.05,
+                            36.56
+                        ],
+                        [
+                            -92.11999999999999,
+                            36.78
+                        ],
+                        [
+                            -92.1,
+                            36.800000000000004
+                        ],
+                        [
+                            -92.08999999999999,
+                            36.940000000000005
+                        ],
+                        [
+                            -91.96999999999998,
+                            37.06
+                        ],
+                        [
+                            -91.65999999999998,
+                            37.050000000000004
+                        ],
+                        [
+                            -91.67999999999998,
+                            36.50000000000001
+                        ],
+                        [
+                            -91.85999999999999,
+                            36.49000000000001
+                        ],
+                        [
+                            -92.08,
+                            36.5
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.1d23c7e6d550b110d91701da5a9ab4f479a123b1.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.1d23c7e6d550b110d91701da5a9ab4f479a123b1.001.1",
+                "areaDesc": "Howell, MO",
+                "geocode": {
+                    "SAME": [
+                        "029091"
+                    ],
+                    "UGC": [
+                        "MOC091"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/county/MOC091"
+                ],
+                "references": [],
+                "sent": "2025-04-02T15:58:00-05:00",
+                "effective": "2025-04-02T15:58:00-05:00",
+                "onset": "2025-04-02T15:58:00-05:00",
+                "expires": "2025-04-02T16:45:00-05:00",
+                "ends": "2025-04-02T16:45:00-05:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Severe",
+                "certainty": "Observed",
+                "urgency": "Immediate",
+                "event": "Severe Thunderstorm Warning",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Springfield MO",
+                "headline": "Severe Thunderstorm Warning issued April 2 at 3:58PM CDT until April 2 at 4:45PM CDT by NWS Springfield MO",
+                "description": "SVRSGF\n\nThe National Weather Service in Springfield has issued a\n\n* Severe Thunderstorm Warning for...\nHowell County in south central Missouri...\n\n* Until 445 PM CDT.\n\n* At 358 PM CDT, severe thunderstorms were located along a line\nextending from 11 miles southwest of Willow Springs to 10 miles\nnortheast of Ott to 6 miles west of Viola, moving northeast at 55\nmph.\n\nHAZARD...60 mph wind gusts and quarter size hail.\n\nSOURCE...Radar indicated.\n\nIMPACT...Hail damage to vehicles is expected. Expect wind damage\nto roofs, siding, and trees.\n\n* Locations impacted include...\nPeace Valley, Brandsville, Lanton, South Fork, Siloam Springs,\nWhite Church, Moody, Willow Springs, Pomona, West Plains,\nPottersville, and Mountain View.",
+                "instruction": "For your protection move to an interior room on the lowest floor of a\nbuilding.\n\nA Tornado Watch remains in effect until 600 PM CDT for south central\nMissouri.",
+                "response": "Shelter",
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "SVRSGF"
+                    ],
+                    "WMOidentifier": [
+                        "WUUS53 KSGF 022058"
+                    ],
+                    "eventMotionDescription": [
+                        "2025-04-02T20:58:00-00:00...storm...220DEG...48KT...36.85,-92.07 36.63,-92.0 36.4,-92.1"
+                    ],
+                    "windThreat": [
+                        "RADAR INDICATED"
+                    ],
+                    "maxWindGust": [
+                        "60 MPH"
+                    ],
+                    "hailThreat": [
+                        "RADAR INDICATED"
+                    ],
+                    "maxHailSize": [
+                        "1.00"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.NEW.KSGF.SV.W.0095.250402T2058Z-250402T2145Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2025-04-02T21:45:00+00:00"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d46d16e714d55b0e523ac847a0e4b3b6c6cb46f6.001.1",
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -88.58,
+                            40.62
+                        ],
+                        [
+                            -88.4599999,
+                            40.61
+                        ],
+                        [
+                            -88.4599999,
+                            40.4799999
+                        ],
+                        [
+                            -88.8,
+                            40.400000000000006
+                        ],
+                        [
+                            -88.86999999999999,
+                            40.4799999
+                        ],
+                        [
+                            -88.69999999999999,
+                            40.760000000000005
+                        ],
+                        [
+                            -88.58999999999999,
+                            40.760000000000005
+                        ],
+                        [
+                            -88.58,
+                            40.62
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.d46d16e714d55b0e523ac847a0e4b3b6c6cb46f6.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.d46d16e714d55b0e523ac847a0e4b3b6c6cb46f6.001.1",
+                "areaDesc": "McLean, IL",
+                "geocode": {
+                    "SAME": [
+                        "017113"
+                    ],
+                    "UGC": [
+                        "ILC113"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/county/ILC113"
+                ],
+                "references": [],
+                "sent": "2025-04-02T15:57:00-05:00",
+                "effective": "2025-04-02T15:57:00-05:00",
+                "onset": "2025-04-02T15:57:00-05:00",
+                "expires": "2025-04-02T16:45:00-05:00",
+                "ends": "2025-04-02T16:45:00-05:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Extreme",
+                "certainty": "Observed",
+                "urgency": "Immediate",
+                "event": "Tornado Warning",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Lincoln IL",
+                "headline": "Tornado Warning issued April 2 at 3:57PM CDT until April 2 at 4:45PM CDT by NWS Lincoln IL",
+                "description": "TORILX\n\nThe National Weather Service in Lincoln has issued a\n\n* Tornado Warning for...\nNortheastern McLean County in central Illinois...\n\n* Until 445 PM CDT.\n\n* At 356 PM CDT, a severe thunderstorm capable of producing a tornado\nwas located near Downs, or 8 miles east of Bloomington, moving\nnortheast at 45 mph.\n\nHAZARD...Tornado and half dollar size hail.\n\nSOURCE...Radar indicated rotation.\n\nIMPACT...Flying debris will be dangerous to those caught without\nshelter. Mobile homes will be damaged or destroyed.\nDamage to roofs, windows, and vehicles will occur.  Tree\ndamage is likely.\n\n* This dangerous storm will be near...\nColfax around 405 PM CDT.",
+                "instruction": "TAKE COVER NOW! Move to a basement or an interior room on the lowest\nfloor of a sturdy building. Avoid windows. If you are outdoors, in a\nmobile home, or in a vehicle, move to the closest substantial shelter\nand protect yourself from flying debris.",
+                "response": "Shelter",
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "TORILX"
+                    ],
+                    "WMOidentifier": [
+                        "WFUS53 KILX 022057"
+                    ],
+                    "eventMotionDescription": [
+                        "2025-04-02T20:56:00-00:00...storm...235DEG...41KT...40.46,-88.81"
+                    ],
+                    "maxHailSize": [
+                        "1.25"
+                    ],
+                    "tornadoDetection": [
+                        "RADAR INDICATED"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.NEW.KILX.TO.W.0026.250402T2057Z-250402T2145Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2025-04-02T21:45:00+00:00"
+                    ],
+                    "WEAHandling": [
+                        "Imminent Threat"
+                    ],
+                    "CMAMtext": [
+                        "NWS: TORNADO WARNING in this area til 4:45 PM CDT. Take shelter now. Check media."
+                    ],
+                    "CMAMlongtext": [
+                        "National Weather Service: TORNADO WARNING in this area until 4:45 PM CDT. Take shelter now in a basement or an interior room on the lowest floor of a sturdy building. If you are outdoors, in a mobile home, or in a vehicle, move to the closest substantial shelter and protect yourself from flying debris. Check media."
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.5dddbc172891fd6092812b446b49f4f56ab98212.001.1",
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -89.63,
+                            39.97
+                        ],
+                        [
+                            -88.91,
+                            40.25
+                        ],
+                        [
+                            -89.08,
+                            40.05
+                        ],
+                        [
+                            -89.14999999999999,
+                            40.05
+                        ],
+                        [
+                            -89.13999999999999,
+                            39.97
+                        ],
+                        [
+                            -89.18999999999998,
+                            39.92
+                        ],
+                        [
+                            -89.21999999999998,
+                            39.92
+                        ],
+                        [
+                            -89.20999989999999,
+                            39.88
+                        ],
+                        [
+                            -89.52999999999999,
+                            39.5
+                        ],
+                        [
+                            -89.53999999999999,
+                            39.52
+                        ],
+                        [
+                            -89.99999999999999,
+                            39.52
+                        ],
+                        [
+                            -89.63,
+                            39.97
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.5dddbc172891fd6092812b446b49f4f56ab98212.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.5dddbc172891fd6092812b446b49f4f56ab98212.001.1",
+                "areaDesc": "Christian, IL; De Witt, IL; Logan, IL; Menard, IL; Morgan, IL; Sangamon, IL",
+                "geocode": {
+                    "SAME": [
+                        "017021",
+                        "017039",
+                        "017107",
+                        "017129",
+                        "017137",
+                        "017167"
+                    ],
+                    "UGC": [
+                        "ILC021",
+                        "ILC039",
+                        "ILC107",
+                        "ILC129",
+                        "ILC137",
+                        "ILC167"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/county/ILC021",
+                    "https://api.weather.gov/zones/county/ILC039",
+                    "https://api.weather.gov/zones/county/ILC107",
+                    "https://api.weather.gov/zones/county/ILC129",
+                    "https://api.weather.gov/zones/county/ILC137",
+                    "https://api.weather.gov/zones/county/ILC167"
+                ],
+                "references": [],
+                "sent": "2025-04-02T15:56:00-05:00",
+                "effective": "2025-04-02T15:56:00-05:00",
+                "onset": "2025-04-02T15:56:00-05:00",
+                "expires": "2025-04-02T16:30:00-05:00",
+                "ends": "2025-04-02T16:30:00-05:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Severe",
+                "certainty": "Observed",
+                "urgency": "Immediate",
+                "event": "Severe Thunderstorm Warning",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Lincoln IL",
+                "headline": "Severe Thunderstorm Warning issued April 2 at 3:56PM CDT until April 2 at 4:30PM CDT by NWS Lincoln IL",
+                "description": "SVRILX\n\nThe National Weather Service in Lincoln has issued a\n\n* Severe Thunderstorm Warning for...\nSoutheastern Menard County in central Illinois...\nSouthern Logan County in central Illinois...\nNorthwestern Christian County in central Illinois...\nSangamon County in central Illinois...\nWestern De Witt County in central Illinois...\nSoutheastern Morgan County in west central Illinois...\n\n* Until 430 PM CDT.\n\n* At 355 PM CDT, severe thunderstorms were located along a line\nextending from near Cornland to near Palmyra, moving northeast at\n35 mph.\n\nHAZARD...60 mph wind gusts and quarter size hail.\n\nSOURCE...Radar indicated.\n\nIMPACT...Hail damage to vehicles is expected. Expect wind damage\nto roofs, siding, and trees.\n\n* Locations impacted include...\nDawson, Sangchris Lake State Park, Mechanicsburg, Curran, Glenarm,\nThayer, Southern View, Latham, Riverton, Illinois State\nFairgrounds, Kenney, Williamsville, Elkhart, Chestnut, Clear Lake,\nLoami, Sherman, Lowder, Chatham, and Pawnee.\n\nThis includes the following highways...\nInterstate 55 between mile markers 77 and 114.\nInterstate 72 between mile markers 89 and 123.",
+                "instruction": "For your protection move to an interior room on the lowest floor of a\nbuilding.\n\nTorrential rainfall is occurring with these storms, and may lead to\nflash flooding. Do not drive your vehicle through flooded roadways.\n\nA Tornado Watch remains in effect until 1000 PM CDT for central\nIllinois.",
+                "response": "Shelter",
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "SVRILX"
+                    ],
+                    "WMOidentifier": [
+                        "WUUS53 KILX 022056"
+                    ],
+                    "eventMotionDescription": [
+                        "2025-04-02T20:55:00-00:00...storm...242DEG...32KT...39.96,-89.47 39.41,-89.92"
+                    ],
+                    "windThreat": [
+                        "RADAR INDICATED"
+                    ],
+                    "maxWindGust": [
+                        "60 MPH"
+                    ],
+                    "hailThreat": [
+                        "RADAR INDICATED"
+                    ],
+                    "maxHailSize": [
+                        "1.00"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.NEW.KILX.SV.W.0063.250402T2056Z-250402T2130Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2025-04-02T21:30:00+00:00"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.56005f9e9bce54adf5dbd7c41b07ff6551ddaaf6.001.1",
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -90.5,
+                            38.11
+                        ],
+                        [
+                            -90.63,
+                            38.3
+                        ],
+                        [
+                            -90.39,
+                            38.449999999999996
+                        ],
+                        [
+                            -90.06,
+                            38.62
+                        ],
+                        [
+                            -89.85000000000001,
+                            38.39
+                        ],
+                        [
+                            -90.5,
+                            38.11
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.56005f9e9bce54adf5dbd7c41b07ff6551ddaaf6.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.56005f9e9bce54adf5dbd7c41b07ff6551ddaaf6.001.1",
+                "areaDesc": "Monroe, IL; St. Clair, IL; Jefferson, MO; St. Louis, MO",
+                "geocode": {
+                    "SAME": [
+                        "017133",
+                        "017163",
+                        "029099",
+                        "029189"
+                    ],
+                    "UGC": [
+                        "ILC133",
+                        "ILC163",
+                        "MOC099",
+                        "MOC189"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/county/ILC133",
+                    "https://api.weather.gov/zones/county/ILC163",
+                    "https://api.weather.gov/zones/county/MOC099",
+                    "https://api.weather.gov/zones/county/MOC189"
+                ],
+                "references": [],
+                "sent": "2025-04-02T15:55:00-05:00",
+                "effective": "2025-04-02T15:55:00-05:00",
+                "onset": "2025-04-02T15:55:00-05:00",
+                "expires": "2025-04-02T16:45:00-05:00",
+                "ends": "2025-04-02T16:45:00-05:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Extreme",
+                "certainty": "Observed",
+                "urgency": "Immediate",
+                "event": "Tornado Warning",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS St Louis MO",
+                "headline": "Tornado Warning issued April 2 at 3:55PM CDT until April 2 at 4:45PM CDT by NWS St Louis MO",
+                "description": "TORLSX\n\nThe National Weather Service in St Louis has issued a\n\n* Tornado Warning for...\nNorthwestern Monroe County in southwestern Illinois...\nWestern Saint Clair County in southwestern Illinois...\nCentral Jefferson County in east central Missouri...\nSouth Central Saint Louis County in east central Missouri...\n\n* Until 445 PM CDT.\n\n* At 355 PM CDT, a severe thunderstorm capable of producing a\ntornado was located near De Soto, moving northeast at 50 mph.\n\nHAZARD...Tornado and quarter size hail.\n\nSOURCE...Radar indicated rotation.\n\nIMPACT...Flying debris will be dangerous to those caught\nwithout shelter. Mobile homes will be damaged or\ndestroyed. Damage to roofs, windows and vehicles will\noccur. Tree damage is likely.\n\n* This tornado will be near...\nHillsboro and Olympian Village around 400 PM CDT.\nFestus around 405 PM CDT.\n\nOther locations impacted by the tornado include Hematite, Victoria,\nMapaville, Harrisonville, Kimmswick, Monroe City, Foster Pond,\nWartburg, Madonnaville and New Hanover.\n\nThis includes the following State Parks...\nMastodon Historic Site, Sandy Creek Covered Bridge Historic Site and\nGov. Dunklin's Grave Historic Site.\n\nThis includes Interstate 55 in Missouri between exits 174 and 191.",
+                "instruction": "Move to an interior room on the lowest floor of a well-built\nbuilding away from windows. If you are outdoors, in a mobile home,\nor in a vehicle, move to the closest substantial shelter and protect\nyourself from flying debris.",
+                "response": "Shelter",
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "TORLSX"
+                    ],
+                    "WMOidentifier": [
+                        "WFUS53 KLSX 022055"
+                    ],
+                    "eventMotionDescription": [
+                        "2025-04-02T20:55:00-00:00...storm...234DEG...42KT...38.18,-90.59"
+                    ],
+                    "maxHailSize": [
+                        "1.00"
+                    ],
+                    "tornadoDetection": [
+                        "RADAR INDICATED"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.NEW.KLSX.TO.W.0025.250402T2055Z-250402T2145Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2025-04-02T21:45:00+00:00"
+                    ],
+                    "WEAHandling": [
+                        "Imminent Threat"
+                    ],
+                    "CMAMtext": [
+                        "NWS: TORNADO WARNING in this area til 4:45 PM CDT. Take shelter now. Check media."
+                    ],
+                    "CMAMlongtext": [
+                        "National Weather Service: TORNADO WARNING in this area until 4:45 PM CDT. Take shelter now in a basement or an interior room on the lowest floor of a sturdy building. If you are outdoors, in a mobile home, or in a vehicle, move to the closest substantial shelter and protect yourself from flying debris. Check media."
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.75c477ca986dae57c780b054123dbfbbabb93689.001.1",
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -89.18,
+                            35.21
+                        ],
+                        [
+                            -89.34,
+                            35.33
+                        ],
+                        [
+                            -88.77000000000001,
+                            35.979999899999996
+                        ],
+                        [
+                            -88.30000000000001,
+                            35.65
+                        ],
+                        [
+                            -89.18,
+                            35.21
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.75c477ca986dae57c780b054123dbfbbabb93689.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.75c477ca986dae57c780b054123dbfbbabb93689.001.1",
+                "areaDesc": "Carroll, TN; Chester, TN; Crockett, TN; Fayette, TN; Gibson, TN; Hardeman, TN; Haywood, TN; Henderson, TN; Madison, TN",
+                "geocode": {
+                    "SAME": [
+                        "047017",
+                        "047023",
+                        "047033",
+                        "047047",
+                        "047053",
+                        "047069",
+                        "047075",
+                        "047077",
+                        "047113"
+                    ],
+                    "UGC": [
+                        "TNC017",
+                        "TNC023",
+                        "TNC033",
+                        "TNC047",
+                        "TNC053",
+                        "TNC069",
+                        "TNC075",
+                        "TNC077",
+                        "TNC113"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/county/TNC017",
+                    "https://api.weather.gov/zones/county/TNC023",
+                    "https://api.weather.gov/zones/county/TNC033",
+                    "https://api.weather.gov/zones/county/TNC047",
+                    "https://api.weather.gov/zones/county/TNC053",
+                    "https://api.weather.gov/zones/county/TNC069",
+                    "https://api.weather.gov/zones/county/TNC075",
+                    "https://api.weather.gov/zones/county/TNC077",
+                    "https://api.weather.gov/zones/county/TNC113"
+                ],
+                "references": [],
+                "sent": "2025-04-02T15:54:00-05:00",
+                "effective": "2025-04-02T15:54:00-05:00",
+                "onset": "2025-04-02T15:54:00-05:00",
+                "expires": "2025-04-02T17:00:00-05:00",
+                "ends": "2025-04-02T17:00:00-05:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Extreme",
+                "certainty": "Observed",
+                "urgency": "Immediate",
+                "event": "Tornado Warning",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Memphis TN",
+                "headline": "Tornado Warning issued April 2 at 3:54PM CDT until April 2 at 5:00PM CDT by NWS Memphis TN",
+                "description": "TORMEG\n\nThe National Weather Service in Memphis has issued a\n\n* Tornado Warning for...\nSoutheastern Crockett County in west Tennessee...\nNorthwestern Henderson County in west Tennessee...\nSoutheastern Gibson County in west Tennessee...\nNortheastern Fayette County in west Tennessee...\nNorthwestern Hardeman County in west Tennessee...\nSouthwestern Carroll County in west Tennessee...\nSoutheastern Haywood County in west Tennessee...\nMadison County in west Tennessee...\nNorthwestern Chester County in west Tennessee...\n\n* Until 500 PM CDT.\n\n* At 354 PM CDT, a severe thunderstorm capable of producing a tornado\nwas located over Whiteville, or 11 miles northwest of Bolivar,\nmoving northeast at 50 mph.\n\nHAZARD...Tornado and quarter size hail.\n\nSOURCE...Radar indicated rotation.\n\nIMPACT...Flying debris will be dangerous to those caught without\nshelter. Mobile homes will be damaged or destroyed.\nDamage to roofs, windows, and vehicles will occur.  Tree\ndamage is likely.\n\n* Locations impacted include...\nHickory Flat, Neely, Pinson, Huntersville, Humboldt, Jackson,\nWestover, Ledbetter, Madison Hall, Uptonville, Lexington, Fairview,\nWhiteville, Medina, Mason Grove, Blue Goose, Hinson Springs, Pinson\nMounds State Archaeological Park, Laconia, and Hillville.",
+                "instruction": "TAKE COVER NOW! Move to a storm shelter or an interior room on the\nlowest floor of a sturdy building. Avoid windows. If you are\noutdoors, in a mobile home, or in a vehicle, move to the closest\nsubstantial shelter and protect yourself from flying debris.",
+                "response": "Shelter",
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "TORMEG"
+                    ],
+                    "WMOidentifier": [
+                        "WFUS54 KMEG 022054"
+                    ],
+                    "eventMotionDescription": [
+                        "2025-04-02T20:54:00-00:00...storm...227DEG...45KT...35.33,-89.2"
+                    ],
+                    "maxHailSize": [
+                        "1.00"
+                    ],
+                    "tornadoDetection": [
+                        "RADAR INDICATED"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.NEW.KMEG.TO.W.0044.250402T2054Z-250402T2200Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2025-04-02T22:00:00+00:00"
+                    ],
+                    "WEAHandling": [
+                        "Imminent Threat"
+                    ],
+                    "CMAMtext": [
+                        "NWS: TORNADO WARNING in this area til 5:00 PM CDT. Take shelter now. Check media."
+                    ],
+                    "CMAMlongtext": [
+                        "National Weather Service: TORNADO WARNING in this area until 5:00 PM CDT. Take shelter now in a basement or an interior room on the lowest floor of a sturdy building. If you are outdoors, in a mobile home, or in a vehicle, move to the closest substantial shelter and protect yourself from flying debris. Check media."
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.8f3b553a78500d1ac0de3863285022214928e857.001.1",
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -89.9599999,
+                            34.67
+                        ],
+                        [
+                            -89.62,
+                            35.28
+                        ],
+                        [
+                            -89.19,
+                            35.24
+                        ],
+                        [
+                            -89.2,
+                            35.09
+                        ],
+                        [
+                            -89.31,
+                            34.99
+                        ],
+                        [
+                            -89.35000000000001,
+                            34.99
+                        ],
+                        [
+                            -89.35000000000001,
+                            34.96
+                        ],
+                        [
+                            -89.81,
+                            34.56
+                        ],
+                        [
+                            -89.9599999,
+                            34.67
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.8f3b553a78500d1ac0de3863285022214928e857.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.8f3b553a78500d1ac0de3863285022214928e857.001.1",
+                "areaDesc": "DeSoto, MS; Marshall, MS; Tate, MS; Fayette, TN; Shelby, TN",
+                "geocode": {
+                    "SAME": [
+                        "028033",
+                        "028093",
+                        "028137",
+                        "047047",
+                        "047157"
+                    ],
+                    "UGC": [
+                        "MSC033",
+                        "MSC093",
+                        "MSC137",
+                        "TNC047",
+                        "TNC157"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/county/MSC033",
+                    "https://api.weather.gov/zones/county/MSC093",
+                    "https://api.weather.gov/zones/county/MSC137",
+                    "https://api.weather.gov/zones/county/TNC047",
+                    "https://api.weather.gov/zones/county/TNC157"
+                ],
+                "references": [],
+                "sent": "2025-04-02T15:49:00-05:00",
+                "effective": "2025-04-02T15:49:00-05:00",
+                "onset": "2025-04-02T15:49:00-05:00",
+                "expires": "2025-04-02T16:45:00-05:00",
+                "ends": "2025-04-02T16:45:00-05:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Severe",
+                "certainty": "Observed",
+                "urgency": "Immediate",
+                "event": "Severe Thunderstorm Warning",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Memphis TN",
+                "headline": "Severe Thunderstorm Warning issued April 2 at 3:49PM CDT until April 2 at 4:45PM CDT by NWS Memphis TN",
+                "description": "SVRMEG\n\nThe National Weather Service in Memphis has issued a\n\n* Severe Thunderstorm Warning for...\nNortheastern DeSoto County in northwestern Mississippi...\nNorthwestern Marshall County in northwestern Mississippi...\nEastern Tate County in northwestern Mississippi...\nFayette County in west Tennessee...\nSoutheastern Shelby County in west Tennessee...\n\n* Until 445 PM CDT.\n\n* At 349 PM CDT, a severe thunderstorm was located near Independence,\nor 8 miles northeast of Senatobia, moving northeast at 45 mph.\n\nHAZARD...60 mph wind gusts and quarter size hail.\n\nSOURCE...Radar indicated.\n\nIMPACT...Hail damage to vehicles is expected. Expect wind damage\nto roofs, siding, and trees.\n\n* Locations impacted include...\nGhost River State Natural Area, Mt Pleasant, Cayce, Crossroad,\nWatson, Oakland, Taska, Kirk, Rossville, Fisherville, Collierville,\nMacon, Lurline, Fairhaven, Victoria, Canadaville, Lewisburg, Early\nGrove, Williston, and Red Banks.",
+                "instruction": "For your protection move to an interior room on the lowest floor of a\nbuilding.\n\nA Tornado Watch remains in effect until midnight CDT for northeastern\nand northwestern Mississippi...and west Tennessee.",
+                "response": "Shelter",
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "SVRMEG"
+                    ],
+                    "WMOidentifier": [
+                        "WUUS54 KMEG 022049"
+                    ],
+                    "eventMotionDescription": [
+                        "2025-04-02T20:49:00-00:00...storm...212DEG...41KT...34.69,-89.86"
+                    ],
+                    "windThreat": [
+                        "RADAR INDICATED"
+                    ],
+                    "maxWindGust": [
+                        "60 MPH"
+                    ],
+                    "hailThreat": [
+                        "RADAR INDICATED"
+                    ],
+                    "maxHailSize": [
+                        "1.00"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.NEW.KMEG.SV.W.0105.250402T2049Z-250402T2145Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2025-04-02T21:45:00+00:00"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.643d063b7b95dd314dd5ec9d2b3b6b928d7b8a8b.001.1",
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -89.7099999,
+                            36.14
+                        ],
+                        [
+                            -89.15,
+                            35.76
+                        ],
+                        [
+                            -89.95,
+                            35.39
+                        ],
+                        [
+                            -89.9599999,
+                            35.39
+                        ],
+                        [
+                            -90.08,
+                            35.47
+                        ],
+                        [
+                            -89.7099999,
+                            36.14
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.643d063b7b95dd314dd5ec9d2b3b6b928d7b8a8b.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.643d063b7b95dd314dd5ec9d2b3b6b928d7b8a8b.001.1",
+                "areaDesc": "Mississippi, AR; Pemiscot, MO; Crockett, TN; Dyer, TN; Haywood, TN; Lauderdale, TN; Tipton, TN",
+                "geocode": {
+                    "SAME": [
+                        "005093",
+                        "029155",
+                        "047033",
+                        "047045",
+                        "047075",
+                        "047097",
+                        "047167"
+                    ],
+                    "UGC": [
+                        "ARC093",
+                        "MOC155",
+                        "TNC033",
+                        "TNC045",
+                        "TNC075",
+                        "TNC097",
+                        "TNC167"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/county/ARC093",
+                    "https://api.weather.gov/zones/county/MOC155",
+                    "https://api.weather.gov/zones/county/TNC033",
+                    "https://api.weather.gov/zones/county/TNC045",
+                    "https://api.weather.gov/zones/county/TNC075",
+                    "https://api.weather.gov/zones/county/TNC097",
+                    "https://api.weather.gov/zones/county/TNC167"
+                ],
+                "references": [],
+                "sent": "2025-04-02T15:49:00-05:00",
+                "effective": "2025-04-02T15:49:00-05:00",
+                "onset": "2025-04-02T15:49:00-05:00",
+                "expires": "2025-04-02T16:45:00-05:00",
+                "ends": "2025-04-02T16:45:00-05:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Extreme",
+                "certainty": "Observed",
+                "urgency": "Immediate",
+                "event": "Tornado Warning",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Memphis TN",
+                "headline": "Tornado Warning issued April 2 at 3:49PM CDT until April 2 at 4:45PM CDT by NWS Memphis TN",
+                "description": "TORMEG\n\nThe National Weather Service in Memphis has issued a\n\n* Tornado Warning for...\nEastern Mississippi County in eastern Arkansas...\nSouth central Pemiscot County in southeastern Missouri...\nSouthwestern Crockett County in west Tennessee...\nCentral Tipton County in west Tennessee...\nSouthwestern Dyer County in west Tennessee...\nLauderdale County in west Tennessee...\nNorthwestern Haywood County in west Tennessee...\n\n* Until 445 PM CDT.\n\n* At 349 PM CDT, a severe thunderstorm capable of producing a tornado\nwas located near Dixonville, or 8 miles southeast of Wilson, moving\nnortheast at 45 mph.\n\nHAZARD...Tornado and golf ball size hail.\n\nSOURCE...Radar indicated rotation.\n\nIMPACT...Flying debris will be dangerous to those caught without\nshelter. Mobile homes will be damaged or destroyed.\nDamage to roofs, windows, and vehicles will occur.  Tree\ndamage is likely.\n\n* Locations impacted include...\nBurlison, Edith, Nutbush, O'Donnell Bend, Grider, Tomato, Tyler,\nCovington, Luckett, Forked Deer, Randolph, Halls, Poplar Grove,\nCurve, Dog Hill, Orysa, Tibbs, Durhamville, Nankipoo, and Armorel.",
+                "instruction": "TAKE COVER NOW! Move to a storm shelter or an interior room on the\nlowest floor of a sturdy building. Avoid windows. If you are\noutdoors, in a mobile home, or in a vehicle, move to the closest\nsubstantial shelter and protect yourself from flying debris.",
+                "response": "Shelter",
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "TORMEG"
+                    ],
+                    "WMOidentifier": [
+                        "WFUS54 KMEG 022049"
+                    ],
+                    "eventMotionDescription": [
+                        "2025-04-02T20:49:00-00:00...storm...225DEG...38KT...35.5,-89.91"
+                    ],
+                    "maxHailSize": [
+                        "1.75"
+                    ],
+                    "tornadoDetection": [
+                        "RADAR INDICATED"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.NEW.KMEG.TO.W.0043.250402T2049Z-250402T2145Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2025-04-02T21:45:00+00:00"
+                    ],
+                    "WEAHandling": [
+                        "Imminent Threat"
+                    ],
+                    "CMAMtext": [
+                        "NWS: TORNADO WARNING in this area til 4:45 PM CDT. Take shelter now. Check media."
+                    ],
+                    "CMAMlongtext": [
+                        "National Weather Service: TORNADO WARNING in this area until 4:45 PM CDT. Take shelter now in a basement or an interior room on the lowest floor of a sturdy building. If you are outdoors, in a mobile home, or in a vehicle, move to the closest substantial shelter and protect yourself from flying debris. Check media."
+                    ]
+                }
+            }
+        },
+        {
+            "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.4d0e8eb7b98097757e2b9434f71e8be387b6a9ef.001.1",
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -91.22,
+                            37.08
+                        ],
+                        [
+                            -91.23,
+                            36.83
+                        ],
+                        [
+                            -91.11,
+                            36.82
+                        ],
+                        [
+                            -91.12,
+                            36.71
+                        ],
+                        [
+                            -91.67,
+                            36.6
+                        ],
+                        [
+                            -91.66,
+                            36.9099999
+                        ],
+                        [
+                            -91.14999999999999,
+                            37.260000000000005
+                        ],
+                        [
+                            -91.13,
+                            37.25000000000001
+                        ],
+                        [
+                            -91.11999999999999,
+                            37.20000000000001
+                        ],
+                        [
+                            -91.08999999999999,
+                            37.20000000000001
+                        ],
+                        [
+                            -91.08999999999999,
+                            37.18000000000001
+                        ],
+                        [
+                            -91.03999999999999,
+                            37.15999990000001
+                        ],
+                        [
+                            -91.03999999999999,
+                            37.14000000000001
+                        ],
+                        [
+                            -91.02,
+                            37.14000000000001
+                        ],
+                        [
+                            -91.02,
+                            37.09000000000001
+                        ],
+                        [
+                            -91.22,
+                            37.08
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.4d0e8eb7b98097757e2b9434f71e8be387b6a9ef.001.1",
+                "@type": "wx:Alert",
+                "id": "urn:oid:2.49.0.1.840.0.4d0e8eb7b98097757e2b9434f71e8be387b6a9ef.001.1",
+                "areaDesc": "Oregon, MO; Shannon, MO",
+                "geocode": {
+                    "SAME": [
+                        "029149",
+                        "029203"
+                    ],
+                    "UGC": [
+                        "MOC149",
+                        "MOC203"
+                    ]
+                },
+                "affectedZones": [
+                    "https://api.weather.gov/zones/county/MOC149",
+                    "https://api.weather.gov/zones/county/MOC203"
+                ],
+                "references": [],
+                "sent": "2025-04-02T15:39:00-05:00",
+                "effective": "2025-04-02T15:39:00-05:00",
+                "onset": "2025-04-02T15:39:00-05:00",
+                "expires": "2025-04-02T16:45:00-05:00",
+                "ends": "2025-04-02T16:45:00-05:00",
+                "status": "Actual",
+                "messageType": "Alert",
+                "category": "Met",
+                "severity": "Severe",
+                "certainty": "Observed",
+                "urgency": "Immediate",
+                "event": "Severe Thunderstorm Warning",
+                "sender": "w-nws.webmaster@noaa.gov",
+                "senderName": "NWS Springfield MO",
+                "headline": "Severe Thunderstorm Warning issued April 2 at 3:39PM CDT until April 2 at 4:45PM CDT by NWS Springfield MO",
+                "description": "SVRSGF\n\nThe National Weather Service in Springfield has issued a\n\n* Severe Thunderstorm Warning for...\nSouthern Shannon County in south central Missouri...\nNorthern Oregon County in south central Missouri...\n\n* Until 445 PM CDT.\n\n* At 338 PM CDT, a severe thunderstorm was located 12 miles east of\nWest Plains, moving northeast at 50 mph.\n\nHAZARD...60 mph wind gusts and half dollar size hail.\n\nSOURCE...Radar indicated.\n\nIMPACT...Hail damage to vehicles is expected. Expect wind damage\nto roofs, siding, and trees.\n\n* Locations impacted include...\nRover, Wilderness, Winona, Thomasville, Greer, Birch Tree, Alton,\nand Ozark National Scenic Riverways.",
+                "instruction": "Remain alert for a possible tornado! Tornadoes can develop quickly\nfrom severe thunderstorms. If you spot a tornado go at once into the\nbasement or small central room in a sturdy structure.\n\nFor your protection move to an interior room on the lowest floor of a\nbuilding.\n\nA Tornado Watch remains in effect until 400 PM CDT for south central\nMissouri.",
+                "response": "Shelter",
+                "parameters": {
+                    "AWIPSidentifier": [
+                        "SVRSGF"
+                    ],
+                    "WMOidentifier": [
+                        "WUUS53 KSGF 022039"
+                    ],
+                    "eventMotionDescription": [
+                        "2025-04-02T20:38:00-00:00...storm...229DEG...38KT...36.8,-91.65"
+                    ],
+                    "windThreat": [
+                        "RADAR INDICATED"
+                    ],
+                    "maxWindGust": [
+                        "60 MPH"
+                    ],
+                    "hailThreat": [
+                        "RADAR INDICATED"
+                    ],
+                    "maxHailSize": [
+                        "1.25"
+                    ],
+                    "tornadoDetection": [
+                        "POSSIBLE"
+                    ],
+                    "BLOCKCHANNEL": [
+                        "EAS",
+                        "NWEM",
+                        "CMAS"
+                    ],
+                    "EAS-ORG": [
+                        "WXR"
+                    ],
+                    "VTEC": [
+                        "/O.NEW.KSGF.SV.W.0094.250402T2039Z-250402T2145Z/"
+                    ],
+                    "eventEndingTime": [
+                        "2025-04-02T21:45:00+00:00"
+                    ]
+                }
+            }
+        }
+    ],
+    "title": "Current watches, warnings, and advisories",
+    "updated": "2025-04-02T20:59:24+00:00"
+}
