@@ -160,7 +160,7 @@ class RadarSweepRenderable(private val sweep: RadarSweep, private val radarShade
             ibo.destroy()
         }
     }
-
+    //TODO: can pre-compute these indices
     private fun generateIndices(indices: IntBuffer, gateCount: Int) {
         var index = 0
         for (j in 0..<gateCount) {
