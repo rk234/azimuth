@@ -12,7 +12,7 @@ object AppState {
     var radarDataProvider = RadarDataProvider()
     var activeVolume: State<RadarVolume?> = State(null)
     var numLoopFrames = State(UserPrefs.numLoopFrames())
-    var activeStation = State(UserPrefs.defaultStation())
+    var activeStation = State("KHPX")
     var radarDataService = RadarDataService(activeStation.value, radarDataProvider)
     var window: AppWindow? = null
 
