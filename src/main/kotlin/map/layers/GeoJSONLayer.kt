@@ -100,8 +100,6 @@ class GeoJSONLayer(private val json: JSONObject, val lineWidth: Float, val lineC
                 vertices.add(p2)
             }
         }
-
-
     }
 
     private fun initGraphics(vertices: ArrayList<Vector2f>) {

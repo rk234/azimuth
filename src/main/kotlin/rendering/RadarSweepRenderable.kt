@@ -37,7 +37,6 @@ class RadarSweepRenderable(private val sweep: RadarSweep, private val radarShade
             jobStartIdx[jobStartIdx.lastIndex] = gateCount
 
             vertBuffer = MemoryUtil.memAllocFloat(gateCount * 3 * 4)
-            val proj = MercatorProjection()
             val cmap = ColormapManager.instance.getDefault(sweep.product)
 
             val resolution =
@@ -51,31 +50,30 @@ class RadarSweepRenderable(private val sweep: RadarSweep, private val radarShade
                     val azimuth = radial.azimuth
                     val startAngle: Float = (azimuth) - (resolution / 2) * 1.12f
                     val endAngle: Float = (azimuth) + (resolution / 2) * 1.12f
-                    val quad = FloatArray(12)
                     for (gateIndex in jobStartIdx[i]..<jobStartIdx[i + 1]) {
                         val gate = RadarGate(radial.gates.get(gateIndex - jobStartIdx[i]))
-                        val range = sweep.rangeStart + (gateSize * gate.idx().toFloat()) // 1000
+                        val range = sweep.rangeStart + (gateSize * gate.idx().toFloat())
                         val data = gate.scaledValue(sweep.scale, sweep.addOffset)
 
                         val rescaled = cmap.rescale(data)
                         val gateVertIndex = gateIndex * 4 * 3
-                        quad[0] = startAngle
-                        quad[1] = range
-                        quad[2] = rescaled
 
-                        quad[3] = startAngle
-                        quad[4] = range+gateSize
-                        quad[5] = rescaled
-
-                        quad[6] = endAngle
-                        quad[7] = range+gateSize
-                        quad[8] = rescaled
-
-                        quad[9] = endAngle
-                        quad[10] = range
-                        quad[11] = rescaled
-
-                        vertBuffer.put(gateVertIndex, quad)
+                        // Vertex 0
+                        vertBuffer.put(gateVertIndex, startAngle)
+                        vertBuffer.put(gateVertIndex + 1, range)
+                        vertBuffer.put(gateVertIndex + 2, rescaled)
+                        // Vertex 1
+                        vertBuffer.put(gateVertIndex + 3, startAngle)
+                        vertBuffer.put(gateVertIndex + 4, range + gateSize)
+                        vertBuffer.put(gateVertIndex + 5, rescaled)
+                        // Vertex 2
+                        vertBuffer.put(gateVertIndex + 6, endAngle)
+                        vertBuffer.put(gateVertIndex + 7, range + gateSize)
+                        vertBuffer.put(gateVertIndex + 8, rescaled)
+                        // Vertex 3
+                        vertBuffer.put(gateVertIndex + 9, endAngle)
+                        vertBuffer.put(gateVertIndex + 10, range)
+                        vertBuffer.put(gateVertIndex + 11, rescaled)
                     }
                 })
             }

@@ -3,6 +3,8 @@ package data.state
 import data.radar.RadarDataProvider
 import data.radar.RadarDataRepository
 import data.radar.RadarDataService
+import data.warnings.WarningDataManager
+import data.warnings.WarningDataService
 import kotlinx.coroutines.*
 import meteo.radar.*
 import utils.ProgressListener
@@ -12,8 +14,10 @@ object AppState {
     var radarDataProvider = RadarDataProvider()
     var activeVolume: State<RadarVolume?> = State(null)
     var numLoopFrames = State(UserPrefs.numLoopFrames())
-    var activeStation = State("KHPX")
+    var activeStation = State(UserPrefs.defaultStation())
     var radarDataService = RadarDataService(activeStation.value, radarDataProvider)
+    var warningDataService = WarningDataService()
+    val warningDataManager = WarningDataManager(warningDataService)
     var window: AppWindow? = null
 
     suspend fun init(progressListener: ProgressListener? = null) {
@@ -21,6 +25,7 @@ object AppState {
         loadInitialData(progressListener)
         activeVolume.value = RadarDataRepository.lastFile()
 
+        warningDataService.init()
         activeStation.onChange {
             radarDataService = RadarDataService(it, radarDataProvider)
         }
@@ -29,6 +34,8 @@ object AppState {
     private suspend fun loadInitialData(progressListener: ProgressListener? = null) = coroutineScope {
         progressListener?.notifyProgress(null, "Loading initial data for ${activeStation.value}")
         RadarDataRepository.loadInitialData(numLoopFrames.value, radarDataService, progressListener)
+        warningDataManager.init()
+        warningDataManager.startPolling()
     }
 }
 

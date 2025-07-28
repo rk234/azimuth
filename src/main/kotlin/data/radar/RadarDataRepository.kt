@@ -32,8 +32,15 @@ object RadarDataRepository {
                     // need to fetch the volume
                     val file = radarDataService.getFile(toDownload[i])
                     if(file != null) {
-                        volumes[i] = RadarVolume(file, toDownload[i])
-                        file.close()
+                        try {
+                            volumes[i] = RadarVolume(file, toDownload[i])
+                        } catch(ex: Exception) {
+                            println("Error loading file ${toDownload[i].fileName}: ${ex.message}")
+                            ex.printStackTrace()
+                            volumes[i] = null
+                        } finally {
+                            file.close()
+                        }
                     }
                 }
                 val progress = volumes.filterNotNull().size / volumes.size.toDouble()
