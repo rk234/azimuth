@@ -26,3 +26,5 @@ object RenderThreadTaskQueue {
 suspend fun invokeLaterOnRenderThread(runnable: Runnable) {
     RenderThreadTaskQueue.offer(runnable)
 }
+
+fun tripleToVec3f(triple: Triple<Float, Float, Float>) = org.joml.Vector3f(triple.first, triple.second, triple.third)

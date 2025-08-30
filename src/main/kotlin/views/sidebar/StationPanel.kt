@@ -31,14 +31,14 @@ class StationPanel : JPanel() {
 
         changeStationButton = JButton("Change Station")
         changeStationButton.addActionListener {
-            val stationPicker = StationPicker(AppState.window!!, AppState.radarDataProvider)
+            val stationPicker = StationPicker(changeStationButton, AppState.radarDataProvider)
             stationPicker.addStationSelectListener { station ->
                 if(station != null) {
                     println("Station selected $station and data loaded!")
                     AppState.activeVolume.value = RadarDataRepository.lastFile()
                 }
             }
-            stationPicker.isVisible = true
+            stationPicker.showUnder(changeStationButton)
         }
         stationHeader.add(changeStationButton)
         stationHeader.alignmentX = JPanel.LEFT_ALIGNMENT

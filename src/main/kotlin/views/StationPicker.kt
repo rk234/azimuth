@@ -10,10 +10,9 @@ import javax.swing.*
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 
-class StationPicker(parent: JFrame, radarDataProvider: RadarDataProvider) : JDialog(parent, "Choose a Station", true), ProgressListener {
+class StationPicker(private val parent: JComponent, radarDataProvider: RadarDataProvider) : JPopupMenu(), ProgressListener {
     private val stationList: JList<String>
     private val scrollPane: JScrollPane
-    private val panel: JPanel = JPanel()
     private val stations: List<String>
 
     private val searchBar: JTextField = JTextField()
@@ -31,9 +30,10 @@ class StationPicker(parent: JFrame, radarDataProvider: RadarDataProvider) : JDia
     private var loadJob: Job? = null
 
     init {
+        val panel = JPanel()
         panel.layout = BoxLayout(panel, BoxLayout.Y_AXIS)
-        contentPane = panel
         panel.border = BorderFactory.createEmptyBorder(8,8,8,8)
+        panel.preferredSize = Dimension(350, 400)
 
         val label = JLabel("Station List")
         label.alignmentX = JLabel.LEFT_ALIGNMENT
@@ -45,14 +45,14 @@ class StationPicker(parent: JFrame, radarDataProvider: RadarDataProvider) : JDia
 
         scrollPane = JScrollPane(stationList)
         scrollPane.alignmentX = JList.LEFT_ALIGNMENT
-        scrollPane.maximumSize = Dimension(Integer.MAX_VALUE, 500)
-        scrollPane.preferredSize = Dimension(400, 400)
+        scrollPane.maximumSize = Dimension(Integer.MAX_VALUE, 300)
+        scrollPane.preferredSize = Dimension(330, 250)
 
         panel.add(label)
-        add(Box.createVerticalStrut(8))
+        panel.add(Box.createVerticalStrut(8))
 
         searchBar.alignmentX = JTextField.LEFT_ALIGNMENT
-        searchBar.maximumSize = Dimension(Integer.MAX_VALUE, 30)
+        searchBar.maximumSize = Dimension(Integer.MAX_VALUE, 25)
         searchBar.document.addDocumentListener(object : DocumentListener {
             override fun insertUpdate(e: DocumentEvent?) {
                 filterList()
@@ -63,10 +63,11 @@ class StationPicker(parent: JFrame, radarDataProvider: RadarDataProvider) : JDia
 
             override fun changedUpdate(e: DocumentEvent?) {}
         })
-        add(searchBar)
+        panel.add(searchBar)
+        panel.add(Box.createVerticalStrut(8))
 
         panel.add(scrollPane)
-        add(Box.createVerticalStrut(8))
+        panel.add(Box.createVerticalStrut(8))
 
         applyBtn.addActionListener {
             val listener = this
@@ -93,7 +94,7 @@ class StationPicker(parent: JFrame, radarDataProvider: RadarDataProvider) : JDia
                         )
                         AppState.window?.resumeAutoPoll()
                         notifyListeners()
-                        isVisible = false
+                        this@StationPicker.isVisible = false
                     } catch(e: CancellationException) {
                         println("Load job cancelled")
                         AppState.window?.resumeAutoPoll()
@@ -107,37 +108,29 @@ class StationPicker(parent: JFrame, radarDataProvider: RadarDataProvider) : JDia
             isVisible = false
         }
 
-        add(JPanel().apply {
-            layout = BoxLayout(this, BoxLayout.X_AXIS)
-            maximumSize = Dimension(Int.MAX_VALUE, 50)
-            alignmentX = JPanel.LEFT_ALIGNMENT
-            add(Box.createHorizontalGlue())
-            add(applyBtn)
-            add(Box.createHorizontalStrut(8))
-            add(cancelBtn)
-        })
+        val buttonPanel = JPanel()
+        buttonPanel.layout = BoxLayout(buttonPanel, BoxLayout.X_AXIS)
+        buttonPanel.maximumSize = Dimension(Int.MAX_VALUE, 30)
+        buttonPanel.alignmentX = JPanel.LEFT_ALIGNMENT
+        buttonPanel.add(Box.createHorizontalGlue())
+        buttonPanel.add(applyBtn)
+        buttonPanel.add(Box.createHorizontalStrut(8))
+        buttonPanel.add(cancelBtn)
 
-        add(Box.createVerticalStrut(8))
+        panel.add(buttonPanel)
+        panel.add(Box.createVerticalStrut(8))
 
         progressBar.alignmentX = JProgressBar.LEFT_ALIGNMENT
+        progressBar.maximumSize = Dimension(Int.MAX_VALUE, 20)
         progressMessage.alignmentX = JLabel.LEFT_ALIGNMENT
 
-        add(progressBar)
-        add(progressMessage)
+        panel.add(progressBar)
+        panel.add(progressMessage)
 
         progressBar.isVisible = false
         progressMessage.isVisible = false
 
-        addWindowListener(object : java.awt.event.WindowAdapter() {
-            override fun windowClosing(e: java.awt.event.WindowEvent?) {
-                super.windowClosing(e)
-                runBlocking {
-                    loadJob?.cancelAndJoin()
-                }
-            }
-        })
-
-        pack()
+        add(panel)
     }
 
     private fun filterList() {
@@ -164,15 +157,28 @@ class StationPicker(parent: JFrame, radarDataProvider: RadarDataProvider) : JDia
         cancelBtn.isEnabled = false
     }
 
+    fun showUnder(component: JComponent) {
+        val location = component.locationOnScreen
+        val componentSize = component.size
+        show(component, 0, componentSize.height)
+
+        // Request focus on the search bar when the popup opens
+        SwingUtilities.invokeLater {
+            searchBar.requestFocusInWindow()
+        }
+    }
+
     override fun notifyProgress(progress: Double?, message: String) {
-        progressBar.isVisible = true
-        progressMessage.isVisible = true
-        if(progress == null) {
-            progressBar.isIndeterminate = true
-        } else {
-            progressBar.isIndeterminate = false
-            progressBar.value = (progress * 100).toInt()
-            progressMessage.text = message
+        SwingUtilities.invokeLater {
+            progressBar.isVisible = true
+            progressMessage.isVisible = true
+            if(progress == null) {
+                progressBar.isIndeterminate = true
+            } else {
+                progressBar.isIndeterminate = false
+                progressBar.value = (progress * 100).toInt()
+                progressMessage.text = message
+            }
         }
     }
 }

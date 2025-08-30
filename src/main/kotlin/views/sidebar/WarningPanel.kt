@@ -2,6 +2,7 @@ package views.sidebar
 
 import data.state.AppState
 import data.warnings.Warning
+import data.warnings.WarningType
 import java.awt.*
 import java.time.Duration
 import java.time.ZonedDateTime

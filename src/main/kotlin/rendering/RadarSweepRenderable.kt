@@ -4,8 +4,6 @@ import data.resources.ColormapManager
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import map.projection.MercatorProjection
-import map.projection.aerToGeo
 import meteo.radar.RadarGate
 import meteo.radar.RadarSweep
 import org.joml.Vector2f

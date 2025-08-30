@@ -15,7 +15,6 @@ class WarningDataService : PollableDataService<List<Warning>> {
         "FFW", // Flash Flood Warning
         "SMW", // Special Marine Warning
         "SQW", // Snow Squall Warning
-        "SPS", // Special Weather Statement
         "SVS", // Severe Weather Statement
     )
     private val warningServiceURL = "https://api.weather.gov/alerts/active?status=actual&code=${eventCodes.joinToString(",")}"

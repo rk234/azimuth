@@ -40,6 +40,19 @@ enum class WarningType {
                 else -> null // Unknown event code
             }
         }
+
+        fun color(warningType: WarningType?): Triple<Float, Float, Float> {
+            return when (warningType) {
+                SEVERE_THUNDERSTORM -> Triple(1.0f, 0.65f, 0.0f) // Orange
+                TORNADO -> Triple(1.0f, 0.0f, 0.0f) // Red
+                FLASH_FLOOD -> Triple(0.0f, 1.0f, 0.0f) // Green
+                SNOW_SQUALL -> Triple(1.0f, 1.0f, 1.0f) // White
+                SPECIAL_MARINE -> Triple(0.0f, 0.75f, 1.0f) // Light Blue
+                SPECIAL_WEATHER_STATEMENT -> Triple(1f, 1f, 0.5f) // Gray
+                SEVERE_WEATHER_STATEMENT -> Triple(0.75f, 0.75f, 0.75f) // Light Gray
+                else -> Triple(0.0f, 0.0f, 0.0f)
+            }
+        }
     }
 }
 

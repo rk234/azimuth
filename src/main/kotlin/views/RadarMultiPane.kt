@@ -2,8 +2,10 @@ package views
 
 import data.resources.GeoJSONManager
 import data.state.AppState
+import data.warnings.WarningType
 import kotlinx.coroutines.runBlocking
 import map.layers.GeoJSONLayer
+import map.layers.WarningLayer
 import meteo.radar.Product
 import org.joml.Vector3f
 import org.lwjgl.opengl.awt.GLData
@@ -33,7 +35,11 @@ class RadarMultiPane(var paneLayout: PaneLayout) : JPanel() {
     private val layers = arrayOf(
         GeoJSONLayer(countries, 0.05f, Vector3f(0.8f), -10f),
         GeoJSONLayer(counties, 0.03f, Vector3f(0.8f), 0.0001f),
-        GeoJSONLayer(states, 0.035f, Vector3f(1.0f), -10f)
+        GeoJSONLayer(states, 0.035f, Vector3f(1.0f), -10f),
+        WarningLayer(AppState.warningDataManager, WarningType.TORNADO),
+        WarningLayer(AppState.warningDataManager, WarningType.SEVERE_THUNDERSTORM),
+        WarningLayer(AppState.warningDataManager, WarningType.FLASH_FLOOD),
+        WarningLayer(AppState.warningDataManager, WarningType.SPECIAL_WEATHER_STATEMENT)
     )
 
     init {

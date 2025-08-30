@@ -5,7 +5,6 @@ import org.joml.Vector3f
 import org.joml.Vector4f
 import org.lwjgl.opengl.GL45.*
 import org.lwjgl.system.MemoryUtil
-import java.io.File
 import java.nio.FloatBuffer
 import java.nio.IntBuffer
 
@@ -14,7 +13,9 @@ class PathRenderable(
     private val shader: ShaderProgram,
     private val lineWidth: Float,
     private val lineColor: Vector3f,
-    private val zoomLevel: Float
+    private val zoomLevel: Float,
+    private val outlineWidth: Float = 0.0f,
+    private val outlineColor: Vector3f = Vector3f(0f)
 ) : Renderable {
     private lateinit var pathVBO: GLBufferObject
     private lateinit var prevVBO: GLBufferObject
@@ -24,6 +25,8 @@ class PathRenderable(
 
     private lateinit var ibo: GLBufferObject
 //    private lateinit var vao: VertexArrayObject
+
+    fun initialized() = initialized
 
     override fun init(vaoContext: VAOContext) {
         if(initialized) return
@@ -93,6 +96,7 @@ class PathRenderable(
     }
 
     override fun draw(camera: Camera, vaoContext: VAOContext) {
+        if(!initialized) return
         shader.bind()
         shader.setUniformMatrix4f("projection", camera.projectionMatrix)
         shader.setUniformMatrix4f("transform", camera.transformMatrix)
@@ -100,6 +104,9 @@ class PathRenderable(
         shader.setUniformVec2f("resolution", camera.viewportDims)
         shader.setUniformFloat("thickness", lineWidth)
         shader.setUniformInt("miter", 0)
+        shader.setUniformFloat("outlineWidth", outlineWidth)
+        shader.setUniformVec4f("outlineColor", Vector4f(outlineColor.x, outlineColor.y, outlineColor.z, 1.0f))
+
         if(camera.zoom > zoomLevel) {
             shader.setUniformVec4f("color", Vector4f(lineColor.x, lineColor.y, lineColor.z, 1.0f))
         } else {
@@ -132,7 +139,6 @@ class PathRenderable(
     }
 
     override fun destroy() {
-//        vao.destroy()
         pathVBO.destroy()
         dirVBO.destroy()
         prevVBO.destroy()
