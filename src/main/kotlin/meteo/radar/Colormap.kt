@@ -85,7 +85,8 @@ class Colormap(private val name: String, private val str: String) {
     fun rescale(data: Number): Float {
         val min = steps.first().low
         val max = steps.last().high
-        return Math.clamp((data.toFloat() - min) / (max - min), 0f, 1f)
+        val value = (data.toFloat() - min) / (max - min)
+        return if (value < 0f) 0f else if (value > 1f) 1f else value
     }
 
     data class ColorStep(val low: Float, val high: Float, val lowColor: Vector3f, val highColor: Vector3f) {

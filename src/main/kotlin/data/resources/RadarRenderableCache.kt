@@ -24,7 +24,7 @@ class RadarRenderableCache(private var maxCacheSize: Int) {
         cache[sweepKey(radarSweep)] = renderable
 
         while (cacheSize() > maxCacheSize) {
-            val toRemove = cache.firstEntry().key
+            val toRemove = cache.entries.first().key
             removeNoLock(toRemove)
         }
     }

@@ -42,3 +42,23 @@ Azimuth is a desktop NEXRAD Level 2 weather radar viewer and weather monitoring 
 *   **Graphics:** OpenGL (via LWJGL)
 *   **Weather Data:** UCAR NetCDF
 *   **Concurrency:** Kotlin Coroutines
+
+## 🚀 Building and Running
+
+To build and run the project, you will need to have a JDK 8 or higher installed.
+
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/rk234/azimuth.git
+    cd azimuth
+    ```
+
+2.  **Build the project:**
+    ```bash
+    ./gradlew build
+    ```
+
+3.  **Run the application:**
+    ```bash
+    ./gradlew run
+    ```
