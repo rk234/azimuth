@@ -20,6 +20,7 @@ class SplashWindow : JFrame(), ProgressListener {
 
     val progressBar = JProgressBar(0, 100)
     val progressLabel = JLabel("Loading...")
+
     init {
         progressLabel.border = BorderFactory.createEmptyBorder(8, 8, 8, 8)
         val splashImage = ImageIO.read(File("src/main/resources/splash/lwx_splash.jpg"))
@@ -35,12 +36,15 @@ class SplashWindow : JFrame(), ProgressListener {
     }
 
     override fun notifyProgress(progress: Double?, message: String) {
-        progressLabel.text = message
-        if(progress == null) {
-            progressBar.isIndeterminate = true
-        } else {
-            progressBar.isIndeterminate = false
-            progressBar.value = (progress * 100).toInt()
+        SwingUtilities.invokeLater {
+            progressLabel.text = message
+
+            if (progress == null) {
+                progressBar.isIndeterminate = true
+            } else {
+                progressBar.isIndeterminate = false
+                progressBar.value = (progress * 100).toInt()
+            }
         }
     }
 }
