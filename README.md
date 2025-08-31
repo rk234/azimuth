@@ -14,7 +14,7 @@ Azimuth is a desktop NEXRAD Level 2 weather radar viewer and weather monitoring 
 
 NEXRAD Level 2 data represents the **highest resolution** raw radar data available to the public, offering several key advantages over processed Level 3 products:
 
-- **📐 Full Angular Resolution**: Level 2 data maintains the radar's native 1° angular resolution, providing the most detailed view of weather phenomena
+- **📐 Full Angular Resolution**: Level 2 data maintains the radar's native 1° and 0.5° angular resolution, providing the most detailed view of weather phenomena
 - **⚡ Higher Temporal Resolution**: Data updates every 4-10 minutes compared to longer intervals for processed products  
 - **🎯 Unprocessed Precision**: Raw measurements without smoothing or averaging, preserving fine-scale weather features
 - **🔍 Enhanced Detail**: Ability to detect and analyze smaller-scale weather features like mesocyclones, wind shear, and precipitation cores
