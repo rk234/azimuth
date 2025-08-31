@@ -4,7 +4,23 @@
 > In radar meteorology, the direction of the radar beam, measured as a horizontal angle clockwise from true north.
 
 
-Azimuth is a desktop NEXRAD Level 2 weather radar viewer and weather monitoring suite. It leverages hardware accelerated graphics with OpenGL to render high-resolution NEXRAD Level 2 weather radar data in real-time on an interactive map. Azimuth also displays live weather warnings from the NWS.
+Azimuth is a desktop NEXRAD Level 2 weather radar viewer and weather monitoring suite. It leverages hardware accelerated graphics with OpenGL to render high-resolution NEXRAD Level 2 weather radar data in real-time.
+
+## 🌩️ About NEXRAD Level 2 Data
+
+**NEXRAD** (Next Generation Radar) is the U.S. network of weather surveillance radars operated by the National Weather Service. These Doppler radars provide critical weather information for forecasting and severe weather warnings.
+
+### What Makes Level 2 Data Special
+
+NEXRAD Level 2 data represents the **highest resolution** raw radar data available to the public, offering several key advantages over processed Level 3 products:
+
+- **📐 Full Angular Resolution**: Level 2 data maintains the radar's native 1° angular resolution, providing the most detailed view of weather phenomena
+- **⚡ Higher Temporal Resolution**: Data updates every 4-10 minutes compared to longer intervals for processed products  
+- **🎯 Unprocessed Precision**: Raw measurements without smoothing or averaging, preserving fine-scale weather features
+- **🔍 Enhanced Detail**: Ability to detect and analyze smaller-scale weather features like mesocyclones, wind shear, and precipitation cores
+- **🌀 Superior Storm Analysis**: Critical for identifying rotation signatures, hook echoes, and other severe weather indicators
+
+This high-resolution data is essential for meteorologists, storm chasers, researchers, and weather enthusiasts who need the most detailed and timely radar information available. Azimuth brings this professional-grade data to your desktop with an intuitive, hardware-accelerated interface.
 
 ## 📸 Screenshots
 
@@ -65,4 +81,3 @@ To build and run the project, you will need to have a JDK 8 or higher installed.
     ```
 > [!WARNING]
 > This project is still under active development. Features may be incomplete or unstable, and there are still features planned.
-
