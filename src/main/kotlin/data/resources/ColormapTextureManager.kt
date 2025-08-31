@@ -49,7 +49,7 @@ class ColormapTextureManager {
 
             val cmapTexture = Texture1D()
             cmapTexture.bind()
-            cmapTexture.uploadData(colormapSampleCount, colormapImageData.flip())
+            cmapTexture.uploadData(colormapSampleCount, colormapImageData.flip() as java.nio.ByteBuffer)
             MemoryUtil.memFree(colormapImageData)
             return cmapTexture
         }

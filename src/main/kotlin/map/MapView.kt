@@ -38,7 +38,7 @@ class MapView(private val data: GLData?) : AWTGLCanvas(data) {
     }
 
     override fun initGL() {
-        if(data.shareContext == null)
+        if(data?.shareContext == null)
             GL.createCapabilities()
         if(!ShaderManager.initialized)
             ShaderManager.init()
