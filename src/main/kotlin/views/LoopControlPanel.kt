@@ -16,7 +16,7 @@ class LoopControlPanel : JPanel() {
     private val togglePlayBtn: JButton = JButton(loadIcon("loop/play.svg", 20, 20))
 
     private val loopTimer: Timer = Timer(500, ::updateLoop)
-    private var loopFrame = AppState.numLoopFrames.value-1
+    private var loopFrame = AppState.numLoopFrames.value - 1
 
     private val nextFrameBtn: JButton
     private val prevFrameBtn: JButton
@@ -47,8 +47,8 @@ class LoopControlPanel : JPanel() {
         loopFrameSelect.addActionListener {
             val selectedFrames = loopFrameSelect.selectedItem as Int
 
-            if(selectedFrames != AppState.numLoopFrames.value) {
-                val progressDialog = ProgressDialog( "Loading Frames")
+            if (selectedFrames != AppState.numLoopFrames.value) {
+                val progressDialog = ProgressDialog(AppState.window!!, "Loading Frames")
                 progressDialog.isVisible = true
 
                 pauseLoop()
@@ -67,8 +67,8 @@ class LoopControlPanel : JPanel() {
                         )
 
                         AppState.numLoopFrames.value = selectedFrames
-                        frameSlider.maximum = selectedFrames-1
-                        loopFrame = selectedFrames-1
+                        frameSlider.maximum = selectedFrames - 1
+                        loopFrame = selectedFrames - 1
                         setVolumeFrame(loopFrame)
                     } catch (e: Exception) {
                         println("Error loading frames: ${e.message}")
@@ -97,10 +97,10 @@ class LoopControlPanel : JPanel() {
 
         frameSlider.alignmentX = LEFT_ALIGNMENT
         frameSlider.minimum = 0
-        frameSlider.maximum = AppState.numLoopFrames.value-1
+        frameSlider.maximum = AppState.numLoopFrames.value - 1
         frameSlider.addChangeListener {
-            if(frameSlider.value != loopFrame) {
-                if(loopTimer.isRunning) {
+            if (frameSlider.value != loopFrame) {
+                if (loopTimer.isRunning) {
                     togglePlayBtn.icon = loadIcon("loop/play.svg", 20, 20)
                     loopTimer.stop()
                 }
@@ -122,7 +122,7 @@ class LoopControlPanel : JPanel() {
         btnGroup.add(prevFrameBtn)
 
         togglePlayBtn.addActionListener {
-            if(loopTimer.isRunning) {
+            if (loopTimer.isRunning) {
                 pauseLoop()
             } else {
                 startLoop()
@@ -161,7 +161,7 @@ class LoopControlPanel : JPanel() {
     }
 
     private fun nextFrame() {
-        if(loopFrame < AppState.numLoopFrames.value - 1) {
+        if (loopFrame < AppState.numLoopFrames.value - 1) {
             pauseLoop()
             loopFrame++
             setVolumeFrame(loopFrame)
@@ -169,7 +169,7 @@ class LoopControlPanel : JPanel() {
     }
 
     private fun lastFrame() {
-        if(loopFrame >= 1) {
+        if (loopFrame >= 1) {
             pauseLoop()
             loopFrame--
             setVolumeFrame(loopFrame)
@@ -178,7 +178,7 @@ class LoopControlPanel : JPanel() {
 
     private fun updateLoop(e: ActionEvent) {
 //        println("Looping frame: ${loopFrame}")
-        if(loopFrame < AppState.numLoopFrames.value-1) {
+        if (loopFrame < AppState.numLoopFrames.value - 1) {
             loopFrame++
         } else {
             loopFrame = 0
@@ -191,7 +191,7 @@ class LoopControlPanel : JPanel() {
     private fun setVolumeFrame(frameIndex: Int) {
         val volume = RadarDataRepository.get(frameIndex)
 
-        if(volume != null) {
+        if (volume != null) {
             AppState.activeVolume.value = volume
         }
 
@@ -200,13 +200,13 @@ class LoopControlPanel : JPanel() {
     }
 
     private fun updateSeekBtns() {
-        if(loopFrame == 0) {
+        if (loopFrame == 0) {
             prevFrameBtn.isEnabled = false
         } else {
             prevFrameBtn.isEnabled = true
         }
 
-        if(loopFrame == AppState.numLoopFrames.value-1) {
+        if (loopFrame == AppState.numLoopFrames.value - 1) {
             nextFrameBtn.isEnabled = false
         } else {
             nextFrameBtn.isEnabled = true

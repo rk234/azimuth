@@ -33,6 +33,7 @@ enum class WarningType {
                 "TOR" -> TORNADO
                 "SVS" -> SEVERE_THUNDERSTORM
                 "FFW" -> FLASH_FLOOD
+                "FFS" -> FLASH_FLOOD
                 "SMW" -> SPECIAL_MARINE
                 "SQW" -> SNOW_SQUALL
                 "SPS" -> SPECIAL_WEATHER_STATEMENT
@@ -134,7 +135,7 @@ data class Warning(
                 onset = onset,
                 expires = expires,
                 polygons = geoPolygons,
-                type = if(eventCode != null) WarningType.fromEventCode(eventCode) else null
+                type = if (eventCode != null) WarningType.fromEventCode(eventCode) else null
             )
         }
     }

@@ -4,7 +4,7 @@ import kotlinx.coroutines.Job
 import utils.ProgressListener
 import javax.swing.*
 
-class ProgressDialog(title: String) : JFrame(title), ProgressListener {
+class ProgressDialog(parent: JFrame, title: String) : JDialog(parent, title), ProgressListener {
     private val panel = JPanel()
     private val messageLbl: JLabel = JLabel()
     private val progressBar: JProgressBar = JProgressBar()
@@ -17,7 +17,7 @@ class ProgressDialog(title: String) : JFrame(title), ProgressListener {
 
         contentPane = panel
         panel.layout = BoxLayout(panel, BoxLayout.Y_AXIS)
-        panel.border = BorderFactory.createEmptyBorder(8,8,8,8)
+        panel.border = BorderFactory.createEmptyBorder(8, 8, 8, 8)
 
         messageLbl.alignmentX = JLabel.LEFT_ALIGNMENT
         progressBar.alignmentX = JProgressBar.LEFT_ALIGNMENT
