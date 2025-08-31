@@ -200,11 +200,7 @@ class LoopControlPanel : JPanel() {
     }
 
     private fun updateSeekBtns() {
-        if (loopFrame == 0) {
-            prevFrameBtn.isEnabled = false
-        } else {
-            prevFrameBtn.isEnabled = true
-        }
+        prevFrameBtn.isEnabled = loopFrame != 0
 
         if (loopFrame == AppState.numLoopFrames.value - 1) {
             nextFrameBtn.isEnabled = false
