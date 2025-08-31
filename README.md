@@ -1,4 +1,11 @@
-# Azimuth 📡
+# Azimuth 📡⛈️
+
+**az·i·muth** (noun)
+> In radar meteorology, the direction of the radar beam, measured as a horizontal angle clockwise from true north.
+
+> [!WARNING]
+> This project is still under active development. Features may be incomplete or unstable, and there are still features planned.
+
 
 Azimuth is a desktop NEXRAD Level 2 weather radar viewer and weather monitoring suite. It leverages hardware accelerated graphics with OpenGL to render high-resolution NEXRAD level 2 weather radar data in real time on an interactive map. Azimuth also displays live weather warnings from the NWS.
 
