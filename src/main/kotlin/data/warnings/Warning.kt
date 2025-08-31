@@ -31,12 +31,11 @@ enum class WarningType {
         fun fromEventCode(event: String): WarningType? {
             return when (event) {
                 "TOR" -> TORNADO
-                "SVR" -> SEVERE_THUNDERSTORM
+                "SVS" -> SEVERE_THUNDERSTORM
                 "FFW" -> FLASH_FLOOD
                 "SMW" -> SPECIAL_MARINE
                 "SQW" -> SNOW_SQUALL
                 "SPS" -> SPECIAL_WEATHER_STATEMENT
-                "SVS" -> SEVERE_WEATHER_STATEMENT
                 else -> null // Unknown event code
             }
         }
@@ -121,6 +120,8 @@ data class Warning(
                 println("Error parsing event code: ${e.message}")
                 null
             }
+
+            println("event code: $eventCode")
 
             return Warning(
                 id = id,
