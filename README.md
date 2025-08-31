@@ -20,7 +20,8 @@ Azimuth is a desktop NEXRAD Level 2 weather radar viewer and weather monitoring 
 
 ```
 /
-├── lib/ (dependencies)
+├── gradle/ (gradle wrapper)
+├── build/ (build output)
 ├── src/
 │   └── main/
 │       ├── kotlin/
@@ -32,6 +33,9 @@ Azimuth is a desktop NEXRAD Level 2 weather radar viewer and weather monitoring 
 │       │   ├── views/ (Swing UI components)
 │       │   └── Main.kt (application entry point)
 │       └── resources/ (application resources)
+├── build.gradle.kts (build script)
+├── settings.gradle.kts (project settings)
+├── gradlew (gradle wrapper executable)
 └── README.md
 ```
 
