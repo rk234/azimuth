@@ -22,7 +22,7 @@ class WarningLayer(private val warningDataManager: WarningDataManager, private v
     private val vertsPerChunk = 60_000
     private var initialized = false
 
-    private fun initGraphics(vertices: ArrayList<Vector2f>) {
+    private fun initGraphics() {
         shader = ShaderManager.instance.linesShader()
     }
 
@@ -44,6 +44,7 @@ class WarningLayer(private val warningDataManager: WarningDataManager, private v
 
     override fun init(camera: Camera, vaoContext: VAOContext) {
         if(initialized) return
+        initGraphics()
         createGeometry(warningDataManager.getWarnings())
         initialized = true
     }
@@ -55,7 +56,16 @@ class WarningLayer(private val warningDataManager: WarningDataManager, private v
         warnings
             .filter { it.type == warningType }
             .forEach { warning ->
+                println("Generating geometry for warning: ${warning.type}, polygons: ${warning.polygons.size}")
                 warning.polygons.forEach { poly ->
+                    //add first line twice
+                    vertices.add(
+                        proj.toCartesian(Vector2f(poly.coordinates[0].lat, poly.coordinates[0].lon)),
+                    )
+                    vertices.add(
+                        proj.toCartesian(Vector2f(poly.coordinates[1].lat, poly.coordinates[1].lon)),
+                    )
+
                     poly.coordinates.windowed(2, 1).map { coords ->
                         vertices.add(
                             proj.toCartesian(Vector2f(coords[0].lat, coords[0].lon)),
@@ -82,12 +92,9 @@ class WarningLayer(private val warningDataManager: WarningDataManager, private v
                 }
             }
 
-        initGraphics(vertices)
-
         val chunks = vertices.chunked(vertsPerChunk)
         chunks.forEach { c ->
-            paths.add(PathRenderable(c, shader, 0.05f, tripleToVec3f(WarningType.color(warningType)), -10f, 0.05f, Vector3f(0f, 0f, 0f)))
-            //renderable.init(vaoContext)
+            paths.add(PathRenderable(c, shader, 0.08f, tripleToVec3f(WarningType.color(warningType)), -10f, 0.05f, Vector3f(0f, 0f, 0f)))
         }
     }
 
