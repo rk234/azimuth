@@ -50,7 +50,6 @@ class WarningLayer(private val warningDataManager: WarningDataManager, private v
     }
 
     private fun createGeometry(warnings: List<Warning>) {
-        val vertices = arrayListOf<Vector2f>()
         val proj = MercatorProjection()
 
         warnings
@@ -59,11 +58,12 @@ class WarningLayer(private val warningDataManager: WarningDataManager, private v
                 println("Generating geometry for warning: ${warning.type}, polygons: ${warning.polygons.size}")
                 warning.polygons.forEach { poly ->
                     //add first line twice
-                    vertices.add(
-                        proj.toCartesian(Vector2f(poly.coordinates[0].lat, poly.coordinates[0].lon)),
-                    )
+                    val vertices = mutableListOf<Vector2f>()
                     vertices.add(
                         proj.toCartesian(Vector2f(poly.coordinates[1].lat, poly.coordinates[1].lon)),
+                    )
+                    vertices.add(
+                        proj.toCartesian(Vector2f(poly.coordinates[0].lat, poly.coordinates[0].lon)),
                     )
 
                     poly.coordinates.windowed(2, 1).map { coords ->
@@ -89,13 +89,13 @@ class WarningLayer(private val warningDataManager: WarningDataManager, private v
                             )
                         )
                     }
+                    val chunks = vertices.chunked(vertsPerChunk)
+                    chunks.forEach { c ->
+                        paths.add(PathRenderable(c, shader, 0.08f, tripleToVec3f(WarningType.color(warningType)), -10f, 0.05f, Vector3f(0f, 0f, 0f)))
+                    }
                 }
             }
 
-        val chunks = vertices.chunked(vertsPerChunk)
-        chunks.forEach { c ->
-            paths.add(PathRenderable(c, shader, 0.08f, tripleToVec3f(WarningType.color(warningType)), -10f, 0.05f, Vector3f(0f, 0f, 0f)))
-        }
     }
 
     override fun render(camera: Camera, vaoContext: VAOContext) {

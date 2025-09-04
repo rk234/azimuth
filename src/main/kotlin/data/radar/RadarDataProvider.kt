@@ -18,11 +18,13 @@ class RadarDataProvider {
         val req = Request.Builder().url("$radarServiceURL/config.cfg").build()
 
         val resp = httpClient.newCall(req).execute()
-        if (!resp.isSuccessful) throw Exception("Failed to load station list, received response code: ${resp.code}")
-        val config = resp.body?.string() ?: ""
-        val listFileLine = config.split("\n").getOrNull(0) ?: throw Exception("Failed to find list file!")
+        resp.use { resp ->
+            if (!resp.isSuccessful) throw Exception("Failed to load station list, received response code: ${resp.code}")
+            val config = resp.body?.string() ?: ""
+            val listFileLine = config.split("\n").getOrNull(0) ?: throw Exception("Failed to find list file!")
 
-        listFile = listFileLine.substringAfter("ListFile: ")
+            listFile = listFileLine.substringAfter("ListFile: ")
+        }
     }
 
     fun addProgressListener(listener: ProgressListener) {
@@ -39,23 +41,26 @@ class RadarDataProvider {
         val req = Request.Builder().url("$radarServiceURL/config.cfg").build()
 
         val resp = httpClient.newCall(req).execute()
-        if (!resp.isSuccessful) throw Exception("Failed to load station list, received response code: ${resp.code}")
-        val config = resp.body?.string() ?: ""
-        val lines = config.split("\n")
 
-        if(lines.size < 2) throw Exception("Failed to parse station list!")
+        resp.use { resp ->
+            if (!resp.isSuccessful) throw Exception("Failed to load station list, received response code: ${resp.code}")
+            val config = resp.body?.string() ?: ""
+            val lines = config.split("\n")
 
-        reportProgress(null, "Parsing Station List...")
+            if(lines.size < 2) throw Exception("Failed to parse station list!")
 
-        for(i in 1..<lines.size) {
-            val stationLine = lines[i]
-            if(stationLine.startsWith("Site: ")) {
-                val station = stationLine.substringAfter("Site: ")
-                stations.add(station)
+            reportProgress(null, "Parsing Station List...")
+
+            for(i in 1..<lines.size) {
+                val stationLine = lines[i]
+                if(stationLine.startsWith("Site: ")) {
+                    val station = stationLine.substringAfter("Site: ")
+                    stations.add(station)
+                }
             }
-        }
 
-        reportProgress(1.0, "Finished loading station list!")
+            reportProgress(1.0, "Finished loading station list!")
+        }
 
         return stations
     }
@@ -67,15 +72,16 @@ class RadarDataProvider {
 
         reportProgress(null, "Downloading file list for ${station}...")
         val res = httpClient.newCall(req).execute()
-        if(!res.isSuccessful) throw Exception("Failed to load data file list, received response code: ${res.code}")
+        res.use { res ->
+            if(!res.isSuccessful) throw Exception("Failed to load data file list, received response code: ${res.code}")
 
-        val lines = res.body?.string()?.split("\n") ?: emptyList()
+            val lines = res.body?.string()?.split("\n") ?: emptyList()
 
-        for(line in lines) {
-            val file = line.split(" ").getOrNull(1)
-            if(file != null) files.add(VolumeFileHandle(file))
+            for(line in lines) {
+                val file = line.split(" ").getOrNull(1)
+                if(file != null) files.add(VolumeFileHandle(file))
+            }
         }
-
 
         reportProgress(1.0, "Done")
         return files.dropLast(1) // last file seems to be in the process of uploading,
@@ -90,15 +96,17 @@ class RadarDataProvider {
         reportProgress(null, "Downloading...")
 
         val resp = httpClient.newCall(req).execute()
-        if(!resp.isSuccessful) return null
+        resp.use { resp ->
+            if(!resp.isSuccessful) return null
 
-        val bytes = resp.body?.bytes() ?: return null
+            val bytes = resp.body?.bytes() ?: return null
 
-        reportProgress(null, "Opening...")
-        val file = NetcdfFiles.openInMemory(handle.fileName, bytes)
-        reportProgress(1.0, "Done")
+            reportProgress(null, "Opening...")
+            val file = NetcdfFiles.openInMemory(handle.fileName, bytes)
+            reportProgress(1.0, "Done")
 
-        return file
+            return file
+        }
     }
 
     private fun reportProgress(progress: Double?, message: String) {

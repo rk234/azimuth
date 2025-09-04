@@ -83,8 +83,6 @@ class RadarSweepRenderable(private val sweep: RadarSweep, private val radarShade
 //        vertBuffer.flip()
 
             val iboGenStart = System.currentTimeMillis()
-            indexBuffer = MemoryUtil.memAllocInt(gateCount * 6)
-
             indexBuffer = MemoryUtil.memAllocInt((gateCount) * 6)
             generateIndices(indexBuffer, gateCount)
             indexBuffer.flip()

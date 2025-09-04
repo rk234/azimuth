@@ -77,6 +77,7 @@ class PathRenderable(
         MemoryUtil.memFree(prev)
         MemoryUtil.memFree(next)
         MemoryUtil.memFree(indices)
+        MemoryUtil.memFree(dirs)
 
         pathVBO.bind()
         vao.attrib(0, 2, GL_FLOAT, false, 2 * Float.SIZE_BYTES, 0)

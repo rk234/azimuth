@@ -103,7 +103,9 @@ class AppWindow : JFrame("Azimuth") {
         val file = radarDataProvider.getDataFile(handle)
         if(file != null) {
             println("downloaded new radar data!")
-            return@coroutineScope RadarVolume(file, handle)
+            val vol = RadarVolume(file, handle)
+            file.close()
+            return@coroutineScope vol
 //            RadarDataRepository.addDataFile(RadarVolume(file, handle))
 //            activeVolume.value = RadarDataRepository.lastFile()
         } else {
