@@ -96,12 +96,12 @@ class FontAtlas(
         var rowHeight = 0
 
         MemoryStack.stackPush().use { stack ->
-            val pWidth = stack.mallocInt(1)
-            val pHeight = stack.mallocInt(1)
-            val pXoff = stack.mallocInt(1)
-            val pYoff = stack.mallocInt(1)
-            val pAdvance = stack.mallocInt(1)
-            val pLeftBearing = stack.mallocInt(1)
+            val pWidth = stack.mallocInt(1) // width of the glyph
+            val pHeight = stack.mallocInt(1) // height of the glyph
+            val pXoff = stack.mallocInt(1) // x offset from cursor
+            val pYoff = stack.mallocInt(1) // y offset from cursor
+            val pAdvance = stack.mallocInt(1) // how much to move cursor after drawing
+            val pLeftBearing = stack.mallocInt(1) // offset from cursor to left edge
 
             for (i in 0 until charCount) {
                 val char: Char = (firstChar + i).toChar()
