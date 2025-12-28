@@ -15,7 +15,7 @@ import kotlin.io.path.Path
  * Glyph metrics for a single character in the SDF atlas.
  */
 data class GlyphInfo(
-    val codepoint: Int,
+    val char: Char,
     val u0: Float, val v0: Float,   // Top-left UV in atlas
     val u1: Float, val v1: Float,   // Bottom-right UV in atlas
     val width: Int, val height: Int, // Glyph dimensions in pixels
@@ -50,7 +50,7 @@ class FontAtlas(
     private val firstChar = 32
     private val charCount = 96
 
-    private val glyphs: MutableMap<Int, GlyphInfo> = mutableMapOf()
+    private val glyphs: MutableMap<Char, GlyphInfo> = mutableMapOf()
 
     val scale: Float
     val ascent: Float
@@ -104,17 +104,17 @@ class FontAtlas(
             val pLeftBearing = stack.mallocInt(1)
 
             for (i in 0 until charCount) {
-                val codepoint = firstChar + i
+                val char: Char = (firstChar + i).toChar()
 
                 // Get horizontal metrics for advance
-                STBTruetype.stbtt_GetCodepointHMetrics(fontInfo, codepoint, pAdvance, pLeftBearing)
+                STBTruetype.stbtt_GetCodepointHMetrics(fontInfo, char.code, pAdvance, pLeftBearing)
                 val advance = pAdvance.get(0) * scale
 
                 // Generate SDF bitmap for this glyph
                 val sdfBitmap: ByteBuffer? = STBTruetype.stbtt_GetCodepointSDF(
                     fontInfo,
                     scale,
-                    codepoint,
+                    char.code,
                     sdfPadding,
                     sdfOnEdgeValue.toByte(),
                     sdfPixelDistScale,
@@ -131,8 +131,8 @@ class FontAtlas(
 
                 if (sdfBitmap == null || glyphW == 0 || glyphH == 0) {
                     // Whitespace or empty glyph — store metrics with zero-size UV
-                    glyphs[codepoint] = GlyphInfo(
-                        codepoint = codepoint,
+                    glyphs[char] = GlyphInfo(
+                        char = char,
                         u0 = 0f, v0 = 0f, u1 = 0f, v1 = 0f,
                         width = 0, height = 0,
                         xOffset = 0, yOffset = 0,
@@ -164,8 +164,8 @@ class FontAtlas(
                 }
 
                 // Record glyph info with UV coordinates
-                glyphs[codepoint] = GlyphInfo(
-                    codepoint = codepoint,
+                glyphs[char] = GlyphInfo(
+                    char = char,
                     u0 = cursorX.toFloat() / atlasWidth,
                     v0 = cursorY.toFloat() / atlasHeight,
                     u1 = (cursorX + glyphW).toFloat() / atlasWidth,
@@ -198,14 +198,14 @@ class FontAtlas(
      * Get glyph info for a character. Returns null if character is not in atlas.
      */
     fun getGlyph(c: Char): GlyphInfo? {
-        return glyphs[c.code]
+        return glyphs[c]
     }
 
     /**
      * Get glyph info, falling back to '?' if character is not found.
      */
     fun getGlyphOrDefault(c: Char): GlyphInfo {
-        return glyphs[c.code] ?: glyphs['?'.code] ?: error("Default glyph '?' not found in atlas")
+        return glyphs[c] ?: glyphs['?'] ?: error("Default glyph '?' not found in atlas")
     }
 
     fun destroy() {
