@@ -52,4 +52,16 @@ class ShaderManager {
         shaders["lines"] = linesShader
         return linesShader
     }
+
+    private fun loadSDFTextShader() : ShaderProgram {
+        val vsSource = File("src/main/resources/shaders/text/sdf_text.vs.glsl").readText(Charsets.UTF_8)
+        val fsSource = File("src/main/resources/shaders/text/sdf_text.fs.glsl").readText(Charsets.UTF_8)
+
+        val sdfTextShader = ShaderProgram()
+        sdfTextShader.createVertexShader(vsSource)
+        sdfTextShader.createFragmentShader(fsSource)
+        sdfTextShader.link()
+        shaders["sdf_text"] = sdfTextShader
+        return sdfTextShader
+    }
 }
