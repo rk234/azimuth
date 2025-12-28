@@ -54,4 +54,26 @@ class Camera(viewWidth: Float, viewHeight: Float) {
         position.add(Vector3f(delta, position.z))
         recalcTransform()
     }
+
+    fun zoomTowards(targetPoint: Vector2f, zoomDelta: Float) {
+        val oldZoom = zoom
+        val newZoom = (zoom + zoomDelta).coerceIn(1e-6f, 100f)
+
+        if (newZoom == oldZoom) return
+
+        // The target point under the cursor stays fixed during zoom
+        // We need to calculate how much to move the camera to keep it fixed
+        //
+        // Screen-to-world conversion factor changes with zoom:
+        // At oldZoom: screenOffset * (1/oldZoom) = worldOffset
+        // At newZoom: screenOffset * (1/newZoom) = worldOffset
+        //
+        // The difference in world offset for the same screen point:
+        val scaleFactor = (1f / oldZoom) - (1f / newZoom)
+        val offsetX = targetPoint.x * scaleFactor
+        val offsetY = targetPoint.y * scaleFactor
+
+        position = Vector3f(position.x + offsetX, position.y + offsetY, position.z)
+        zoom = newZoom
+    }
 }

@@ -3,19 +3,15 @@ package views
 import data.resources.GeoJSONManager
 import data.state.AppState
 import data.warnings.WarningType
-import kotlinx.coroutines.runBlocking
 import map.layers.GeoJSONLayer
 import map.layers.WarningLayer
 import meteo.radar.Product
 import org.joml.Vector3f
 import org.lwjgl.opengl.awt.GLData
-import rendering.Camera
 import utils.RenderThreadTaskQueue
 import java.awt.GridLayout
 import javax.swing.JPanel
-import javax.swing.SwingUtilities
 import javax.swing.Timer
-import kotlin.time.measureTime
 
 enum class PaneLayout(val numPanes: Int) {
     SINGLE(1),
@@ -30,6 +26,8 @@ class RadarMultiPane(var paneLayout: PaneLayout) : JPanel() {
     private val counties = GeoJSONManager.instance.counties
     private val states = GeoJSONManager.instance.states
 
+    private lateinit var renderTimer: Timer
+
     var fps: Int = 0
 
     private val layers = arrayOf(
@@ -39,7 +37,8 @@ class RadarMultiPane(var paneLayout: PaneLayout) : JPanel() {
         WarningLayer(AppState.warningDataManager, WarningType.TORNADO),
         WarningLayer(AppState.warningDataManager, WarningType.SEVERE_THUNDERSTORM),
         WarningLayer(AppState.warningDataManager, WarningType.FLASH_FLOOD),
-        WarningLayer(AppState.warningDataManager, WarningType.SPECIAL_WEATHER_STATEMENT)
+        WarningLayer(AppState.warningDataManager, WarningType.SPECIAL_WEATHER_STATEMENT),
+        WarningLayer(AppState.warningDataManager, WarningType.SPECIAL_MARINE)
     )
 
     init {
@@ -105,20 +104,34 @@ class RadarMultiPane(var paneLayout: PaneLayout) : JPanel() {
 
     fun startRendering() {
         var lastFrame = System.currentTimeMillis()
-        Timer(1000/60) {
+        renderTimer = Timer(1000/60) {
             for (i in 0..<paneLayout.numPanes) {
                 productPanes[i]?.render()
-
-                runBlocking {
-                    val task = RenderThreadTaskQueue.poll()
-                    task?.run()
-                }
             }
+
+            // Handle render thread tasks without blocking
+            val task = RenderThreadTaskQueue.pollNonBlocking()
+            task?.run()
+
             val dt = System.currentTimeMillis()-lastFrame
             lastFrame = System.currentTimeMillis()
             if(dt != 0L) {
                 fps = Math.round(1000.0f / dt)
             }
-        }.start()
+        }
+        renderTimer?.start()
+    }
+
+    fun stopRendering() {
+        renderTimer.stop()
+    }
+
+    // Add cleanup method for proper resource disposal
+    fun dispose() {
+        stopRendering()
+        for (i in productPanes.indices) {
+            productPanes[i]?.dispose()
+            productPanes[i] = null
+        }
     }
 }

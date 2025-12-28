@@ -32,6 +32,7 @@ enum class WarningType {
             return when (event) {
                 "TOR" -> TORNADO
                 "SVS" -> SEVERE_THUNDERSTORM
+                "SVR" -> SEVERE_THUNDERSTORM
                 "FFW" -> FLASH_FLOOD
                 "FFS" -> FLASH_FLOOD
                 "SMW" -> SPECIAL_MARINE
@@ -84,7 +85,19 @@ data class Warning(
         fun fromJson(json: JSONObject): Warning {
             val geoPolygons = mutableListOf<GeoPolygon>()
 
+            val properties = json.getJSONObject("properties") ?: throw JSONException("Missing properties in JSON")
+            val id = properties.getString("id")
+            val areaDesc = properties.getString("areaDesc") ?: "No area description provided"
+            val sent = ZonedDateTime.parse(properties.getString("sent"))
+            val effective = ZonedDateTime.parse(properties.getString("effective"))
+            val onset = ZonedDateTime.parse(properties.getString("onset"))
+            val expires = ZonedDateTime.parse(properties.getString("expires"))
+            val type = properties.getString("event")
+            val description = properties.getString("description")
+            val headline = properties.getString("headline")
+
             try {
+                println("parsing geometry for warning: $type")
                 val polygons = json.getJSONObject("geometry").getJSONArray("coordinates")
                 for (i in 0 until polygons.length()) {
                     val polygonCoords = polygons.getJSONArray(i)
@@ -102,18 +115,10 @@ data class Warning(
                 }
             } catch (e: JSONException) {
                 println("Error parsing geometry coordinates: ${e.message}")
+            } catch (e: Exception) {
+                println("General error parsing geometry: ${e.message}")
             }
 
-            val properties = json.getJSONObject("properties") ?: throw JSONException("Missing properties in JSON")
-            val id = properties.getString("id")
-            val areaDesc = properties.getString("areaDesc") ?: "No area description provided"
-            val sent = ZonedDateTime.parse(properties.getString("sent"))
-            val effective = ZonedDateTime.parse(properties.getString("effective"))
-            val onset = ZonedDateTime.parse(properties.getString("onset"))
-            val expires = ZonedDateTime.parse(properties.getString("expires"))
-            val type = properties.getString("event")
-            val description = properties.getString("description")
-            val headline = properties.getString("headline")
 
             val eventCode = try {
                 properties.getJSONObject("eventCode").getJSONArray("SAME").getString(0)

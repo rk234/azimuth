@@ -43,9 +43,10 @@ class RadarLayer(private var volume: RadarProductVolume, private var tilt: Int) 
     }
 
     override fun destroy() {
-//        radarRenderable.destroy()
-//        radarShader.destroy()
-//        cmapTexture.destroy()
+        if (initialized && ::radarRenderable.isInitialized) {
+            radarRenderable.destroy()
+        }
+        initialized = false
     }
 
     override fun initialized(): Boolean {

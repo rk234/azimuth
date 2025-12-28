@@ -224,4 +224,18 @@ class RadarProductPane(private var volume: RadarVolume, var product: Product, pr
     private fun updateTiltLabel() {
         tiltLabel.text = ("Elevation: %.2f deg".format(volume.getProductVolume(product)!!.scans[tilt].elevation))
     }
+    
+    // Add proper cleanup method to prevent memory leaks
+    fun dispose() {
+        // Cancel all coroutines in this scope
+        scope.cancel()
+        
+        // Cancel any pending volume change job
+        runBlocking {
+            volChangeJob?.cancelAndJoin()
+        }
+        
+        // Clean up map resources
+        map.dispose()
+    }
 }

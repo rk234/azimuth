@@ -76,4 +76,21 @@ class MapView(private val data: GLData?) : AWTGLCanvas(data) {
 
         swapBuffers()
     }
+    
+    // Add proper cleanup method for OpenGL resources
+    fun dispose() {
+        // Clean up all layers
+        for (layer in layers) {
+            layer.destroy()
+        }
+        layers.clear()
+        
+        // Clean up VAO context
+        vaoContext.dispose()
+        
+        // Remove input handlers to prevent memory leaks
+        removeMouseMotionListener(inputHandler)
+        removeMouseWheelListener(inputHandler)
+        removeMouseListener(inputHandler)
+    }
 }

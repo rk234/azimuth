@@ -20,6 +20,11 @@ object RenderThreadTaskQueue {
         }
     }
 
+    // Add non-blocking poll method to avoid runBlocking in render loop
+    fun pollNonBlocking(): Runnable? {
+        return queue.poll()
+    }
+
     suspend fun isEmpty() = mutex.withLock {queue.isEmpty()}
 }
 

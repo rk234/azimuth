@@ -27,6 +27,7 @@ class RadarSweepRenderable(private val sweep: RadarSweep, private val radarShade
     suspend fun createGeometry() = coroutineScope {
         geomMutex.withLock {
             if (hasGeometry || initialized) return@coroutineScope
+
             val jobStartIdx: IntArray = IntArray(sweep.radials.size + 1)
             for ((i, radial) in sweep.radials.withIndex()) {
                 jobStartIdx[i] = gateCount
@@ -80,7 +81,6 @@ class RadarSweepRenderable(private val sweep: RadarSweep, private val radarShade
 
             val dur = System.currentTimeMillis() - startTime
             println("VERT GEN: ${dur}ms")
-//        vertBuffer.flip()
 
             val iboGenStart = System.currentTimeMillis()
             indexBuffer = MemoryUtil.memAllocInt((gateCount) * 6)
@@ -148,10 +148,10 @@ class RadarSweepRenderable(private val sweep: RadarSweep, private val radarShade
 
     override fun destroy() {
         if(initialized) {
-            //TODO pass vao context here
-//        vao.destroy()
             vbo.destroy()
             ibo.destroy()
+            // Note: VAO cleanup is handled by VAOContext.dispose()
+            initialized = false
         }
     }
     //TODO: can pre-compute these indices

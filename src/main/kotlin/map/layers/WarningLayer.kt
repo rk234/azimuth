@@ -52,6 +52,7 @@ class WarningLayer(private val warningDataManager: WarningDataManager, private v
     private fun createGeometry(warnings: List<Warning>) {
         val proj = MercatorProjection()
 
+        println("WarningLayer: #of $warningType warnings: ${warnings.filter { it.type == warningType }.size}")
         warnings
             .filter { it.type == warningType }
             .forEach { warning ->

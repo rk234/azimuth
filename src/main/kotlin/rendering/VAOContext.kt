@@ -15,4 +15,10 @@ class VAOContext {
             return mapping[renderable]!!
         }
     }
+    
+    // Add dispose method to clean up all VAOs
+    fun dispose() {
+        mapping.values.forEach { it.destroy() }
+        mapping.clear()
+    }
 }
