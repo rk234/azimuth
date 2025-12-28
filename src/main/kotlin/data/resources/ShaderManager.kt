@@ -29,6 +29,11 @@ class ShaderManager {
         else return loadLinesShader()
     }
 
+    fun sdfTextShader(): ShaderProgram {
+        if(shaders.containsKey("sdf_text")) return shaders["sdf_text"]!!
+        else return loadSDFTextShader()
+    }
+
     private fun loadRadarShader() : ShaderProgram {
         val vsSource = File("src/main/resources/shaders/radar/radar.vs.glsl").readText(Charsets.UTF_8)
         val fsSource = File("src/main/resources/shaders/radar/radar.fs.glsl").readText(Charsets.UTF_8)

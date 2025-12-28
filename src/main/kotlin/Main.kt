@@ -7,14 +7,19 @@ import data.state.AppState
 import data.state.UserPrefs
 import kotlinx.coroutines.*
 import kotlinx.coroutines.swing.Swing
+import rendering.FontAtlas
 import views.AppWindow
 import views.SplashWindow
+import java.awt.Font
 import javax.swing.JDialog
 import javax.swing.JFrame
 
 fun main() {
     System.setProperty("apple.laf.useScreenMenuBar", "true")
     System.setProperty("apple.awt.application.appearance", "system")
+
+    val atlas = FontAtlas("src/main/resources/fonts/Inter/static/Inter_24pt-Regular.ttf", 32f, 1024, 1024)
+    atlas.writeBitmapToFile("font_atlas.png")
 
     // This resets user prefs to defaults, remove when not in dev
     UserPrefs.reset()
