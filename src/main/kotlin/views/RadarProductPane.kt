@@ -7,6 +7,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.swing.Swing
 import map.MapView
 import map.layers.GeoJSONLayer
+import map.layers.LabelLayer
 import map.layers.RadarLayer
 import map.projection.MercatorProjection
 import meteo.radar.Product

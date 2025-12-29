@@ -4,6 +4,7 @@ import data.resources.GeoJSONManager
 import data.state.AppState
 import data.warnings.WarningType
 import map.layers.GeoJSONLayer
+import map.layers.LabelLayer
 import map.layers.WarningLayer
 import meteo.radar.Product
 import org.joml.Vector3f
@@ -38,7 +39,8 @@ class RadarMultiPane(var paneLayout: PaneLayout) : JPanel() {
         WarningLayer(AppState.warningDataManager, WarningType.SEVERE_THUNDERSTORM),
         WarningLayer(AppState.warningDataManager, WarningType.FLASH_FLOOD),
         WarningLayer(AppState.warningDataManager, WarningType.SPECIAL_WEATHER_STATEMENT),
-        WarningLayer(AppState.warningDataManager, WarningType.SPECIAL_MARINE)
+        WarningLayer(AppState.warningDataManager, WarningType.SPECIAL_MARINE),
+        LabelLayer()
     )
 
     init {

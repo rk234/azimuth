@@ -13,6 +13,7 @@ class ShaderManager {
             instance = ShaderManager()
             instance.loadRadarShader()
             instance.loadLinesShader()
+            instance.loadSDFTextShader()
             initialized = true
         }
     }

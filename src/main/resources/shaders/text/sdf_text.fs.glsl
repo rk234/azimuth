@@ -10,7 +10,6 @@ uniform sampler2D fontBitmap;
 out vec4 fragColor;
 
 void main() {
-    vec4 sampled = vec4(1.0, 1.0, 1.0, texture(text, TexCoords).r);
-    color = vec4(textColor, 1.0) * sampled;
-    fragColor = color;
+    vec4 sampled = vec4(1.0, 1.0, 1.0, texture(fontBitmap, TexCoord).r);
+    fragColor = color * sampled;
 }
