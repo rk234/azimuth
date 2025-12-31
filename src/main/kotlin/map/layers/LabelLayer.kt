@@ -17,7 +17,7 @@ class LabelLayer : MapLayer {
         val mercator = MercatorProjection()
         val coord = mercator.toCartesian(Vector2f(40.7128f, -74.0060f)) // Example: New York City
         println("Adding label at coord: ${coord.x}, ${coord.y}")
-        batch.addText("New York City", coord.x, coord.y,  0.01f)
+        batch.addText("New York City", coord.x, coord.y,  0.005f)
         batch.flush()
         println("LabelLayer initialized")
     }
