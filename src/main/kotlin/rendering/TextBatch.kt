@@ -26,7 +26,8 @@ class TextBatch(
     private lateinit var ibo: GLBufferObject
 
     fun addText(text: String, x: Float, y: Float, size: Float) {
-        val cursor = Vector2f(x, y)
+        val width = atlas.stringWidth(text) * size
+        val cursor = Vector2f(x-width/2f, y)
         for (char in text) {
             val glyph = atlas.getGlyph(char) ?: continue
 
@@ -96,7 +97,16 @@ class TextBatch(
         shader.setUniformVec4f("color", color)
         shader.setUniformVec4f("borderColor", borderColor)
         shader.setUniformFloat("borderWidth", borderWidth)
+        shader.setUniformFloat("fontSize", size)
+        shader.setUniformFloat("pxrange", 4f)
+        shader.setUniformFloat("zoom", camera.zoom)
         atlas.texture.bind()
+
+        GL45.glEnable(GL45.GL_BLEND)
+        GL45.glBlendFunc(GL45.GL_SRC_ALPHA, GL45.GL_ONE_MINUS_SRC_ALPHA)
+        GL45.glDisable(GL45.GL_DEPTH_TEST)
+        GL45.glDepthMask(false)
+
         val vao = vaoContext.getVAO(this) { vao ->
             vao.bind()
             vbo.bind()

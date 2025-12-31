@@ -208,6 +208,15 @@ class FontAtlas(
         return glyphs[c] ?: glyphs['?'] ?: error("Default glyph '?' not found in atlas")
     }
 
+    fun stringWidth(text: String): Float {
+        var width = 0f
+        for (char in text) {
+            val glyph = getGlyph(char) ?: continue
+            width += glyph.advance
+        }
+        return width
+    }
+
     fun destroy() {
         texture.destroy()
         MemoryUtil.memFree(ttfBuffer)

@@ -25,6 +25,17 @@ class Texture2D {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapT)
     }
 
+    /**
+     * Set swizzle mask for single-channel (RED) textures.
+     * This makes the texture return (R, R, R, R) when sampled instead of (R, 0, 0, 1).
+     */
+    fun setSwizzleForSingleChannel() {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_RED)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_RED)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_RED)
+    }
+
     fun destroy() {
         glDeleteTextures(id)
     }
