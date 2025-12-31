@@ -15,7 +15,7 @@ class TextBatch(
     private val borderColor: Vector4f,
     private val atlas: FontAtlas,
 ) : Renderable {
-    private val verts: MutableList<Vector4f> = mutableListOf()
+    private val verts: MutableList<Vector2f> = mutableListOf()
     private val indices: MutableList<Int> = mutableListOf()
     private lateinit var shader: ShaderProgram
     private lateinit var vaoContext: VAOContext
@@ -27,7 +27,7 @@ class TextBatch(
 
     fun addText(text: String, x: Float, y: Float, size: Float) {
         val width = atlas.stringWidth(text) * size
-        val cursor = Vector2f(x-width/2f, y)
+        val cursor = Vector2f(-width/2f, 0f)
         for (char in text) {
             val glyph = atlas.getGlyph(char) ?: continue
 
@@ -36,14 +36,26 @@ class TextBatch(
             val x1 = x0 + glyph.width * size
             val y1 = y0 - glyph.height * size
 
-            verts.add(Vector4f(x0, y0, glyph.u0, glyph.v0))
-            verts.add(Vector4f(x1, y0, glyph.u1, glyph.v0))
-            verts.add(Vector4f(x1, y1, glyph.u1, glyph.v1))
-            verts.add(Vector4f(x0, y1, glyph.u0, glyph.v1))
+            verts.add(Vector2f(x0, y0))
+            verts.add(Vector2f(glyph.u0, glyph.v0))
+            verts.add(Vector2f(x, y))
 
+            verts.add(Vector2f(x1, y0))
+            verts.add(Vector2f(glyph.u1, glyph.v0))
+            verts.add(Vector2f(x, y))
+
+            verts.add(Vector2f(x1, y1))
+            verts.add(Vector2f(glyph.u1, glyph.v1))
+            verts.add(Vector2f(x, y))
+
+            verts.add(Vector2f(x0, y1))
+            verts.add(Vector2f(glyph.u0, glyph.v1))
+            verts.add(Vector2f(x, y))
+
+            val nVerts = verts.size / 3
             indices.addAll(listOf(
-                verts.size - 4, verts.size - 3, verts.size - 2,
-                verts.size - 4, verts.size - 2, verts.size - 1
+                nVerts - 4, nVerts - 3, nVerts - 2,
+                nVerts - 4, nVerts - 2, nVerts - 1
             ))
 
             cursor.x += glyph.advance * size
@@ -53,11 +65,11 @@ class TextBatch(
     fun flush() {
         val vao = vaoContext.getVAO(this)
         vao.bind()
-        val vertBuffer = MemoryUtil.memAllocFloat(verts.size * 4)
+        val vertBuffer = MemoryUtil.memAllocFloat(verts.size * 2)
         val indexBuffer = MemoryUtil.memAllocInt(indices.size)
 
         for (v in verts) {
-            vertBuffer.put(v.x).put(v.y).put(v.z).put(v.w)
+            vertBuffer.put(v.x).put(v.y)
         }
         vertBuffer.flip()
         for (i in indices) {
@@ -73,10 +85,12 @@ class TextBatch(
         ibo.bind()
         ibo.uploadData(indexBuffer, GL45.GL_STATIC_DRAW)
 
-        vao.attrib(0, 2, GL45.GL_FLOAT, false, 4 * Float.SIZE_BYTES, 0)
-        vao.attrib(1, 2, GL45.GL_FLOAT, false, 4 * Float.SIZE_BYTES, (2 * Float.SIZE_BYTES).toLong())
+        vao.attrib(0, 2, GL45.GL_FLOAT, false, 6 * Float.SIZE_BYTES, 0)
+        vao.attrib(1, 2, GL45.GL_FLOAT, false, 6 * Float.SIZE_BYTES, (2 * Float.SIZE_BYTES).toLong())
+        vao.attrib(2, 2, GL45.GL_FLOAT, false, 6 * Float.SIZE_BYTES, (4 * Float.SIZE_BYTES).toLong())
         vao.enableAttrib(0)
         vao.enableAttrib(1)
+        vao.enableAttrib(2)
 
         MemoryUtil.memFree(vertBuffer)
         MemoryUtil.memFree(indexBuffer)
@@ -98,7 +112,7 @@ class TextBatch(
         shader.setUniformVec4f("borderColor", borderColor)
         shader.setUniformFloat("borderWidth", borderWidth)
         shader.setUniformFloat("fontSize", size)
-        shader.setUniformFloat("pxrange", 4f)
+        shader.setUniformFloat("pxrange", 2f)
         shader.setUniformFloat("zoom", camera.zoom)
         atlas.texture.bind()
 
@@ -111,11 +125,12 @@ class TextBatch(
             vao.bind()
             vbo.bind()
 
-            vao.attrib(0, 2, GL45.GL_FLOAT, false, 4 * Float.SIZE_BYTES, 0)
-            vao.attrib(1, 2, GL45.GL_FLOAT, false, 4 * Float.SIZE_BYTES, (2 * Float.SIZE_BYTES).toLong())
-
+            vao.attrib(0, 2, GL45.GL_FLOAT, false, 6 * Float.SIZE_BYTES, 0)
+            vao.attrib(1, 2, GL45.GL_FLOAT, false, 6 * Float.SIZE_BYTES, (2 * Float.SIZE_BYTES).toLong())
+            vao.attrib(2, 2, GL45.GL_FLOAT, false, 6 * Float.SIZE_BYTES, (4 * Float.SIZE_BYTES).toLong())
             vao.enableAttrib(0)
             vao.enableAttrib(1)
+            vao.enableAttrib(2)
 
             ibo.bind()
         }

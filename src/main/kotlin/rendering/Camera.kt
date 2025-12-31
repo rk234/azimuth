@@ -8,6 +8,7 @@ import org.joml.Vector3f
 class Camera(viewWidth: Float, viewHeight: Float) {
     lateinit var projectionMatrix: Matrix4f
     lateinit var transformMatrix: Matrix4f
+    lateinit var screenSpaceMatrix: Matrix4f
 
     var position: Vector3f = Vector3f(0f)
         set(newVal) {
@@ -48,6 +49,14 @@ class Camera(viewWidth: Float, viewHeight: Float) {
             -1f,
             1f
         )
+        screenSpaceMatrix = Matrix4f().ortho(
+            -viewportDims.x / 2,
+            viewportDims.x / 2,
+            -viewportDims.y / 2,
+            viewportDims.y / 2,
+            -1f,
+            1f
+        )
     }
 
     fun translate(delta: Vector2f) {
@@ -57,7 +66,7 @@ class Camera(viewWidth: Float, viewHeight: Float) {
 
     fun zoomTowards(targetPoint: Vector2f, zoomDelta: Float) {
         val oldZoom = zoom
-        val newZoom = (zoom + zoomDelta).coerceIn(1e-6f, 100f)
+        val newZoom = (zoom + zoomDelta).coerceIn(1e-9f, 100f)
 
         if (newZoom == oldZoom) return
 

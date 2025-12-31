@@ -53,6 +53,8 @@ class RadarProductPane(private var volume: RadarVolume, var product: Product, pr
 
         val proj = MercatorProjection()
         val camPos = proj.toCartesian(Vector2f(volume.station.latitude, volume.station.longitude))
+        println("Initial camera pos: $camPos")
+        println("station lat/lon: ${volume.station.latitude}, ${volume.station.longitude}")
         map.camera.position = Vector3f(camPos.x, camPos.y, 0f)
         map.camera.zoom = 0.0001f
         map.camera.recalcProjection()
