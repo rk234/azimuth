@@ -11,7 +11,7 @@ import rendering.*
 class GeoJSONLayer(private val json: JSONObject, val lineWidth: Float, val lineColor: Vector3f, val zoomLevel: Float) : MapLayer {
     private lateinit var shader: ShaderProgram
     private var paths: ArrayList<PathRenderable> = ArrayList()
-    private val vertsPerChunk = 60_000
+    private val vertsPerChunk = 30_000
     private var initialized = false
 
     override fun init(camera: Camera, vaoContext: VAOContext) {
