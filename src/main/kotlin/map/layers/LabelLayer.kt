@@ -1,7 +1,5 @@
 package map.layers
 
-import com.google.common.io.Files
-import map.projection.MercatorProjection
 import org.joml.Vector2f
 import org.joml.Vector4f
 import rendering.AABB
@@ -9,7 +7,6 @@ import rendering.Camera
 import rendering.FontAtlas
 import rendering.TextBatch
 import rendering.VAOContext
-import java.io.File
 
 data class Label(
     val text: String,
@@ -18,37 +15,16 @@ data class Label(
     val size: Float
 )
 
-class LabelLayer : MapLayer {
+class LabelLayer(private val labels: List<Label>) : MapLayer {
     private val atlas = FontAtlas("src/main/resources/fonts/IBMPlexSans_Condensed-Bold.ttf", 150f, 1024, 1024)
     private val batch = TextBatch(Vector4f(1f, 1f, 1f, 1f), 24f, 4f, Vector4f(0f, 0f, 0f, 1f), atlas)
 
-    private val labels = mutableListOf<Label>()
     private var lastViewBounds: AABB? = null
     private var lastZoom: Float = -1f
 
     override fun init(camera: Camera, vaoContext: VAOContext) {
-        val citiesCSV = Files.readLines(File("src/main/resources/geo/USCities.csv"), Charsets.UTF_8)
-
-        val mercator = MercatorProjection()
         batch.init(vaoContext)
 
-        // Parse and store all labels
-        for (line in citiesCSV) {
-            val parts = line.split(",")
-            val city = parts[0]
-            val lat = parts[1].toFloat()
-            val lon = parts[2].toFloat()
-            val population = parts[3].toInt()
-            val size = when {
-                population > 1_000_000 -> 0.004f
-                population > 500_000 -> 0.003f
-                population > 100_000 -> 0.0025f
-                else -> 0.002f
-            }
-
-            val coord = mercator.toCartesian(Vector2f(lat, lon))
-            labels.add(Label(city, coord, population, size))
-        }
 
         println("LabelLayer initialized with ${labels.size} labels")
     }
