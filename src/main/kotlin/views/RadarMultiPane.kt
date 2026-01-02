@@ -10,6 +10,7 @@ import map.layers.LabelLayer
 import map.layers.WarningLayer
 import map.projection.MercatorProjection
 import meteo.radar.Product
+import org.joml.Vector2f
 import org.joml.Vector3f
 import org.lwjgl.opengl.awt.GLData
 import utils.RenderThreadTaskQueue
@@ -49,7 +50,7 @@ class RadarMultiPane(var paneLayout: PaneLayout) : JPanel() {
         LabelLayer(generateCityLabels(citiesCSV))
     )
 
-    private fun generateCityLabels(citiesCSV: List<String>) {
+    private fun generateCityLabels(citiesCSV: List<String>): List<Label> {
         val labels = mutableListOf<Label>()
         val mercator = MercatorProjection()
         // Parse and store all labels
@@ -69,7 +70,7 @@ class RadarMultiPane(var paneLayout: PaneLayout) : JPanel() {
             val coord = mercator.toCartesian(Vector2f(lat, lon))
             labels.add(Label(city, coord, population, size))
         }
-
+        return labels
     }
 
     init {

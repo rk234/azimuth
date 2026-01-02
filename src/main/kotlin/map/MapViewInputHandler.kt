@@ -48,7 +48,6 @@ class MapViewInputHandler(private val camera: Camera, private var view: MapView)
     override fun mouseDragged(e: MouseEvent?) {
         val delta = Vector2f(e?.x?.minus(prevMousPos.x) ?: 0f, e?.y?.minus(prevMousPos.y) ?: 0f)
         camera.translate(delta.mul(0.01f / camera.zoom).mul(Vector2f(-1f, 1f)))
-        println("camera pos: ${camera.position}")
         prevMousPos = Vector2f(e?.x?.toFloat() ?: 0f, e?.y?.toFloat() ?: 0f)
     }
 

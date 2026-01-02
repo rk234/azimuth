@@ -1,5 +1,6 @@
 package map.layers
 
+import data.resources.FontManager
 import org.joml.Vector2f
 import org.joml.Vector4f
 import rendering.AABB
@@ -16,7 +17,7 @@ data class Label(
 )
 
 class LabelLayer(private val labels: List<Label>) : MapLayer {
-    private val atlas = FontAtlas("src/main/resources/fonts/IBMPlexSans_Condensed-Bold.ttf", 150f, 1024, 1024)
+    private val atlas = FontManager.instance.getDefaultFont()
     private val batch = TextBatch(Vector4f(1f, 1f, 1f, 1f), 24f, 4f, Vector4f(0f, 0f, 0f, 1f), atlas)
 
     private var lastViewBounds: AABB? = null
