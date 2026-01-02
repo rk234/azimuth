@@ -1,5 +1,6 @@
 package rendering
 
+import org.joml.Vector2f
 import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL45.GL_CLAMP_TO_EDGE
 import org.lwjgl.opengl.GL45.GL_LINEAR
@@ -215,6 +216,16 @@ class FontAtlas(
             width += glyph.advance
         }
         return width
+    }
+
+    /**
+     * Get the bounding box dimensions of a string in atlas units.
+     * @return Vector2f with x=width, y=height
+     */
+    fun stringBounds(text: String): Vector2f {
+        val width = stringWidth(text)
+        val height = ascent - descent  // Total line height
+        return Vector2f(width, height)
     }
 
     fun destroy() {

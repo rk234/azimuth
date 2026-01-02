@@ -1,6 +1,5 @@
 package rendering
 
-import map.projection.MercatorProjection
 import org.joml.Matrix4f
 import org.joml.Vector2f
 import org.joml.Vector3f
@@ -84,5 +83,18 @@ class Camera(viewWidth: Float, viewHeight: Float) {
 
         position = Vector3f(position.x + offsetX, position.y + offsetY, position.z)
         zoom = newZoom
+    }
+
+    /**
+     * Returns the world-space AABB of the currently visible viewport.
+     */
+    fun getViewBounds(scale: Float = 1f): AABB {
+        val halfWidth = (viewportDims.x * (1f / zoom) / 2f) * scale
+        val halfHeight = (viewportDims.y * (1f / zoom) / 2f) * scale
+
+        return AABB(
+            topLeft = Vector2f(position.x - halfWidth, position.y + halfHeight),
+            bottomRight = Vector2f(position.x + halfWidth, position.y - halfHeight)
+        )
     }
 }

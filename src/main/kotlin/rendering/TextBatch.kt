@@ -21,9 +21,15 @@ class TextBatch(
     private lateinit var vaoContext: VAOContext
 
     private var initialized = false
+    private var indexCount = 0
 
-    private lateinit var vbo: GLBufferObject
-    private lateinit var ibo: GLBufferObject
+    private var vbo: GLBufferObject? = null
+    private var ibo: GLBufferObject? = null
+
+    fun clear() {
+        verts.clear()
+        indices.clear()
+    }
 
     fun addText(text: String, x: Float, y: Float, size: Float) {
         val width = atlas.stringWidth(text) * size
@@ -63,6 +69,11 @@ class TextBatch(
     }
 
     fun flush() {
+        if (verts.isEmpty()) {
+            indexCount = 0
+            return
+        }
+
         val vao = vaoContext.getVAO(this)
         vao.bind()
         val vertBuffer = MemoryUtil.memAllocFloat(verts.size * 2)
@@ -77,13 +88,18 @@ class TextBatch(
         }
         indexBuffer.flip()
 
-        vbo = GLBufferObject()
-        vbo.bind()
-        vbo.uploadData(vertBuffer, GL45.GL_STATIC_DRAW)
+        // Create or reuse buffer objects
+        if (vbo == null) {
+            vbo = GLBufferObject()
+        }
+        vbo!!.bind()
+        vbo!!.uploadData(vertBuffer, GL45.GL_DYNAMIC_DRAW)
 
-        ibo = GLBufferObject(GL45.GL_ELEMENT_ARRAY_BUFFER)
-        ibo.bind()
-        ibo.uploadData(indexBuffer, GL45.GL_STATIC_DRAW)
+        if (ibo == null) {
+            ibo = GLBufferObject(GL45.GL_ELEMENT_ARRAY_BUFFER)
+        }
+        ibo!!.bind()
+        ibo!!.uploadData(indexBuffer, GL45.GL_DYNAMIC_DRAW)
 
         vao.attrib(0, 2, GL45.GL_FLOAT, false, 6 * Float.SIZE_BYTES, 0)
         vao.attrib(1, 2, GL45.GL_FLOAT, false, 6 * Float.SIZE_BYTES, (2 * Float.SIZE_BYTES).toLong())
@@ -91,6 +107,8 @@ class TextBatch(
         vao.enableAttrib(0)
         vao.enableAttrib(1)
         vao.enableAttrib(2)
+
+        indexCount = indices.size
 
         MemoryUtil.memFree(vertBuffer)
         MemoryUtil.memFree(indexBuffer)
@@ -104,7 +122,7 @@ class TextBatch(
     }
 
     override fun draw(camera: Camera, vaoContext: VAOContext) {
-        if(!initialized) return
+        if(!initialized || indexCount == 0 || vbo == null || ibo == null) return
         shader.bind()
         shader.setUniformMatrix4f("projectionMatrix", camera.projectionMatrix)
         shader.setUniformMatrix4f("transformMatrix", camera.transformMatrix)
@@ -123,7 +141,7 @@ class TextBatch(
 
         val vao = vaoContext.getVAO(this) { vao ->
             vao.bind()
-            vbo.bind()
+            vbo!!.bind()
 
             vao.attrib(0, 2, GL45.GL_FLOAT, false, 6 * Float.SIZE_BYTES, 0)
             vao.attrib(1, 2, GL45.GL_FLOAT, false, 6 * Float.SIZE_BYTES, (2 * Float.SIZE_BYTES).toLong())
@@ -132,10 +150,10 @@ class TextBatch(
             vao.enableAttrib(1)
             vao.enableAttrib(2)
 
-            ibo.bind()
+            ibo!!.bind()
         }
         vao.bind()
-        GL45.glDrawElements(GL45.GL_TRIANGLES, indices.size, GL45.GL_UNSIGNED_INT, 0)
+        GL45.glDrawElements(GL45.GL_TRIANGLES, indexCount, GL45.GL_UNSIGNED_INT, 0)
     }
 
     override fun destroy() {
