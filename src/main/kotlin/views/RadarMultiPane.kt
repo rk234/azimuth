@@ -47,10 +47,10 @@ class RadarMultiPane(var paneLayout: PaneLayout) : JPanel() {
         WarningLayer(AppState.warningDataManager, WarningType.FLASH_FLOOD),
         WarningLayer(AppState.warningDataManager, WarningType.SPECIAL_WEATHER_STATEMENT),
         WarningLayer(AppState.warningDataManager, WarningType.SPECIAL_MARINE),
-        LabelLayer(generateCityLabels(citiesCSV))
+        LabelLayer(generateCityLabels(citiesCSV)),
     )
 
-    private fun generateCityLabels(citiesCSV: List<String>): List<Label> {
+    private fun generateCityLabels(citiesCSV: List<String>): MutableList<Label> {
         val labels = mutableListOf<Label>()
         val mercator = MercatorProjection()
         // Parse and store all labels

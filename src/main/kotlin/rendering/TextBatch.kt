@@ -33,7 +33,8 @@ class TextBatch(
 
     fun addText(text: String, x: Float, y: Float, size: Float) {
         val width = atlas.stringWidth(text) * size
-        val cursor = Vector2f(-width/2f, 0f)
+        val height = (atlas.ascent) * size
+        val cursor = Vector2f(-width/2f, -height/2f)
         for (char in text) {
             val glyph = atlas.getGlyph(char) ?: continue
 

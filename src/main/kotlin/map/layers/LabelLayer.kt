@@ -5,20 +5,31 @@ import org.joml.Vector2f
 import org.joml.Vector4f
 import rendering.AABB
 import rendering.Camera
-import rendering.FontAtlas
 import rendering.TextBatch
 import rendering.VAOContext
 
 data class Label(
     val text: String,
     val position: Vector2f,
-    val population: Int,
+    val priority: Int,
     val size: Float
 )
 
-class LabelLayer(private val labels: List<Label>) : MapLayer {
+class LabelLayer(
+    private val labels: MutableList<Label>,
+    color: Vector4f = Vector4f(1f, 1f, 1f, 1f),
+    borderWidth: Float = 4f,
+    borderColor: Vector4f = Vector4f(0f, 0f, 0f, 1f),
+    size: Float = 24f
+) : MapLayer {
     private val atlas = FontManager.instance.getDefaultFont()
-    private val batch = TextBatch(Vector4f(1f, 1f, 1f, 1f), 24f, 4f, Vector4f(0f, 0f, 0f, 1f), atlas)
+    private val batch = TextBatch(
+        color,
+        size,
+        borderWidth,
+        borderColor,
+        atlas
+    )
 
     private var lastViewBounds: AABB? = null
     private var lastZoom: Float = -1f
@@ -26,18 +37,13 @@ class LabelLayer(private val labels: List<Label>) : MapLayer {
     override fun init(camera: Camera, vaoContext: VAOContext) {
         batch.init(vaoContext)
 
-
         println("LabelLayer initialized with ${labels.size} labels")
     }
 
-    private fun getPopulationThreshold(zoom: Float): Int {
-        return when {
-            zoom < 0.00005f/10 -> 1_000_000   // Very zoomed out: only major cities
-            zoom < 0.0001f/10 -> 500_000      // Zoomed out: large cities
-            zoom < 0.0005f/10 -> 100_000      // Medium zoom: medium cities
-            zoom < 0.001f/10 -> 50_000        // Closer: smaller cities
-            else -> 0                       // Zoomed in: show all
-        }
+    fun setLabels(newLabels: List<Label>) {
+        labels.clear()
+        labels.addAll(newLabels)
+        lastViewBounds = null // Force rebuild
     }
 
     private fun rebuildBatch(camera: Camera) {
@@ -52,7 +58,7 @@ class LabelLayer(private val labels: List<Label>) : MapLayer {
         // Filter and sort labels by population (descending) so larger cities get priority
         val candidateLabels = labels
             .filter { viewBounds.contains(it.position) }
-            .sortedByDescending { it.population }
+            .sortedByDescending { it.priority }
 
         var visibleCount = 0
         for (label in candidateLabels) {
