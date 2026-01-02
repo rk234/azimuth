@@ -1,6 +1,5 @@
 package rendering
 
-import map.projection.MercatorProjection
 import org.joml.Matrix4f
 import org.joml.Vector2f
 import org.joml.Vector3f
@@ -8,6 +7,7 @@ import org.joml.Vector3f
 class Camera(viewWidth: Float, viewHeight: Float) {
     lateinit var projectionMatrix: Matrix4f
     lateinit var transformMatrix: Matrix4f
+    lateinit var screenSpaceMatrix: Matrix4f
 
     var position: Vector3f = Vector3f(0f)
         set(newVal) {
@@ -48,6 +48,14 @@ class Camera(viewWidth: Float, viewHeight: Float) {
             -1f,
             1f
         )
+        screenSpaceMatrix = Matrix4f().ortho(
+            -viewportDims.x / 2,
+            viewportDims.x / 2,
+            -viewportDims.y / 2,
+            viewportDims.y / 2,
+            -1f,
+            1f
+        )
     }
 
     fun translate(delta: Vector2f) {
@@ -57,7 +65,7 @@ class Camera(viewWidth: Float, viewHeight: Float) {
 
     fun zoomTowards(targetPoint: Vector2f, zoomDelta: Float) {
         val oldZoom = zoom
-        val newZoom = (zoom + zoomDelta).coerceIn(1e-6f, 100f)
+        val newZoom = (zoom + zoomDelta).coerceIn(1e-9f, 100f)
 
         if (newZoom == oldZoom) return
 
@@ -75,5 +83,18 @@ class Camera(viewWidth: Float, viewHeight: Float) {
 
         position = Vector3f(position.x + offsetX, position.y + offsetY, position.z)
         zoom = newZoom
+    }
+
+    /**
+     * Returns the world-space AABB of the currently visible viewport.
+     */
+    fun getViewBounds(scale: Float = 1f): AABB {
+        val halfWidth = (viewportDims.x * (1f / zoom) / 2f) * scale
+        val halfHeight = (viewportDims.y * (1f / zoom) / 2f) * scale
+
+        return AABB(
+            topLeft = Vector2f(position.x - halfWidth, position.y + halfHeight),
+            bottomRight = Vector2f(position.x + halfWidth, position.y - halfHeight)
+        )
     }
 }

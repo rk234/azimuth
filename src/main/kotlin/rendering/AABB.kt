@@ -7,10 +7,15 @@ data class AABB(
     var bottomRight: Vector2f,
 ) {
     fun intersects(aabb: AABB): Boolean {
-//        if(aabb.topLeft.x > topLeft.x) {
-//
-//        }
-        return false
+        // Check if one AABB is to the left of the other
+        if (bottomRight.x < aabb.topLeft.x || aabb.bottomRight.x < topLeft.x) {
+            return false
+        }
+        // Check if one AABB is above the other
+        if (bottomRight.y > aabb.topLeft.y || aabb.bottomRight.y > topLeft.y) {
+            return false
+        }
+        return true
     }
 
     fun contains(point: Vector2f): Boolean {

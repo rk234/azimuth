@@ -7,12 +7,15 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.swing.Swing
 import map.MapView
 import map.layers.GeoJSONLayer
+import map.layers.Label
+import map.layers.LabelLayer
 import map.layers.RadarLayer
 import map.projection.MercatorProjection
 import meteo.radar.Product
 import meteo.radar.RadarVolume
 import org.joml.Vector2f
 import org.joml.Vector3f
+import org.joml.Vector4f
 import org.lwjgl.opengl.awt.GLData
 import java.awt.Color
 import java.awt.Dimension
@@ -26,9 +29,19 @@ import javax.swing.*
 import kotlin.math.max
 import kotlin.math.min
 
-class RadarProductPane(private var volume: RadarVolume, var product: Product, private var tilt: Int, glData: GLData? = null) : JPanel() {
+class RadarProductPane(
+    private var volume: RadarVolume,
+    var product: Product,
+    private var tilt: Int,
+    glData: GLData? = null
+) : JPanel() {
     val map: MapView = MapView(glData)
     private var radarLayer: RadarLayer = RadarLayer(volume.getProductVolume(product)!!, tilt)
+    private var labelLayer: LabelLayer = LabelLayer(
+        mutableListOf(),
+        size = 24f,
+        color = Vector4f(0f, 1f, 1f, 1f)
+    )
 
     private val scope: CoroutineScope = MainScope()
 
@@ -58,9 +71,9 @@ class RadarProductPane(private var volume: RadarVolume, var product: Product, pr
         map.camera.recalcTransform()
 
         map.addLayer(radarLayer)
-//        map.addLayer(GeoJSONLayer(countries, 0.05f, Vector3f(0.8f), -10f))
-//        map.addLayer(GeoJSONLayer(counties, 0.03f, Vector3f(0.8f), 0.0001f))
-//        map.addLayer(GeoJSONLayer(states, 0.035f, Vector3f(1.0f), -10f))
+
+        updateMapLabel()
+        map.addLayer(labelLayer)
 
         layout = BoxLayout(this, BoxLayout.Y_AXIS)
         minimumSize = Dimension(100, 100)
@@ -159,7 +172,7 @@ class RadarProductPane(private var volume: RadarVolume, var product: Product, pr
                 volume.getProductVolume(selectedProduct)
             }
 
-            if(productVolume != null) {
+            if (productVolume != null) {
                 tilt = min(tilt, productVolume.scans.size - 1)
                 radarLayer.setProductVolumeAndTilt(
                     productVolume,
@@ -174,16 +187,26 @@ class RadarProductPane(private var volume: RadarVolume, var product: Product, pr
         }
     }
 
+    private fun updateMapLabel() {
+        val proj = MercatorProjection()
+        val radarPos = proj.toCartesian(Vector2f(volume.station.latitude, volume.station.longitude))
+        val labels = mutableListOf(
+            Label(volume.station.code, radarPos, 10, 0.002f)
+        )
+        labelLayer.setLabels(labels)
+    }
+
     private suspend fun handleVolumeChange(volume: RadarVolume?) {
-        if(volume == null) return
+        if (volume == null) return
 //        println("${product.displayName} PANEL => volume change: ${volume.handle.fileName}")
         this.volume = volume
         val productVolume = volume.getProductVolume(product)
-        if(productVolume != null) {
+        if (productVolume != null) {
             tilt = min(tilt, productVolume.scans.size - 1)
             radarLayer.setProductVolumeAndTilt(volume.getProductVolume(product)!!, tilt)
             updateTiltLabel()
             updateTimeLabel()
+            updateMapLabel()
             updateTiltBtns(productVolume.scans.size)
         }
 //        println("Volume updated!!")
@@ -193,7 +216,7 @@ class RadarProductPane(private var volume: RadarVolume, var product: Product, pr
         this.tilt = tilt
         val productVolume = volume.getProductVolume(product)
 
-        if(productVolume != null && tilt >= 0 && tilt < productVolume.scans.size) {
+        if (productVolume != null && tilt >= 0 && tilt < productVolume.scans.size) {
             radarLayer.setProductVolumeAndTilt(productVolume, tilt)
             updateTiltLabel()
             updateTiltBtns(productVolume.scans.size)
@@ -202,13 +225,13 @@ class RadarProductPane(private var volume: RadarVolume, var product: Product, pr
     }
 
     private fun updateTiltBtns(numScans: Int) {
-        if(tilt < numScans - 1) {
+        if (tilt < numScans - 1) {
             upTiltBtn.isEnabled = true
         } else {
             upTiltBtn.isEnabled = false
         }
 
-        if(tilt > 0) {
+        if (tilt > 0) {
             downTiltBtn.isEnabled = true
         } else {
             downTiltBtn.isEnabled = false
@@ -224,17 +247,17 @@ class RadarProductPane(private var volume: RadarVolume, var product: Product, pr
     private fun updateTiltLabel() {
         tiltLabel.text = ("Elevation: %.2f deg".format(volume.getProductVolume(product)!!.scans[tilt].elevation))
     }
-    
+
     // Add proper cleanup method to prevent memory leaks
     fun dispose() {
         // Cancel all coroutines in this scope
         scope.cancel()
-        
+
         // Cancel any pending volume change job
         runBlocking {
             volChangeJob?.cancelAndJoin()
         }
-        
+
         // Clean up map resources
         map.dispose()
     }

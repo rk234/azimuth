@@ -1,15 +1,21 @@
 package views
 
+import com.google.common.io.Files
 import data.resources.GeoJSONManager
 import data.state.AppState
 import data.warnings.WarningType
 import map.layers.GeoJSONLayer
+import map.layers.Label
+import map.layers.LabelLayer
 import map.layers.WarningLayer
+import map.projection.MercatorProjection
 import meteo.radar.Product
+import org.joml.Vector2f
 import org.joml.Vector3f
 import org.lwjgl.opengl.awt.GLData
 import utils.RenderThreadTaskQueue
 import java.awt.GridLayout
+import java.io.File
 import javax.swing.JPanel
 import javax.swing.Timer
 
@@ -25,6 +31,8 @@ class RadarMultiPane(var paneLayout: PaneLayout) : JPanel() {
     private val countries = GeoJSONManager.instance.countries
     private val counties = GeoJSONManager.instance.counties
     private val states = GeoJSONManager.instance.states
+    private val citiesCSV = Files.readLines(File("src/main/resources/geo/USCities.csv"), Charsets.UTF_8)
+
 
     private lateinit var renderTimer: Timer
 
@@ -38,8 +46,32 @@ class RadarMultiPane(var paneLayout: PaneLayout) : JPanel() {
         WarningLayer(AppState.warningDataManager, WarningType.SEVERE_THUNDERSTORM),
         WarningLayer(AppState.warningDataManager, WarningType.FLASH_FLOOD),
         WarningLayer(AppState.warningDataManager, WarningType.SPECIAL_WEATHER_STATEMENT),
-        WarningLayer(AppState.warningDataManager, WarningType.SPECIAL_MARINE)
+        WarningLayer(AppState.warningDataManager, WarningType.SPECIAL_MARINE),
+        LabelLayer(generateCityLabels(citiesCSV)),
     )
+
+    private fun generateCityLabels(citiesCSV: List<String>): MutableList<Label> {
+        val labels = mutableListOf<Label>()
+        val mercator = MercatorProjection()
+        // Parse and store all labels
+        for (line in citiesCSV) {
+            val parts = line.split(",")
+            val city = parts[0]
+            val lat = parts[1].toFloat()
+            val lon = parts[2].toFloat()
+            val population = parts[3].toInt()
+            val size = when {
+                population > 1_000_000 -> 0.004f
+                population > 500_000 -> 0.003f
+                population > 100_000 -> 0.0025f
+                else -> 0.002f
+            }
+
+            val coord = mercator.toCartesian(Vector2f(lat, lon))
+            labels.add(Label(city, coord, population, size))
+        }
+        return labels
+    }
 
     init {
         layout = createLayout(paneLayout)

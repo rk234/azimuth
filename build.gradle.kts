@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm") version "2.1.0"
     application
+    //id("de.infolektuell.jpackage") version "0.2.0"
 }
 
 group = "com.azimuth"

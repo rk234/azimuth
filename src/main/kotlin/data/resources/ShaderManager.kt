@@ -13,6 +13,7 @@ class ShaderManager {
             instance = ShaderManager()
             instance.loadRadarShader()
             instance.loadLinesShader()
+            instance.loadSDFTextShader()
             initialized = true
         }
     }
@@ -27,6 +28,11 @@ class ShaderManager {
     fun linesShader(): ShaderProgram {
         if(shaders.containsKey("lines")) return shaders["lines"]!!
         else return loadLinesShader()
+    }
+
+    fun sdfTextShader(): ShaderProgram {
+        if(shaders.containsKey("sdf_text")) return shaders["sdf_text"]!!
+        else return loadSDFTextShader()
     }
 
     private fun loadRadarShader() : ShaderProgram {
@@ -51,5 +57,17 @@ class ShaderManager {
         linesShader.link()
         shaders["lines"] = linesShader
         return linesShader
+    }
+
+    private fun loadSDFTextShader() : ShaderProgram {
+        val vsSource = File("src/main/resources/shaders/text/sdf_text.vs.glsl").readText(Charsets.UTF_8)
+        val fsSource = File("src/main/resources/shaders/text/sdf_text.fs.glsl").readText(Charsets.UTF_8)
+
+        val sdfTextShader = ShaderProgram()
+        sdfTextShader.createVertexShader(vsSource)
+        sdfTextShader.createFragmentShader(fsSource)
+        sdfTextShader.link()
+        shaders["sdf_text"] = sdfTextShader
+        return sdfTextShader
     }
 }
