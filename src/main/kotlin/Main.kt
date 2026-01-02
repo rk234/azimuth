@@ -19,9 +19,6 @@ fun main() {
     System.setProperty("apple.laf.useScreenMenuBar", "true")
     System.setProperty("apple.awt.application.appearance", "system")
 
-    val atlas = FontAtlas("src/main/resources/fonts/IBMPlexSans-Regular.ttf", 150f, 1024, 1024)
-    atlas.writeBitmapToFile("font_atlas.png")
-
     // This resets user prefs to defaults, remove when not in dev
     UserPrefs.reset()
 
