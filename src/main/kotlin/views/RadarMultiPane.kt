@@ -25,6 +25,11 @@ enum class PaneLayout(val numPanes: Int) {
     QUAD(4)
 }
 
+data class View(
+    var position : Vector2f,
+    var zoom: Float
+)
+
 class RadarMultiPane(var paneLayout: PaneLayout) : JPanel() {
     private val productPanes: Array<RadarProductPane?> = arrayOfNulls(4)
 
@@ -33,7 +38,13 @@ class RadarMultiPane(var paneLayout: PaneLayout) : JPanel() {
     private val states = GeoJSONManager.instance.states
     private val citiesCSV = Files.readLines(File("src/main/resources/geo/USCities.csv"), Charsets.UTF_8)
 
-
+    private var view = {
+        val mercator = MercatorProjection()
+        View(
+            mercator.toCartesian(Vector2f(AppState.activeVolume.value.station.latitude, AppState.activeVolume.value.station.longitude)),
+            1f
+        )
+    }
     private lateinit var renderTimer: Timer
 
     var fps: Int = 0
