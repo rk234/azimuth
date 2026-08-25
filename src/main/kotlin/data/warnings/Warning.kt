@@ -140,7 +140,7 @@ data class Warning(
                 onset = onset,
                 expires = expires,
                 polygons = geoPolygons,
-                type = if (eventCode != null) WarningType.fromEventCode(eventCode) else null
+                type = if(type == "Tornado Warning") WarningType.TORNADO else if (eventCode != null) WarningType.fromEventCode(eventCode) else null
             )
         }
     }

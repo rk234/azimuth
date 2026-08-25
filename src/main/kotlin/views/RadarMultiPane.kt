@@ -41,7 +41,7 @@ class RadarMultiPane(var paneLayout: PaneLayout) : JPanel() {
     private var view = {
         val mercator = MercatorProjection()
         View(
-            mercator.toCartesian(Vector2f(AppState.activeVolume.value.station.latitude, AppState.activeVolume.value.station.longitude)),
+            mercator.toCartesian(Vector2f(AppState.activeVolume.value!!.station.latitude, AppState.activeVolume.value!!.station.longitude)),
             1f
         )
     }
